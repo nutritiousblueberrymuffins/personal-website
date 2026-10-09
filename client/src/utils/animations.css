@@ -1,0 +1,119 @@
+
+
+
+@keyframes record-spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes track-scroll {
+    from { transform: translateX(0); }
+    to { transform: translateX(-28%); }
+}
+
+@keyframes title-breathe {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.72; transform: scale(1.035); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+@media (max-width: 1050px) {
+    .navigation,
+    .projects-section {
+        width: min(100% - 4rem, 900px);
+    }
+
+.music-player {
+        grid-template-columns: 112px minmax(0, 1fr);
+    }
+
+.track-window p {
+        font-size: 1.1rem;
+    }
+
+    .project-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 760px) {
+    .navigation {
+        width: min(100% - 2rem, 620px);
+        min-height: 76px;
+    }
+
+    .logo {
+        max-width: 190px;
+        font-size: 1rem;
+    }
+
+    .nav-links {
+        gap: 1rem;
+    }
+
+    .nav-links a {
+        font-size: 0.95rem;
+    }
+
+.profile-column {
+        display: flex;
+        flex-direction: column;
+    }
+
+.music-player {
+        grid-template-columns: 105px minmax(0, 1fr);
+    }
+
+.animation-panel {
+        margin-top: 1.5rem;
+    }
+
+    .projects-section {
+        width: min(100% - 2rem, 620px);
+        margin-top: 5rem;
+    }
+
+    .project-grid {
+        grid-template-columns: 1fr;
+        margin-top: 2.5rem;
+    }
+
+    .project-card {
+        min-height: 205px;
+    }
+}
+
+@media (max-width: 500px) {
+    .navigation {
+        padding-block: 1.1rem;
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .nav-links {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+.introduction-caption p {
+        font-size: 1.05rem;
+    }
+
+.record {
+        width: 84px;
+    }
+
+.animation-panel {
+        border-radius: 16px;
+        font-size: 2.5rem;
+    }
+
+    .contact-section address,
+    .footer-line {
+        font-size: 1.05rem;
+    }
+}

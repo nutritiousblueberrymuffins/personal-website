@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Next Track Button</title>
+    <style>
+        :root { --red: #ff0808; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 32px;
+            color: #111827;
+            background: #ffead1;
+            font-family: "Trebuchet MS", sans-serif;
+        }
+        h1 { margin: 0 0 24px; font-size: 20px; }
+        button:disabled { opacity: 1; cursor: default; }
+        .playback-controls button {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 22px;
+    padding: 2px;
+    border: 1px solid #f3f4f6;
+    border-radius: 20px;
+    color: #111827;
+    background: white;
+    box-shadow: 0 2px 4px #00000012;
+}
+.playback-controls .playback-toggle { width: 44px; background: var(--red); border-color: var(--red); box-shadow: none; }
+.playback-controls svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+    </style>
+</head>
+<body>
+    <main aria-labelledby="svg-label">
+        <h1 id="svg-label">Next Track Button</h1>
+        <div class="playback-controls" role="group" aria-labelledby="svg-label">
+            <button type="button" disabled aria-label="Next track" title="Audio not yet connected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l10 7-10 7Z"/></svg></button>
+        </div>
+    </main>
+</body>
+</html>

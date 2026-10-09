@@ -1,0 +1,49 @@
+<svg width="156" height="137" viewBox="0 0 156 137" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Vinyl &#194;&#183; grooves and spindle">
+<ellipse id="Outer pressed rim" cx="78" cy="68.5" rx="76.5" ry="67" stroke="#303336" stroke-opacity="0.6" stroke-width="0.8"/>
+<ellipse id="Lead-in groove" cx="78" cy="68.5" rx="73.5" ry="64.5" stroke="#595E66" stroke-opacity="0.28" stroke-width="0.7"/>
+<ellipse id="Record groove 1" cx="78.0001" cy="68.5" rx="69.42" ry="60.965" stroke="#52575C" stroke-opacity="0.34" stroke-width="0.65"/>
+<ellipse id="Record groove 2" cx="78" cy="68.5" rx="67.47" ry="59.2525" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 3" cx="78" cy="68.5" rx="65.52" ry="57.54" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 4" cx="77.9999" cy="68.5" rx="63.57" ry="55.8275" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 5" cx="77.9999" cy="68.5" rx="61.62" ry="54.115" stroke="#52575C" stroke-opacity="0.34" stroke-width="0.65"/>
+<ellipse id="Record groove 6" cx="78.0001" cy="68.5" rx="59.67" ry="52.4025" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 7" cx="78" cy="68.5" rx="57.72" ry="50.69" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 8" cx="78" cy="68.5" rx="55.77" ry="48.9775" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 9" cx="77.9999" cy="68.5" rx="53.82" ry="47.265" stroke="#52575C" stroke-opacity="0.34" stroke-width="0.65"/>
+<ellipse id="Record groove 10" cx="77.9999" cy="68.5" rx="51.87" ry="45.5525" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 11" cx="78.0001" cy="68.5" rx="49.92" ry="43.84" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 12" cx="78" cy="68.5" rx="47.97" ry="42.1275" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 13" cx="78" cy="68.5" rx="46.02" ry="40.415" stroke="#52575C" stroke-opacity="0.34" stroke-width="0.65"/>
+<ellipse id="Record groove 14" cx="77.9999" cy="68.5" rx="44.07" ry="38.7025" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 15" cx="77.9999" cy="68.5" rx="42.12" ry="36.99" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 16" cx="78.0001" cy="68.5" rx="40.17" ry="35.2775" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<ellipse id="Record groove 17" cx="78" cy="68.5" rx="38.22" ry="33.565" stroke="#52575C" stroke-opacity="0.34" stroke-width="0.65"/>
+<ellipse id="Record groove 18" cx="78" cy="68.5" rx="36.27" ry="31.8525" stroke="#52575C" stroke-opacity="0.19" stroke-width="0.45"/>
+<path id="Light catching groove 1" d="M21.1094 37.2873C27.064 28.9168 35.3179 21.9942 45.1132 17.1555C54.9085 12.3167 65.9311 9.71679 77.1689 9.59452" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 1" d="M131.401 104.152C122.527 114.403 110.073 121.819 95.9437 125.263" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 2" d="M23.8216 38.7754C29.4923 30.8039 37.3528 24.2114 46.6811 19.6033C56.0094 14.9952 66.5065 12.5193 77.2085 12.4028" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 2" d="M128.855 102.452C120.404 112.215 108.544 119.277 95.0883 122.557" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 3" d="M26.5338 40.2634C31.9207 32.691 39.3876 26.4285 48.2489 22.0511C57.1102 17.6737 67.0819 15.3217 77.2481 15.2111" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 3" d="M126.309 100.752C118.282 110.026 107.015 116.735 94.2328 119.851" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 4" d="M29.246 41.7515C34.349 34.5781 41.4224 28.6457 49.8168 24.4989C58.2111 20.3522 67.6573 18.1242 77.2877 18.0194" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 4" d="M123.764 99.0525C116.159 107.838 105.486 114.193 93.3774 117.145" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 5" d="M31.9583 43.2395C36.7773 36.4652 43.4573 30.8628 51.3846 26.9468C59.312 23.0307 68.2326 20.9266 77.3273 20.8277" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 5" d="M121.218 97.3529C114.036 105.649 103.956 111.651 92.5219 114.439" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 6" d="M34.6705 44.7276C39.2057 38.3523 45.4921 33.0799 52.9525 29.3946C60.4128 25.7092 68.808 23.7291 77.367 23.636" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 6" d="M118.672 95.6532C111.913 103.461 102.427 109.109 91.6664 111.732" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 7" d="M37.3827 46.2156C41.634 40.2394 47.527 35.297 54.5203 31.8424C61.5137 28.3877 69.3834 26.5315 77.4066 26.4442" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 7" d="M116.126 93.9535C109.79 101.273 100.898 106.567 90.811 109.026" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 8" d="M40.0949 47.7037C44.0624 42.1265 49.5618 37.5142 56.0882 34.2902C62.6146 31.0662 69.9587 29.334 77.4462 29.2525" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 8" d="M113.58 92.2539C107.668 99.0842 99.3693 104.025 89.9555 106.32" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 9" d="M42.8071 49.1917C46.4907 44.0136 51.5966 39.7313 57.656 36.738C63.7154 33.7447 70.5341 32.1364 77.4858 32.0608" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 9" d="M111.034 90.5542C105.545 96.8958 97.8403 101.483 89.1 103.614" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<path id="Light catching groove 10" d="M45.5194 50.6798C48.919 45.9007 53.6315 41.9485 59.2239 39.1859C64.8163 36.4233 71.1095 34.9389 77.5254 34.8691" stroke="#A8B3BF" stroke-opacity="0.13" stroke-width="0.6"/>
+<path id="Lower groove reflection 10" d="M108.488 88.8545C103.422 94.7074 96.3112 98.9412 88.2446 100.908" stroke="#808A94" stroke-opacity="0.09" stroke-width="0.6"/>
+<ellipse id="Pressed center ring" cx="78" cy="68.5" rx="10" ry="9.5" stroke="#665959" stroke-opacity="0.45" stroke-width="0.65"/>
+<g id="Spindle hole">
+<circle cx="77.5" cy="68.5" r="3.5" fill="#090909"/>
+<circle cx="77.5" cy="68.5" r="3.2" stroke="#8C8080" stroke-opacity="0.5" stroke-width="0.6"/>
+</g>
+</g>
+</svg>

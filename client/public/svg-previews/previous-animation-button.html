@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Previous Animation Button</title>
+    <style>
+        :root { --red: #ff0808; }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 32px;
+            color: #111827;
+            background: #ffead1;
+            font-family: "Trebuchet MS", sans-serif;
+        }
+        h1 { margin: 0 0 24px; font-size: 20px; }
+        button:disabled { opacity: 1; cursor: default; }
+        .showcase-controls button {
+    display: grid;
+    place-items: center;
+    width: 45px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    color: white;
+    background: #060202;
+}
+.showcase-controls svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+</head>
+<body>
+    <main aria-labelledby="svg-label">
+        <h1 id="svg-label">Previous Animation Button</h1>
+        <div class="showcase-controls" role="group" aria-labelledby="svg-label">
+            <button type="button" disabled aria-label="Previous animation" title="Animation slides not yet added"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 6-6 6 6 6M6 12h12"/></svg></button>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Music Player</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="music-player">
+    
+    <img id="song-image" src="cover.jpg" alt="Album Art">
+    <div id="song">Song Title</div>
+    <div id="song-artist">Artist Name</div>
+    
+    <audio id="audio" src="Zenith-Kavinsky.mp3"></audio>
+
+    <div class="progress-bar">
+      <span id="current-time">0:00</span>
+      <input type="range" id="slider-song" value="0" max="100">
+      <span id="duration">0:00</span>
+    </div>
+
+    <div class="controls">
+      <button id="prev">Prev</button>
+      <button id="play-pause">Play</button>
+      <button id="next">Next</button>
+    </div>
+  </div>
+
+  <script src="musicplayer.js"></script>
+  
+</body>
+</html>

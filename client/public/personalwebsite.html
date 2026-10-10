@@ -75,16 +75,22 @@
                     <div class="track-window">
                         <p class="track-eyebrow">NOW PLAYING</p>
                         <h2 class="track-title"><span aria-hidden="true">&#9835;</span> PARTYNEXTDOOR - TBH <span aria-hidden="true">&#9835;</span></h2>
-                        <div class="track-progress" aria-hidden="true"><span></span></div>
-                        <div class="track-times" aria-hidden="true"><span>1:42</span><span>3:24</span></div>
+                        <input type="range" id="progress" min="0" max="100" value="0">
+                        <div class="track-times" aria-hidden="true">
+                            <span id="current-time">0:00</span>
+                            <span id="duration">0:00</span>
+                        </div>
                         <div class="playback-controls" role="group" aria-label="Playback controls (audio not yet connected)">
-                            <button type="button" disabled aria-label="Previous track" title="Audio not yet connected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14m12-14L8 12l10 7Z"/></svg></button>
+                            <button type="button" disabled aria-label="Previous track" title="Audio not yet connected">
+                                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 5v14m12-14L8 12l10 7Z"/></svg>
+                            </button>
                             <button class="playback-toggle" type="button" disabled aria-label="Pause" title="Audio not yet connected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg></button>
                             <button type="button" disabled aria-label="Next track" title="Audio not yet connected"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 5v14M6 5l10 7-10 7Z"/></svg></button>
                         </div>
                     </div>
                 </div>
 
+                
                 <div class="animation-panel" aria-label="Animation showcase">
                     <span>Animation</span>
                 </div>

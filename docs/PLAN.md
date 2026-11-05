@@ -1,7 +1,7 @@
 # Personal Website — Plan (approved 2026-11-05)
 
-Status: **approved 2026-11-05** with the recommended choices. Phase 0 (repo hygiene) is in the
-repo; phase 1 (scaffold) is next. The table in section 2 records what was decided.
+Status: **approved 2026-11-05** with the recommended choices. Phases 0 and 1 are in the repo;
+phase 2 (first deploy) is next. The table in section 2 records what was decided.
 
 ## 1. Goal
 

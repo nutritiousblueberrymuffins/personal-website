@@ -3,12 +3,13 @@
   "version": "1.0.0",
   "description": "Tony's portfolio site, linked from the resume",
   "private": true,
-  "type": "commonjs",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "npm install --prefix client && npm install --prefix api",
+    "dev": "swa start",
+    "build": "npm run build --prefix client",
+    "preview": "swa start preview"
   },
-  "license": "ISC",
-  "dependencies": {
-    "@fontsource-variable/outfit": "^5.3.0"
+  "devDependencies": {
+    "@azure/static-web-apps-cli": "^2.1.0"
   }
 }

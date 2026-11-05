@@ -5,7 +5,6 @@ node_modules/
 dist/
 
 # Azure Functions local config and build output
-local.settings.json
 api/bin/
 api/obj/
 
@@ -30,3 +29,6 @@ desktop.ini
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+
+# Claude Code session config (launch targets)
+.claude/

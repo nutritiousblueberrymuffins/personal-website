@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Timeline of Tony's work, education, certifications and projects.">
+    <title>Timeline | Tony</title>
+    <link rel="stylesheet" href="./src/styles/designtoken.css">
+    <link rel="stylesheet" href="./src/styles/animations.css">
+    <link rel="stylesheet" href="./src/styles/site.css">
+    <link rel="stylesheet" href="./src/styles/timeline.css">
+</head>
+
+<body>
+
+    <header class="site-header">
+        <nav class="navigation" aria-label="Primary navigation">
+            <a class="logo" href="/">nutritiousblueberrymuffins</a>
+
+            <ul class="nav-links">
+                <li><a href="/#about">About</a></li>
+                <li><a href="/#projects">Projects</a></li>
+                <li><a class="active" href="/timeline" aria-current="page">Timeline</a></li>
+                <li><a href="/#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Placeholder page for phase 1: proves the client talks to /api/timeline.
+             Phase 5 replaces this list with the designed timeline (year groups, filters, reveal animation). -->
+        <section class="timeline-section" aria-labelledby="timeline-title">
+            <div class="section-heading">
+                <h1 id="timeline-title">Timeline</h1>
+                <p>Work, education, certifications and projects, newest first.</p>
+            </div>
+
+            <p class="timeline-status" id="timeline-status" role="status" aria-live="polite">Loading the timeline&hellip;</p>
+
+            <ol class="timeline-list" id="timeline-list"></ol>
+        </section>
+    </main>
+
+    <script type="module" src="./src/scripts/main.js"></script>
+    <script type="module" src="./src/scripts/timeline.js"></script>
+</body>
+
+</html>

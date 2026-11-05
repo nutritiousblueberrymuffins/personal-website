@@ -1,0 +1,126 @@
+/* Timeline page. Placeholder styling for phase 1; phase 5 brings the designed layout. */
+
+.timeline-section {
+    width: min(100% - 9.5rem, 900px);
+    margin: 4rem auto 6rem;
+}
+
+.timeline-section .section-heading h1 {
+    margin: 0;
+    color: var(--red);
+    font-size: 2.35rem;
+    font-weight: 850;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+}
+
+.timeline-status {
+    margin: 2rem 0 0;
+    color: var(--muted);
+    text-align: center;
+}
+
+.timeline-list {
+    margin: 2.5rem 0 0;
+    padding: 0 0 0 1.5rem;
+    list-style: none;
+    border-left: 3px solid var(--black);
+}
+
+.timeline-entry {
+    position: relative;
+    padding: 0 0 2.5rem 1.5rem;
+}
+
+.timeline-entry:last-child {
+    padding-bottom: 0.5rem;
+}
+
+/* Dot centred on the vertical line. The line is 3px wide and sits 1.5rem + 3px left of the entry. */
+.timeline-entry::before {
+    content: "";
+    position: absolute;
+    top: 0.3rem;
+    left: calc(-1.5rem - 8.5px);
+    width: 14px;
+    height: 14px;
+    box-sizing: border-box;
+    border: 2px solid var(--background);
+    border-radius: 50%;
+    background: var(--red);
+}
+
+.timeline-entry__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.timeline-entry__type {
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    color: var(--background);
+    background: var(--black);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.timeline-entry__title {
+    margin: 0.5rem 0 0;
+    font-size: 1.35rem;
+    font-weight: 750;
+    line-height: 1.25;
+}
+
+.timeline-entry__org {
+    margin: 0.25rem 0 0;
+    color: var(--red);
+    font-weight: 700;
+}
+
+.timeline-entry__summary {
+    max-width: 60ch;
+    margin: 0.6rem 0 0;
+    font-weight: 400;
+    line-height: 1.55;
+}
+
+.timeline-entry__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 0.75rem 0 0;
+}
+
+.timeline-entry__links a {
+    color: var(--red);
+    font-weight: 700;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+    .timeline-section {
+        width: min(100% - 2rem, 620px);
+        margin-top: 2.5rem;
+    }
+
+    .timeline-list {
+        padding-left: 1rem;
+    }
+
+    .timeline-entry {
+        padding-left: 1rem;
+    }
+
+    .timeline-entry::before {
+        left: calc(-1rem - 8.5px);
+    }
+}

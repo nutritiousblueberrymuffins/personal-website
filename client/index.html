@@ -13,8 +13,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Tony's portfolio — accounting insight and software engineering projects.">
-    <title>Personal Portfolio</title>
+    <meta name="description" content="Portfolio of Tony, a CPA moving into software engineering: projects, a timeline of work and learning, and how to get in touch.">
+    <link rel="canonical" href="https://nutritiousblueberrymuffins.github.io/personal-website/">
+    <meta name="theme-color" content="#ffead1">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Tony | CPA and Aspiring Software Engineer">
+    <meta property="og:description" content="Portfolio of Tony, a CPA moving into software engineering: projects, a timeline of work and learning, and how to get in touch.">
+    <meta property="og:url" content="https://nutritiousblueberrymuffins.github.io/personal-website/">
+    <meta property="og:site_name" content="Tony's portfolio">
+    <meta name="twitter:card" content="summary">
+    <title>Tony | CPA and Aspiring Software Engineer</title>
     <link rel="stylesheet" href="./src/styles/designtoken.css">
     <link rel="stylesheet" href="./src/styles/animations.css">
     <link rel="stylesheet" href="./src/styles/site.css">
@@ -58,20 +67,17 @@
                     <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="portrait-slide-3" aria-label="Portrait 3"></button>
                 </div>
                 <div class="introduction-caption">
-                    <h1 id="intro-title">Hello Im Tony</h1>
+                    <h1 id="intro-title">Hello, I'm <span>Tony</span></h1>
                     <p>CPA | Aspiring Software Engineer</p>
                 </div>
 
                 <div class="profile-actions">
                     <div class="social-links" aria-label="Social links">
-                        <a href="#" aria-label="LinkedIn">
-                            <img src="/assets/hero/svg-previews/linkedin-icon.svg" alt="" width="23" height="23">
-                        </a>
-                        <a href="#" aria-label="GitHub">
+                        <a href="https://github.com/nutritiousblueberrymuffins" aria-label="GitHub" target="_blank" rel="noopener">
                             <img src="/assets/hero/svg-previews/github-icon.svg" alt="" width="23" height="23">
                         </a>
-                        <a href="#" aria-label="Twitter">
-                            <img src="/assets/hero/svg-previews/twitter-icon.svg" alt="" width="23" height="23">
+                        <a href="mailto:tony123dragon@gmail.com" aria-label="Email">
+                            <img src="/assets/hero/svg-previews/mail-icon.svg" alt="" width="23" height="23">
                         </a>
                     </div>
                 </div>
@@ -139,52 +145,52 @@
         <section class="projects-section" id="projects" aria-labelledby="projects-title">
             <div class="section-heading">
                 <h2 id="projects-title">My Projects</h2>
-                <p>Showcasing active and completed work.</p>
+                <p>Things I have built while moving from accounting into software.</p>
             </div>
 
             <div class="project-grid">
-                <article class="project-card">
-                    <div class="project-icon" aria-hidden="true">
-                        <img src="/assets/hero/svg-previews/ledgercode.svg" alt="" width="28" height="28">
-                    </div>
-                    <h3>Project #1 — LedgerCode</h3>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                </article>
-
-                <article class="project-card">
+                <a class="project-card" href="https://github.com/nutritiousblueberrymuffins/retriever-rush" target="_blank" rel="noopener">
                     <div class="project-icon" aria-hidden="true">
                         <img src="/assets/hero/svg-previews/taxcalc.svg" alt="" width="28" height="28">
                     </div>
-                    <h3>Project #2 — TaxCalc API</h3>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                </article>
+                    <h3>Retriever Rush</h3>
+                    <p>A campus food, grocery and supplies storefront prototype: a design-token system, a documented design-system page, and product pages built from a JSON catalogue.</p>
+                    <p class="project-card__tech">HTML &middot; CSS &middot; JavaScript</p>
+                </a>
 
-                <article class="project-card">
+                <a class="project-card" href="https://github.com/nutritiousblueberrymuffins/personal-website" target="_blank" rel="noopener">
                     <div class="project-icon" aria-hidden="true">
                         <img src="/assets/hero/svg-previews/auditengine.svg" alt="" width="28" height="28">
                     </div>
-                    <h3>Project #3 — AuditEngine</h3>
-                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-                </article>
+                    <h3>This website</h3>
+                    <p>A Vite front end deployed to GitHub Pages by GitHub Actions, with a music player, an animated hero and a data-driven timeline.</p>
+                    <p class="project-card__tech">Vite &middot; GitHub Actions &middot; JavaScript</p>
+                </a>
+
+                <a class="project-card" href="https://github.com/nutritiousblueberrymuffins/excalidraw-practice---codebase-navigation" target="_blank" rel="noopener">
+                    <div class="project-icon" aria-hidden="true">
+                        <img src="/assets/hero/svg-previews/ledgercode.svg" alt="" width="28" height="28">
+                    </div>
+                    <h3>Inside a large codebase</h3>
+                    <p>Working in the Obsidian Excalidraw plugin, a large TypeScript project: reading unfamiliar code, implementing features and opening pull requests.</p>
+                    <p class="project-card__tech">TypeScript &middot; Git &middot; Pull requests</p>
+                </a>
             </div>
         </section>
 
         <section class="contact-section" id="contact" aria-labelledby="contact-title">
             <h2 id="contact-title">Contact Me</h2>
             <address>
-                <a href="mailto:tony@example.com">Email: tony@example.com</a>
-                <a href="tel:+11234567890">Phone: (123)-456-7890</a>
+                <a href="mailto:tony123dragon@gmail.com">tony123dragon@gmail.com</a>
+                <a href="https://github.com/nutritiousblueberrymuffins" target="_blank" rel="noopener">github.com/nutritiousblueberrymuffins</a>
             </address>
 
             <div class="social-links contact-socials" aria-label="Social links">
-                <a href="#" aria-label="LinkedIn">
-                    <img src="/assets/hero/svg-previews/linkedin-icon.svg" alt="" width="23" height="23">
-                </a>
-                <a href="#" aria-label="GitHub">
+                <a href="https://github.com/nutritiousblueberrymuffins" aria-label="GitHub" target="_blank" rel="noopener">
                     <img src="/assets/hero/svg-previews/github-icon.svg" alt="" width="23" height="23">
                 </a>
-                <a href="#" aria-label="Twitter">
-                    <img src="/assets/hero/svg-previews/twitter-icon.svg" alt="" width="23" height="23">
+                <a href="mailto:tony123dragon@gmail.com" aria-label="Email">
+                    <img src="/assets/hero/svg-previews/mail-icon.svg" alt="" width="23" height="23">
                 </a>
             </div>
 

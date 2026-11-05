@@ -236,7 +236,7 @@
 .introduction-caption { margin-top: 22px; text-align: center; }
 .introduction-caption h1 {
     margin: 0;
-    color: white;
+    color: var(--black);
     font-size: clamp(36px, 4.45vw, 64px);
     font-weight: 900;
     line-height: 1.1;
@@ -343,4 +343,23 @@
     .music-player { grid-template-columns: 84px minmax(0, 1fr); }
     .record { width: 84px; }
     .track-title { font-size: 14px; }
+}
+
+/* Project cards are links to their repositories (phase 4). */
+.project-card {
+    display: block;
+}
+
+.project-card:focus-visible {
+    outline: 3px solid var(--black);
+    outline-offset: 4px;
+}
+
+.project-card__tech {
+    margin: 1.1rem 0 0;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.85;
 }

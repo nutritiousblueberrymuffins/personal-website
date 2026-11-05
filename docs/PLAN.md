@@ -209,7 +209,7 @@ Phases 3, 4 and 5 are independent of each other once phase 1 is in.
 | Static Web Apps CLI | local dev with `/api` routing; also deploys | `npm i -D @azure/static-web-apps-cli` |
 | Azure Functions Core Tools v4 | runs the API locally | `npm i -g azure-functions-core-tools@4` |
 | Node 22 LTS for `api/` | managed Functions run `node:22`; local Node is 26 | pin with `.nvmrc`/`engines`, use fnm or nvm-windows |
-| Azure account | create the Static Web App | portal is enough; Azure CLI optional |
+| Azure subscription | create the Static Web App; the account must hold a subscription first (free account or Azure for Students; the Free plan costs nothing either way) | sign up at https://azure.microsoft.com/free, then the portal is enough; Azure CLI optional |
 
 ## 11. Cost
 

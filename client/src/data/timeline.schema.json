@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Timeline entries",
+  "description": "Entries shown on the timeline page. Editors that understand JSON Schema (VS Code does) validate timeline.json against this file and offer completions.",
+  "type": "object",
+  "required": ["entries"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "entries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "type", "title", "start"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]+$",
+            "description": "Unique, lowercase, hyphenated, for example cpa-license."
+          },
+          "type": {
+            "enum": ["work", "education", "certification", "project", "milestone"]
+          },
+          "title": { "type": "string" },
+          "org": {
+            "type": "string",
+            "description": "Employer, school, issuer or project context."
+          },
+          "start": {
+            "type": "string",
+            "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$",
+            "description": "YYYY, YYYY-MM or YYYY-MM-DD."
+          },
+          "end": {
+            "type": ["string", "null"],
+            "pattern": "^[0-9]{4}(-[0-9]{2}(-[0-9]{2})?)?$",
+            "description": "Same format as start. null means ongoing for work and education, or a single moment for other types."
+          },
+          "summary": {
+            "type": "string",
+            "description": "One or two sentences."
+          },
+          "tags": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "links": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["label", "url"],
+              "additionalProperties": false,
+              "properties": {
+                "label": { "type": "string" },
+                "url": { "type": "string", "format": "uri" }
+              }
+            }
+          },
+          "draft": {
+            "type": "boolean",
+            "description": "Drafts show in local development only, never on the live site."
+          }
+        }
+      }
+    }
+  }
+}

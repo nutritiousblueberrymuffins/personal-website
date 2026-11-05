@@ -1,89 +1,76 @@
-[
-  {
-    "id": "site-plan",
-    "type": "milestone",
-    "title": "Planned the site and put it on GitHub Pages",
-    "org": "Personal project",
-    "start": "2026-11-05",
-    "end": null,
-    "summary": "Planned the design, the timeline feature and the build phases; chose GitHub Pages for free hosting and set up the deploy workflow.",
-    "tags": [
-      "github-pages",
-      "planning"
-    ],
-    "links": []
-  },
-  {
-    "id": "music-player",
-    "type": "project",
-    "title": "Built the music player",
-    "org": "Personal project",
-    "start": "2026-10-10",
-    "end": null,
-    "summary": "Play, pause and track switching over an HTML audio element, to be wired into the hero.",
-    "tags": [
-      "javascript",
-      "audio"
-    ],
-    "links": []
-  },
-  {
-    "id": "website-first-commit",
-    "type": "project",
-    "title": "Started building this website",
-    "org": "Personal project",
-    "start": "2026-10-09",
-    "end": null,
-    "summary": "First commit: the hero layout, the design tokens, and the project cards.",
-    "tags": [
-      "html",
-      "css",
-      "portfolio"
-    ],
-    "links": [
-      {
-        "label": "Repository",
-        "url": "https://github.com/nutritiousblueberrymuffins/personal-website"
-      }
-    ]
-  },
-  {
-    "id": "sample-cpa",
-    "type": "certification",
-    "title": "Sample entry: CPA license",
-    "org": "Replace with the issuing board",
-    "start": "2024-01",
-    "end": null,
-    "summary": "Sample entry. Replace the date, organization and summary with your own.",
-    "tags": [
-      "accounting"
-    ],
-    "links": []
-  },
-  {
-    "id": "sample-work",
-    "type": "work",
-    "title": "Sample entry: Accountant",
-    "org": "Replace with the employer",
-    "start": "2022-06",
-    "end": "2024-12",
-    "summary": "Sample entry. Replace with what you did there and what you learned.",
-    "tags": [
-      "accounting"
-    ],
-    "links": []
-  },
-  {
-    "id": "sample-education",
-    "type": "education",
-    "title": "Sample entry: Bachelor's degree in Accounting",
-    "org": "Replace with the university",
-    "start": "2018-09",
-    "end": "2022-05",
-    "summary": "Sample entry. Replace with your degree, school and dates.",
-    "tags": [
-      "accounting"
-    ],
-    "links": []
-  }
-]
+{
+  "$schema": "./timeline.schema.json",
+  "entries": [
+    {
+      "id": "site-plan",
+      "type": "milestone",
+      "title": "Planned the site and put it on GitHub Pages",
+      "org": "Personal project",
+      "start": "2026-11-05",
+      "end": null,
+      "summary": "Planned the design, the timeline feature and the build phases; chose GitHub Pages for free hosting and set up the deploy workflow.",
+      "tags": ["github-pages", "planning"],
+      "links": []
+    },
+    {
+      "id": "music-player",
+      "type": "project",
+      "title": "Built the music player",
+      "org": "Personal project",
+      "start": "2026-10-10",
+      "end": null,
+      "summary": "Play, pause and track switching over an HTML audio element, later wired into the hero with a seekable progress bar.",
+      "tags": ["javascript", "audio"],
+      "links": []
+    },
+    {
+      "id": "website-first-commit",
+      "type": "project",
+      "title": "Started building this website",
+      "org": "Personal project",
+      "start": "2026-10-09",
+      "end": null,
+      "summary": "First commit: the hero layout, the design tokens, and the project cards.",
+      "tags": ["html", "css", "portfolio"],
+      "links": [
+        { "label": "Repository", "url": "https://github.com/nutritiousblueberrymuffins/personal-website" }
+      ]
+    },
+    {
+      "id": "sample-cpa",
+      "type": "certification",
+      "title": "Sample entry: CPA license",
+      "org": "Replace with the issuing board",
+      "start": "2024-01",
+      "end": null,
+      "summary": "Sample entry, shown in local development only. Replace the date, organization and summary with your own and remove the draft flag.",
+      "tags": ["accounting"],
+      "links": [],
+      "draft": true
+    },
+    {
+      "id": "sample-work",
+      "type": "work",
+      "title": "Sample entry: Accountant",
+      "org": "Replace with the employer",
+      "start": "2022-06",
+      "end": "2024-12",
+      "summary": "Sample entry, shown in local development only. Replace with what you did there and what you learned.",
+      "tags": ["accounting"],
+      "links": [],
+      "draft": true
+    },
+    {
+      "id": "sample-education",
+      "type": "education",
+      "title": "Sample entry: Bachelor's degree in Accounting",
+      "org": "Replace with the university",
+      "start": "2018-09",
+      "end": "2022-05",
+      "summary": "Sample entry, shown in local development only. Replace with your degree, school and dates.",
+      "tags": ["accounting"],
+      "links": [],
+      "draft": true
+    }
+  ]
+}

@@ -36,17 +36,19 @@
     </header>
 
     <main>
-        <!-- Placeholder page: lists the entries in src/data/timeline.json.
-             Phase 5 replaces this list with the designed timeline (year groups, filters, reveal animation). -->
         <section class="timeline-section" aria-labelledby="timeline-title">
             <div class="section-heading">
                 <h1 id="timeline-title">Timeline</h1>
                 <p>Work, education, certifications and projects, newest first.</p>
             </div>
 
+            <!-- Filled by timeline.js: one chip per entry type, with counts. -->
+            <div class="timeline-filters" id="timeline-filters" role="group" aria-label="Filter by type"></div>
+
             <p class="timeline-status" id="timeline-status" role="status" aria-live="polite"></p>
 
-            <ol class="timeline-list" id="timeline-list"></ol>
+            <!-- Filled by timeline.js: year groups of entries from src/data/timeline.json. -->
+            <div class="timeline" id="timeline"></div>
         </section>
     </main>
 

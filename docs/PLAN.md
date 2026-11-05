@@ -1,7 +1,7 @@
 # Personal Website — Plan (approved 2026-11-05)
 
 Status: **approved 2026-11-05** with the recommended choices, hosting changed to GitHub Pages the same day.
-Phases 0 to 4 are done except the resume PDF and real photos, which need files from Tony. The site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 5 (timeline content and design) is next.
+Phases 0 to 5 are done, except for content that needs files or facts from Tony: the resume PDF, real portrait photos, and real timeline entries (the sample entries are drafts, shown in local development only). The site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 6 (polish) is next.
 
 ## Hosting change (2026-11-05)
 
@@ -134,6 +134,10 @@ Contact: `mailto:` plus LinkedIn/GitHub links at first. A contact form needs spa
 and is a separate later task.
 
 ## 6. Timeline feature
+
+Done 2026-11-05: year groups on a centre line, cards alternating sides on wide screens, type filter
+chips with counts (linkable as `?type=work`), reveal on scroll that respects reduced motion, and a
+`draft` flag that keeps entries off the live site. `timeline.schema.json` documents the entry shape.
 
 Purpose: show the path so far, with work, education, certifications (CPA), projects, and
 milestones on one scrollable view.

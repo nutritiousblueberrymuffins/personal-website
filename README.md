@@ -12,9 +12,10 @@ Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
 |------|------------|
 | `client/` | The site: a Vite project with plain HTML, CSS and JavaScript |
 | `client/index.html` | Home page: hero, projects grid, contact |
-| `client/timeline/index.html` | Timeline page (placeholder styling until phase 5) |
+| `client/timeline/index.html` | Timeline page: year groups, type filters, reveal on scroll |
 | `client/404.html` | Not-found page, served by GitHub Pages for unknown URLs |
 | `client/src/data/timeline.json` | The timeline entries. Edit this file to change the timeline |
+| `client/src/data/timeline.schema.json` | What an entry may contain; editors use it to validate `timeline.json` |
 | `client/src/data/tracks.json` | The music player's track list and credits |
 | `client/src/styles/` | Design tokens (cream `#ffead1`, red `#ff0808`, Outfit font), animations, page and hero styles |
 | `client/src/scripts/` | Page scripts: the hero's music player, portrait slides and animation showcase, and the timeline page |
@@ -62,7 +63,11 @@ npm run preview
 - **Music:** add files to `client/public/music/` and describe them in `client/src/data/tracks.json`.
   Keep the artist and license fields accurate: the player prints them as the credit, which the
   current CC BY 4.0 tracks require.
-- **Timeline:** edit `client/src/data/timeline.json`.
+- **Timeline:** edit `client/src/data/timeline.json`. Each entry has a type (work, education,
+  certification, project or milestone), a start date and optionally an end date, a summary, tags
+  and links; `timeline.schema.json` spells out the rules. An entry with `"draft": true` shows in
+  local development only, never on the live site, so samples and unfinished items can stay in the
+  file. Filters can be linked to directly, for example `/timeline/?type=work`.
 - **Projects and contact details:** the project cards, the email link and the GitHub links are plain
   markup in `client/index.html`.
 - **Resume:** put `resume.pdf` in `client/public/` and add a link such as

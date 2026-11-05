@@ -7,7 +7,6 @@
 -make sure html elements are explicit
 -following standard component classes (BEM)
 -Accessibility (a11y compliant)
--FIX MUSIC PLAYER
 -ADD PORTFOLIO
 -ADD PROJECTS
 -->
@@ -19,6 +18,7 @@
     <link rel="stylesheet" href="./src/styles/designtoken.css">
     <link rel="stylesheet" href="./src/styles/animations.css">
     <link rel="stylesheet" href="./src/styles/site.css">
+    <link rel="stylesheet" href="./src/styles/hero.css">
 </head>
 
 <body>
@@ -40,11 +40,23 @@
 
         <section class="hero" id="about" aria-labelledby="intro-title">
             <div class="profile-column">
-                <div class="portrait-placeholder" role="img" aria-label="Portrait photo placeholder">
-                    
+                <div class="portrait-slides" role="region" aria-roledescription="carousel" aria-label="Portraits">
+                    <figure class="portrait-slide is-active" role="tabpanel" id="portrait-slide-1" aria-roledescription="slide" aria-label="1 of 3">
+                        <img src="/assets/portraits/portrait-1.svg" alt="Portrait placeholder 1" width="542" height="470">
+                    </figure>
+                    <figure class="portrait-slide" role="tabpanel" id="portrait-slide-2" aria-roledescription="slide" aria-label="2 of 3" aria-hidden="true">
+                        <img src="/assets/portraits/portrait-2.svg" alt="Portrait placeholder 2" width="542" height="470">
+                    </figure>
+                    <figure class="portrait-slide" role="tabpanel" id="portrait-slide-3" aria-roledescription="slide" aria-label="3 of 3" aria-hidden="true">
+                        <img src="/assets/portraits/portrait-3.svg" alt="Portrait placeholder 3" width="542" height="470">
+                    </figure>
                 </div>
 
-                <div class="portrait-pagination" aria-label="Portrait slides"><span class="is-active"></span><span></span><span></span></div>
+                <div class="portrait-pagination" role="tablist" aria-label="Choose portrait">
+                    <button type="button" role="tab" aria-selected="true" aria-controls="portrait-slide-1" aria-label="Portrait 1"></button>
+                    <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="portrait-slide-2" aria-label="Portrait 2"></button>
+                    <button type="button" role="tab" aria-selected="false" tabindex="-1" aria-controls="portrait-slide-3" aria-label="Portrait 3"></button>
+                </div>
                 <div class="introduction-caption">
                     <h1 id="intro-title">Hello Im Tony</h1>
                     <p>CPA | Aspiring Software Engineer</p>
@@ -66,33 +78,60 @@
             </div>
 
             <div class="showcase-column">
-                <div class="music-player" aria-label="Music player preview">
+                <div class="music-player" role="region" aria-label="Music player">
                     <div class="record" aria-hidden="true"><img src="/assets/hero/vinyl.svg" alt=""></div>
                     <div class="track-window">
-                        <p class="track-eyebrow">NOW PLAYING</p>
-                        <h2 class="track-title"><span aria-hidden="true">&#9835;</span> PARTYNEXTDOOR - TBH <span aria-hidden="true">&#9835;</span></h2>
-                        <input type="range" id="progress" min="0" max="100" value="0">
+                        <p class="track-eyebrow" id="track-status" aria-live="polite">PAUSED</p>
+                        <h2 class="track-title"><span aria-hidden="true">&#9835;</span> <span id="track-name">Loading</span> <span aria-hidden="true">&#9835;</span></h2>
+                        <p class="track-artist" id="track-artist"></p>
+                        <input type="range" id="progress" min="0" max="100" value="0" step="0.1" aria-label="Track position" aria-valuetext="0:00 of 0:00">
                         <div class="track-times" aria-hidden="true">
                             <span id="current-time">0:00</span>
                             <span id="duration">0:00</span>
                         </div>
-                        <div class="playback-controls" role="group" aria-label="Playback controls (audio not yet connected)">
-                            <button type="button" disabled aria-label="Previous track" title="Audio not yet connected">
+                        <div class="playback-controls" role="group" aria-label="Playback controls">
+                            <button type="button" id="prev-track" aria-label="Previous track">
                                 <img src="/assets/hero/svg-previews/previous-track.svg" alt="" width="18" height="18">
                             </button>
-                            <button class="playback-toggle" type="button" disabled aria-label="Pause" title="Audio not yet connected"><img src="/assets/hero/svg-previews/pause.svg" alt="" width="18" height="18"></button>
-                            <button type="button" disabled aria-label="Next track" title="Audio not yet connected"><img src="/assets/hero/svg-previews/next-track.svg" alt="" width="18" height="18"></button>
+                            <button class="playback-toggle" type="button" id="play-pause" aria-label="Play" aria-pressed="false"><img src="/assets/hero/svg-previews/play.svg" alt="" width="18" height="18"></button>
+                            <button type="button" id="next-track" aria-label="Next track"><img src="/assets/hero/svg-previews/next-track.svg" alt="" width="18" height="18"></button>
                         </div>
+                        <p class="track-credit" id="track-credit"></p>
                     </div>
                 </div>
 
                 
-                <div class="animation-panel" aria-label="Animation showcase">
-                    <span>Animation</span>
+                <div class="animation-panel" id="showcase" role="region" aria-roledescription="carousel" aria-label="Animation showcase">
+                    <figure class="showcase-slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 3: Balanced books">
+                        <div class="ledger" aria-hidden="true">
+                            <div class="ledger__row ledger__head"><span>Account</span><span>Debit</span><span>Credit</span></div>
+                            <div class="ledger__row"><span>Cash</span><span>1,200</span><span></span></div>
+                            <div class="ledger__row"><span>Revenue</span><span></span><span>1,200</span></div>
+                            <div class="ledger__row"><span>Equipment</span><span>800</span><span></span></div>
+                            <div class="ledger__row"><span>Cash</span><span></span><span>800</span></div>
+                            <div class="ledger__row ledger__total"><span>Balanced <span class="ledger__check">&#10003;</span></span><span>2,000</span><span>2,000</span></div>
+                        </div>
+                        <figcaption>Balanced books</figcaption>
+                    </figure>
+                    <figure class="showcase-slide" role="group" aria-roledescription="slide" aria-label="2 of 3: Growth" aria-hidden="true">
+                        <div class="bars" aria-hidden="true">
+                            <div class="bars__bar"><i></i>2021</div>
+                            <div class="bars__bar"><i></i>2022</div>
+                            <div class="bars__bar"><i></i>2023</div>
+                            <div class="bars__bar"><i></i>2024</div>
+                            <div class="bars__bar"><i></i>2025</div>
+                            <div class="bars__bar"><i></i>2026</div>
+                        </div>
+                        <figcaption>Growth</figcaption>
+                    </figure>
+                    <figure class="showcase-slide" role="group" aria-roledescription="slide" aria-label="3 of 3: Code" aria-hidden="true">
+                        <pre class="typewriter" aria-hidden="true"><code><span class="typewriter__line"><span class="kw">const</span> entries = ledger.read(<span class="str">'2026-Q3'</span>);</span><span class="typewriter__line"><span class="kw">const</span> debits = total(entries, <span class="str">'debit'</span>);</span><span class="typewriter__line"><span class="kw">const</span> credits = total(entries, <span class="str">'credit'</span>);</span><span class="typewriter__line">assert(debits === credits); <span class="comment">// balanced</span></span></code></pre>
+                        <figcaption>Code</figcaption>
+                    </figure>
                 </div>
-                <div class="showcase-controls" role="group" aria-label="Showcase navigation (slides not yet added)">
-                    <button type="button" disabled aria-label="Previous animation" title="Animation slides not yet added"><img src="/assets/hero/svg-previews/previous-animation.svg" alt="" width="22" height="22"></button>
-                    <button type="button" disabled aria-label="Next animation" title="Animation slides not yet added"><img src="/assets/hero/svg-previews/next-animation.svg" alt="" width="22" height="22"></button>
+                <div class="showcase-controls" role="group" aria-label="Showcase navigation">
+                    <button type="button" id="showcase-prev" aria-label="Previous animation"><img src="/assets/hero/svg-previews/previous-animation.svg" alt="" width="22" height="22"></button>
+                    <button type="button" id="showcase-next" aria-label="Next animation"><img src="/assets/hero/svg-previews/next-animation.svg" alt="" width="22" height="22"></button>
                 </div>
             </div>
         </section>
@@ -154,5 +193,6 @@
     </main>
 
     <script type="module" src="./src/scripts/main.js"></script>
+    <script type="module" src="./src/scripts/home.js"></script>
 </body>
 </html>

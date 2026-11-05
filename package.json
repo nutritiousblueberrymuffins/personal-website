@@ -4,12 +4,9 @@
   "description": "Tony's portfolio site, linked from the resume",
   "private": true,
   "scripts": {
-    "postinstall": "npm install --prefix client && npm install --prefix api",
-    "dev": "swa start",
-    "build": "npm run build --prefix client",
-    "preview": "swa start preview"
-  },
-  "devDependencies": {
-    "@azure/static-web-apps-cli": "^2.1.0"
+    "postinstall": "npm install --prefix client",
+    "dev": "npm run dev --prefix client --",
+    "build": "npm run build --prefix client --",
+    "preview": "npm run preview --prefix client --"
   }
 }

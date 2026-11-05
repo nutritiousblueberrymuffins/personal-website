@@ -4,13 +4,6 @@ node_modules/
 # Build output
 dist/
 
-# Azure Functions local config and build output
-api/bin/
-api/obj/
-
-# Static Web Apps CLI
-.swa/
-
 # Environment files
 .env
 .env.*

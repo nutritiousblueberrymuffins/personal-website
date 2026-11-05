@@ -1,7 +1,7 @@
-// Timeline page: fetches entries from the API and renders them as a list.
-// If the API is unreachable (cold start, offline, not deployed yet), it falls back to a copy of
-// api/data/timeline.json that Vite bundles at build time, so the page never renders empty.
-import fallbackEntries from '../../../api/data/timeline.json';
+// Timeline page: renders the entries in src/data/timeline.json, newest first.
+// GitHub Pages serves static files only, so the data is bundled at build time rather than
+// fetched from an API. Edit the JSON file and push to update the timeline.
+import entries from '../data/timeline.json';
 
 const list = document.getElementById('timeline-list');
 const status = document.getElementById('timeline-status');
@@ -17,22 +17,9 @@ const TYPE_LABELS = {
 // Types where a missing end date means "still going" rather than "a single moment".
 const ONGOING_TYPES = new Set(['work', 'education']);
 
+// Dates are ISO strings (YYYY, YYYY-MM or YYYY-MM-DD), so string order is date order.
 function newestFirst(a, b) {
   return a.start < b.start ? 1 : a.start > b.start ? -1 : 0;
-}
-
-async function loadEntries() {
-  try {
-    const response = await fetch('/api/timeline');
-    if (!response.ok) {
-      throw new Error(`API responded with ${response.status}`);
-    }
-    const data = await response.json();
-    return { entries: data.entries, source: 'API' };
-  } catch (error) {
-    console.warn('Timeline API unavailable, using the bundled copy.', error);
-    return { entries: [...fallbackEntries].sort(newestFirst), source: 'bundled copy' };
-  }
 }
 
 // "2024-01" -> "Jan 2024", "2024" -> "2024", "2024-01-15" -> "Jan 2024"
@@ -95,10 +82,6 @@ function entryElement(entry) {
   return item;
 }
 
-async function init() {
-  const { entries, source } = await loadEntries();
-  list.replaceChildren(...entries.map(entryElement));
-  status.textContent = `${entries.length} entries, loaded from the ${source}.`;
-}
-
-init();
+const sorted = [...entries].sort(newestFirst);
+list.replaceChildren(...sorted.map(entryElement));
+status.textContent = sorted.length ? `${sorted.length} entries, newest first.` : 'No entries yet.';

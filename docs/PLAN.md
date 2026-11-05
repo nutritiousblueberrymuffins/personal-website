@@ -3,6 +3,24 @@
 Status: **approved 2026-11-05** with the recommended choices. Phases 0 and 1 are in the repo;
 phase 2 (first deploy) is next. The table in section 2 records what was decided.
 
+## Hosting change (2026-11-05)
+
+Hosting moved from Azure Static Web Apps to **GitHub Pages**, because the Azure account has no
+subscription and adding one requires a paid-upgrade step. What this changes:
+
+- No server-side code: the Functions API (`api/`) is gone. The timeline reads its entries from
+  `client/src/data/timeline.json` at build time instead of calling `GET /api/timeline`.
+- The site lives at `https://nutritiousblueberrymuffins.github.io/personal-website/`. The Vite
+  build takes the `/personal-website` prefix from the deploy workflow (`BASE_PATH`), so renaming the
+  repo to `nutritiousblueberrymuffins.github.io` for a root URL, or adding a custom domain, needs no
+  code change.
+- Deploys run from `.github/workflows/deploy-pages.yml` on every push to `main`. Pages must be set
+  to the GitHub Actions source once. No preview environments.
+- GitHub Pages limits: 1 GB site, soft limits of 100 GB bandwidth a month and 10 builds an hour,
+  free for public repositories, custom domains with free HTTPS.
+- Section 3 (the Azure comparison) and the API notes in sections 4 and 6 describe the original
+  plan and are kept for the record.
+
 ## 1. Goal
 
 A personal portfolio site that is linked from the resume. It must:
@@ -194,10 +212,10 @@ Audio is the only realistic way to approach the 100 GB/month bandwidth cap.
 |-------|------|-----------|
 | 0. Hygiene | `.gitignore`, untrack `node_modules`, `main` branch, README | `git status` clean, `main` is the GitHub default |
 | 1. Scaffold | Vite client from existing HTML/CSS; `api/` with `GET /api/health` and `GET /api/timeline` (sample data); `staticwebapp.config.json`; SWA CLI | `swa start` serves the site and API locally |
-| 2. First deploy | Create Static Web App (Free) in the portal, link GitHub `main`, workflow commits itself; test a PR preview | HTTPS URL loads; `/api/timeline` returns JSON in production |
+| 2. First deploy | GitHub Pages: deploy workflow on push to `main`, Pages source set to GitHub Actions | HTTPS URL loads and the timeline page renders |
 | 3. Hero | Music player wired to licensed tracks, portrait slides, animation showcase content | Hero TODOs cleared |
 | 4. Content | Real project cards, resume PDF, contact links, SEO/Open Graph meta, favicon | Resume -> site -> resume loop works |
-| 5. Timeline | Data model, real entries, API, timeline page with filters, fallback copy | Page renders from `/api/timeline` with the real entries |
+| 5. Timeline | Real entries in `timeline.json`, designed timeline page with year groups and filters | Page renders the real entries |
 | 6. Polish | Responsive QA 360 to 1440 px, a11y pass (keyboard, contrast, labels), Lighthouse 90+, optional custom domain | Scores recorded in README |
 
 Phases 3, 4 and 5 are independent of each other once phase 1 is in.

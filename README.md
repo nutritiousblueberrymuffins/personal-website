@@ -1,80 +1,76 @@
 # Personal Website
 
 Tony's portfolio site, built to be linked from the resume. See [docs/PLAN.md](docs/PLAN.md)
-for the full plan, the hosting decision, and the phase checklist.
+for the plan, the hosting decisions, and the phase checklist.
 
-Status: phase 1 (scaffold) is complete. The site runs locally through the Azure Static Web
-Apps emulator with a working API. Next is phase 2: the first deploy to Azure.
+Hosting: GitHub Pages, deployed by GitHub Actions on every push to `main`.
+Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
 
 ## Layout
 
 | Path | What it is |
 |------|------------|
-| `client/` | The front end: a Vite project with plain HTML, CSS and JavaScript |
+| `client/` | The site: a Vite project with plain HTML, CSS and JavaScript |
 | `client/index.html` | Home page: hero, projects grid, contact |
-| `client/timeline.html` | Timeline page, rendered from the API (placeholder styling until phase 5) |
+| `client/timeline/index.html` | Timeline page (placeholder styling until phase 5) |
+| `client/404.html` | Not-found page, served by GitHub Pages for unknown URLs |
+| `client/src/data/timeline.json` | The timeline entries. Edit this file to change the timeline |
 | `client/src/styles/` | Design tokens (cream `#ffead1`, red `#ff0808`, Outfit font), animations, page styles |
 | `client/src/scripts/` | Page scripts. `music-player.js` is not wired in yet |
 | `client/public/` | Files served as they are: icons and the vinyl graphic |
-| `client/staticwebapp.config.json` | Static Web Apps routing, response headers and the API runtime (Node 22) |
-| `api/` | Managed Azure Functions API (Node.js, v4 programming model) |
-| `api/src/functions/` | `health.js` (GET /api/health) and `timeline.js` (GET /api/timeline) |
-| `api/data/timeline.json` | The timeline entries. Edit this file to change the timeline |
-| `swa-cli.config.json` | Static Web Apps CLI settings for local development |
+| `.github/workflows/deploy-pages.yml` | Builds the client and publishes `client/dist` to GitHub Pages |
 | `music/` | Placeholder tracks and covers, to be replaced with licensed tracks before the site goes public |
 
 ## Run it locally
 
-Requirements: Node 22 and npm. The Azure Functions tooling refuses newer Node majors, so this
-repo carries a `.nvmrc`. With [fnm](https://github.com/Schniz/fnm) installed
-(`winget install Schniz.fnm`, then its one-time shell setup), run this in the repo folder:
-
-```bash
-fnm use
-```
-
-Any other way of getting a shell where `node -v` prints 22 works too.
-
-Install everything from the repo root (a postinstall step also installs `client/` and `api/`):
+Requirements: Node 22 or newer and npm. Install from the repo root (a postinstall step also
+installs `client/`):
 
 ```bash
 npm install
 ```
 
-Start the local stack:
+Start the dev server at http://localhost:5173/ :
 
 ```bash
 npm run dev
 ```
 
-This runs the Static Web Apps emulator at http://localhost:4280 with the Vite dev server behind it
-and the Functions API mounted on `/api`. The first run downloads Azure Functions Core Tools.
-
 | URL | What you get |
 |-----|--------------|
-| http://localhost:4280/ | Home page |
-| http://localhost:4280/timeline | Timeline page |
-| http://localhost:4280/api/health | `{ "status": "ok", ... }` |
-| http://localhost:4280/api/timeline | Timeline entries as JSON. Add `?type=work` (or education, certification, project, milestone) to filter |
+| http://localhost:5173/ | Home page |
+| http://localhost:5173/timeline/ | Timeline page |
 
-Build the client into `client/dist`:
+Build the site into `client/dist`:
 
 ```bash
 npm run build
 ```
 
-Serve the built client through the emulator together with the API, the closest thing to
-production that runs locally:
+Serve the built site at http://localhost:4173/ :
 
 ```bash
 npm run preview
 ```
 
-`api/local.settings.json` is committed and must never hold secrets. Secrets go in the Static Web
-App's application settings in the Azure portal.
+## How deploys work
 
-## Where it is going
+The workflow in `.github/workflows/deploy-pages.yml` runs on every push to `main`: it builds the
+client with Node 22 and publishes `client/dist` to GitHub Pages. One-time setting on GitHub:
+Settings, Pages, Build and deployment, Source: GitHub Actions. Until that is set, the workflow's
+Configure Pages step fails.
 
-Azure Static Web Apps, Free plan. The client is built with Vite and served from the CDN, and the
-managed Azure Functions API under `/api` serves data such as the timeline. GitHub Actions deploys
-from the `main` branch, and pull requests get preview environments.
+GitHub Pages serves a project site under `/personal-website/`. The workflow passes that prefix to
+the build as `BASE_PATH`, so asset and page links come out right. Renaming the repo to
+`nutritiousblueberrymuffins.github.io` (which gives a root URL) or adding a custom domain needs no
+code change. To test the prefixed build locally, pass the same prefix to Vite directly:
+
+```bash
+npm run build -- --base /personal-website/
+```
+
+```bash
+npm run preview -- --base /personal-website/
+```
+
+The preview then serves the site at http://localhost:4173/personal-website/ .

@@ -2,12 +2,15 @@
   {
     "id": "site-plan",
     "type": "milestone",
-    "title": "Chose the architecture: Azure Static Web Apps with a Functions API",
+    "title": "Planned the site and put it on GitHub Pages",
     "org": "Personal project",
     "start": "2026-11-05",
     "end": null,
-    "summary": "Planned the client/server split, the timeline feature, and the phases to launch the site.",
-    "tags": ["azure", "planning"],
+    "summary": "Planned the design, the timeline feature and the build phases; chose GitHub Pages for free hosting and set up the deploy workflow.",
+    "tags": [
+      "github-pages",
+      "planning"
+    ],
     "links": []
   },
   {
@@ -18,7 +21,10 @@
     "start": "2026-10-10",
     "end": null,
     "summary": "Play, pause and track switching over an HTML audio element, to be wired into the hero.",
-    "tags": ["javascript", "audio"],
+    "tags": [
+      "javascript",
+      "audio"
+    ],
     "links": []
   },
   {
@@ -29,9 +35,16 @@
     "start": "2026-10-09",
     "end": null,
     "summary": "First commit: the hero layout, the design tokens, and the project cards.",
-    "tags": ["html", "css", "portfolio"],
+    "tags": [
+      "html",
+      "css",
+      "portfolio"
+    ],
     "links": [
-      { "label": "Repository", "url": "https://github.com/nutritiousblueberrymuffins/personal-website" }
+      {
+        "label": "Repository",
+        "url": "https://github.com/nutritiousblueberrymuffins/personal-website"
+      }
     ]
   },
   {
@@ -42,7 +55,9 @@
     "start": "2024-01",
     "end": null,
     "summary": "Sample entry. Replace the date, organization and summary with your own.",
-    "tags": ["accounting"],
+    "tags": [
+      "accounting"
+    ],
     "links": []
   },
   {
@@ -53,7 +68,9 @@
     "start": "2022-06",
     "end": "2024-12",
     "summary": "Sample entry. Replace with what you did there and what you learned.",
-    "tags": ["accounting"],
+    "tags": [
+      "accounting"
+    ],
     "links": []
   },
   {
@@ -64,7 +81,9 @@
     "start": "2018-09",
     "end": "2022-05",
     "summary": "Sample entry. Replace with your degree, school and dates.",
-    "tags": ["accounting"],
+    "tags": [
+      "accounting"
+    ],
     "links": []
   }
 ]

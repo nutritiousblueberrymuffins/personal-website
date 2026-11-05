@@ -1,7 +1,7 @@
 # Personal Website — Plan (approved 2026-11-05)
 
-Status: **approved 2026-11-05** with the recommended choices. Phases 0 and 1 are in the repo;
-phase 2 (first deploy) is next. The table in section 2 records what was decided.
+Status: **approved 2026-11-05** with the recommended choices, hosting changed to GitHub Pages the same day.
+Phases 0 to 2 are done: the site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 3 (hero) is next.
 
 ## Hosting change (2026-11-05)
 

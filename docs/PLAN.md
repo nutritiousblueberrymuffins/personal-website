@@ -1,7 +1,7 @@
 # Personal Website — Plan (approved 2026-11-05)
 
 Status: **approved 2026-11-05** with the recommended choices, hosting changed to GitHub Pages the same day.
-Phases 0 to 2 are done: the site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 3 (hero) is next.
+Phases 0 to 3 are done: the site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 4 (content) is next.
 
 ## Hosting change (2026-11-05)
 
@@ -173,6 +173,10 @@ Optional later: `GET /api/github` pulls public repos/activity for
 appear automatically.
 
 ## 7. Music player
+
+Done 2026-11-05: the player is wired to three Kevin MacLeod tracks (CC BY 4.0, credit printed in the
+player) in `client/public/music`, and the old `music/` folder of commercial tracks is removed from the
+working tree (it remains in git history until a history rewrite).
 
 What exists: `musicplayer.js` (play/pause/next/prev over an `Audio` element) and a styled but
 disconnected player in the hero. The TODO says "FIX MUSIC PLAYER".

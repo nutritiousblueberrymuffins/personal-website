@@ -15,11 +15,12 @@ Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
 | `client/timeline/index.html` | Timeline page (placeholder styling until phase 5) |
 | `client/404.html` | Not-found page, served by GitHub Pages for unknown URLs |
 | `client/src/data/timeline.json` | The timeline entries. Edit this file to change the timeline |
-| `client/src/styles/` | Design tokens (cream `#ffead1`, red `#ff0808`, Outfit font), animations, page styles |
-| `client/src/scripts/` | Page scripts. `music-player.js` is not wired in yet |
-| `client/public/` | Files served as they are: icons and the vinyl graphic |
+| `client/src/data/tracks.json` | The music player's track list and credits |
+| `client/src/styles/` | Design tokens (cream `#ffead1`, red `#ff0808`, Outfit font), animations, page and hero styles |
+| `client/src/scripts/` | Page scripts: the hero's music player, portrait slides and animation showcase, and the timeline page |
+| `client/public/` | Files served as they are: icons, the vinyl graphic, placeholder portraits, audio |
+| `client/public/music/` | The audio files: three tracks by Kevin MacLeod, licensed CC BY 4.0 |
 | `.github/workflows/deploy-pages.yml` | Builds the client and publishes `client/dist` to GitHub Pages |
-| `music/` | Placeholder tracks and covers, to be replaced with licensed tracks before the site goes public |
 
 ## Run it locally
 
@@ -52,6 +53,16 @@ Serve the built site at http://localhost:4173/ :
 ```bash
 npm run preview
 ```
+
+## Swapping in your own content
+
+- **Portraits:** put photos in `client/public/assets/portraits/` and point the three `<img>` tags
+  of the portrait carousel in `client/index.html` at them. Any size works; they are cropped to
+  the frame.
+- **Music:** add files to `client/public/music/` and describe them in `client/src/data/tracks.json`.
+  Keep the artist and license fields accurate: the player prints them as the credit, which the
+  current CC BY 4.0 tracks require.
+- **Timeline:** edit `client/src/data/timeline.json`.
 
 ## How deploys work
 

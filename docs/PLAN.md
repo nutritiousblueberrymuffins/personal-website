@@ -1,7 +1,7 @@
 # Personal Website — Plan (approved 2026-11-05)
 
 Status: **approved 2026-11-05** with the recommended choices, hosting changed to GitHub Pages the same day.
-Phases 0 to 3 are done: the site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 4 (content) is next.
+Phases 0 to 4 are done except the resume PDF and real photos, which need files from Tony. The site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 5 (timeline content and design) is next.
 
 ## Hosting change (2026-11-05)
 

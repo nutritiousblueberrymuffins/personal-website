@@ -63,6 +63,11 @@ npm run preview
   Keep the artist and license fields accurate: the player prints them as the credit, which the
   current CC BY 4.0 tracks require.
 - **Timeline:** edit `client/src/data/timeline.json`.
+- **Projects and contact details:** the project cards, the email link and the GitHub links are plain
+  markup in `client/index.html`.
+- **Resume:** put `resume.pdf` in `client/public/` and add a link such as
+  `<a class="resume-button" href="/resume.pdf">Resume</a>` under the hero's social links in
+  `client/index.html`; the button style already exists in `site.css`.
 
 ## How deploys work
 

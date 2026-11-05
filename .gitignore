@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Azure Functions local config and build output
+local.settings.json
+api/bin/
+api/obj/
+
+# Static Web Apps CLI
+.swa/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor: keep only the shared workspace settings
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json

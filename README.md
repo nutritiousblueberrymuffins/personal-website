@@ -19,8 +19,10 @@ Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
 | `client/src/data/tracks.json` | The music player's track list and credits |
 | `client/src/styles/` | Design tokens (cream `#ffead1`, red `#ff0808`, Outfit font), animations, page and hero styles |
 | `client/src/scripts/` | Page scripts: the hero's music player, portrait slides and animation showcase, and the timeline page |
-| `client/public/` | Files served as they are: icons, the vinyl graphic, placeholder portraits, audio |
+| `client/public/` | Files served as they are: icons, the vinyl graphic, placeholder portraits, audio, `sitemap.xml` |
 | `client/public/music/` | The audio files: three tracks by Kevin MacLeod, licensed CC BY 4.0 |
+| `client/public/og-image.png` | The 1200 x 630 preview image that chat apps and social sites show for links to the site |
+| `docs/sharing-image/` | The HTML the preview image and the touch icon are rendered from |
 | `.github/workflows/deploy-pages.yml` | Builds the client and publishes `client/dist` to GitHub Pages |
 
 ## Run it locally
@@ -59,7 +61,15 @@ npm run preview
 
 - **Portraits:** put photos in `client/public/assets/portraits/` and point the three `<img>` tags
   of the portrait carousel in `client/index.html` at them. Any size works; they are cropped to
-  the frame.
+  the frame. Around 1100 px wide as JPEG or WebP keeps the page fast, and the `alt` text should
+  say what the photo shows.
+- **Sharing image and touch icon:** `docs/sharing-image/og.html` and `icon.html` are the sources.
+  After changing the name or tagline, re-render them with Chrome and copy the results over
+  `client/public/og-image.png` and `client/public/apple-touch-icon.png`:
+
+  ```bash
+  "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --allow-file-access-from-files --force-device-scale-factor=1 --hide-scrollbars --virtual-time-budget=8000 --window-size=1200,630 --screenshot=client\public\og-image.png docs\sharing-image\og.html
+  ```
 - **Music:** add files to `client/public/music/` and describe them in `client/src/data/tracks.json`.
   Keep the artist and license fields accurate: the player prints them as the credit, which the
   current CC BY 4.0 tracks require.
@@ -84,7 +94,9 @@ Configure Pages step fails.
 GitHub Pages serves a project site under `/personal-website/`. The workflow passes that prefix to
 the build as `BASE_PATH`, so asset and page links come out right. Renaming the repo to
 `nutritiousblueberrymuffins.github.io` (which gives a root URL) or adding a custom domain needs no
-code change. To test the prefixed build locally, pass the same prefix to Vite directly:
+change to the build; only the absolute URLs need updating: the canonical, `og:url` and `og:image`
+tags in the two pages' `<head>`, `client/public/sitemap.xml`, and the address printed on the
+sharing image. To test the prefixed build locally, pass the same prefix to Vite directly:
 
 ```bash
 npm run build -- --base /personal-website/

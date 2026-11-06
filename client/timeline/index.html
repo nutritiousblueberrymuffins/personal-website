@@ -4,16 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <meta name="description" content="Timeline of Tony's work, education, certifications and projects.">
     <title>Timeline | Tony</title>
     <link rel="canonical" href="https://nutritiousblueberrymuffins.github.io/personal-website/timeline/">
     <meta name="theme-color" content="#ffead1">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Timeline | Tony">
     <meta property="og:description" content="Timeline of Tony's work, education, certifications and projects.">
     <meta property="og:url" content="https://nutritiousblueberrymuffins.github.io/personal-website/timeline/">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://nutritiousblueberrymuffins.github.io/personal-website/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Tony, CPA and aspiring software engineer">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="stylesheet" href="../src/styles/designtoken.css">
     <link rel="stylesheet" href="../src/styles/animations.css">
     <link rel="stylesheet" href="../src/styles/site.css">
@@ -21,6 +27,7 @@
 </head>
 
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
         <nav class="navigation" aria-label="Primary navigation">
@@ -35,15 +42,23 @@
         </nav>
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
         <section class="timeline-section" aria-labelledby="timeline-title">
             <div class="section-heading">
                 <h1 id="timeline-title">Timeline</h1>
                 <p>Work, education, certifications and projects, newest first.</p>
             </div>
 
-            <!-- Filled by timeline.js: one chip per entry type, with counts. -->
-            <div class="timeline-filters" id="timeline-filters" role="group" aria-label="Filter by type"></div>
+            <!-- One chip per entry type. timeline.js fills in the counts and handles the clicks; the chips
+                 are in the HTML so the page does not jump when the script runs. -->
+            <div class="timeline-filters" id="timeline-filters" role="group" aria-label="Filter by type">
+                <button type="button" data-type="" aria-pressed="true">All <span></span></button>
+                <button type="button" data-type="work" aria-pressed="false">Work <span></span></button>
+                <button type="button" data-type="education" aria-pressed="false">Education <span></span></button>
+                <button type="button" data-type="certification" aria-pressed="false">Certification <span></span></button>
+                <button type="button" data-type="project" aria-pressed="false">Project <span></span></button>
+                <button type="button" data-type="milestone" aria-pressed="false">Milestone <span></span></button>
+            </div>
 
             <p class="timeline-status" id="timeline-status" role="status" aria-live="polite"></p>
 

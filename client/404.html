@@ -4,14 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <meta name="robots" content="noindex">
     <title>Page not found | Tony</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="stylesheet" href="./src/styles/designtoken.css">
     <link rel="stylesheet" href="./src/styles/animations.css">
     <link rel="stylesheet" href="./src/styles/site.css">
 </head>
 
 <body>
+    <a class="skip-link" href="#main">Skip to content</a>
 
     <header class="site-header">
         <nav class="navigation" aria-label="Primary navigation">
@@ -23,11 +27,11 @@
         </nav>
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
         <!-- GitHub Pages serves this file for any unknown URL, at any depth, so the links use
              data-home-link and main.js points them at the site root. -->
         <section class="contact-section" aria-labelledby="not-found-title">
-            <h2 id="not-found-title">Page not found</h2>
+            <h1 id="not-found-title">Page not found</h1>
             <p class="footer-line">That link goes nowhere. Head back to the <a href="/" data-home-link>home page</a>.</p>
         </section>
     </main>

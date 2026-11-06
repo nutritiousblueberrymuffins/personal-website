@@ -190,20 +190,17 @@ function setFilter(type, { updateUrl = true } = {}) {
   }
 }
 
+// The chips are in the HTML (one per type in TYPES, plus "All") so they take up space before the
+// script runs; this fills in the counts and wires up the clicks.
 function buildFilters() {
   const counts = {};
   for (const entry of entries) {
     counts[entry.type] = (counts[entry.type] ?? 0) + 1;
   }
-  const chips = [['', 'All', entries.length], ...TYPES.map(([type, label]) => [type, label, counts[type] ?? 0])];
-  for (const [type, label, count] of chips) {
-    const button = element('button', '', `${label} `);
-    button.type = 'button';
-    button.dataset.type = type;
-    button.setAttribute('aria-pressed', 'false');
-    button.append(element('span', '', String(count)));
+  for (const button of filters.querySelectorAll('button')) {
+    const type = button.dataset.type;
+    button.querySelector('span').textContent = String(type ? counts[type] ?? 0 : entries.length);
     button.addEventListener('click', () => setFilter(type));
-    filters.append(button);
   }
 }
 

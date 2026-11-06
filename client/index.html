@@ -1,28 +1,25 @@
 <!doctype html>
 <html lang="en">
 
-<!--TODO LISTS:
--Make it multiplatform (mobile)
--Optimize for SEO
--make sure html elements are explicit
--following standard component classes (BEM)
--Accessibility (a11y compliant)
--ADD PORTFOLIO
--ADD PROJECTS
--->
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light">
     <meta name="description" content="Portfolio of Tony, a CPA moving into software engineering: projects, a timeline of work and learning, and how to get in touch.">
     <link rel="canonical" href="https://nutritiousblueberrymuffins.github.io/personal-website/">
     <meta name="theme-color" content="#ffead1">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta property="og:type" content="website">
     <meta property="og:title" content="Tony | CPA and Aspiring Software Engineer">
     <meta property="og:description" content="Portfolio of Tony, a CPA moving into software engineering: projects, a timeline of work and learning, and how to get in touch.">
     <meta property="og:url" content="https://nutritiousblueberrymuffins.github.io/personal-website/">
     <meta property="og:site_name" content="Tony's portfolio">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://nutritiousblueberrymuffins.github.io/personal-website/og-image.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Tony, CPA and aspiring software engineer">
+    <meta name="twitter:card" content="summary_large_image">
     <title>Tony | CPA and Aspiring Software Engineer</title>
     <link rel="stylesheet" href="./src/styles/designtoken.css">
     <link rel="stylesheet" href="./src/styles/animations.css">
@@ -31,7 +28,8 @@
 </head>
 
 <body>
-    
+    <a class="skip-link" href="#main">Skip to content</a>
+
     <header class="site-header">
         <nav class="navigation" aria-label="Primary navigation">
             <a class="logo" href="#about">nutritiousblueberrymuffins</a>
@@ -45,20 +43,20 @@
         </nav>
     </header>
 
-    <main>
+    <main id="main" tabindex="-1">
 
         <section class="hero" id="about" aria-labelledby="intro-title">
             <div class="profile-column">
                 <div class="portrait-slides" role="region" aria-roledescription="carousel" aria-label="Portraits">
-                    <figure class="portrait-slide is-active" role="tabpanel" id="portrait-slide-1" aria-roledescription="slide" aria-label="1 of 3">
-                        <img src="/assets/portraits/portrait-1.svg" alt="Portrait placeholder 1" width="542" height="470">
-                    </figure>
-                    <figure class="portrait-slide" role="tabpanel" id="portrait-slide-2" aria-roledescription="slide" aria-label="2 of 3" aria-hidden="true">
+                    <div class="portrait-slide is-active" role="tabpanel" id="portrait-slide-1" aria-roledescription="slide" aria-label="1 of 3">
+                        <img src="/assets/portraits/portrait-1.svg" alt="Portrait placeholder 1" width="542" height="470" fetchpriority="high">
+                    </div>
+                    <div class="portrait-slide" role="tabpanel" id="portrait-slide-2" aria-roledescription="slide" aria-label="2 of 3" aria-hidden="true">
                         <img src="/assets/portraits/portrait-2.svg" alt="Portrait placeholder 2" width="542" height="470">
-                    </figure>
-                    <figure class="portrait-slide" role="tabpanel" id="portrait-slide-3" aria-roledescription="slide" aria-label="3 of 3" aria-hidden="true">
+                    </div>
+                    <div class="portrait-slide" role="tabpanel" id="portrait-slide-3" aria-roledescription="slide" aria-label="3 of 3" aria-hidden="true">
                         <img src="/assets/portraits/portrait-3.svg" alt="Portrait placeholder 3" width="542" height="470">
-                    </figure>
+                    </div>
                 </div>
 
                 <div class="portrait-pagination" role="tablist" aria-label="Choose portrait">
@@ -85,10 +83,10 @@
 
             <div class="showcase-column">
                 <div class="music-player" role="region" aria-label="Music player">
-                    <div class="record" aria-hidden="true"><img src="/assets/hero/vinyl.svg" alt=""></div>
+                    <div class="record" aria-hidden="true"><img src="/assets/hero/vinyl.svg" alt="" width="156" height="137" fetchpriority="high"></div>
                     <div class="track-window">
                         <p class="track-eyebrow" id="track-status" aria-live="polite">PAUSED</p>
-                        <h2 class="track-title"><span aria-hidden="true">&#9835;</span> <span id="track-name">Loading</span> <span aria-hidden="true">&#9835;</span></h2>
+                        <p class="track-title"><span aria-hidden="true">&#9835;</span> <span id="track-name">Loading</span> <span aria-hidden="true">&#9835;</span></p>
                         <p class="track-artist" id="track-artist"></p>
                         <input type="range" id="progress" min="0" max="100" value="0" step="0.1" aria-label="Track position" aria-valuetext="0:00 of 0:00">
                         <div class="track-times" aria-hidden="true">
@@ -108,7 +106,7 @@
 
                 
                 <div class="animation-panel" id="showcase" role="region" aria-roledescription="carousel" aria-label="Animation showcase">
-                    <figure class="showcase-slide is-active" role="group" aria-roledescription="slide" aria-label="1 of 3: Balanced books">
+                    <figure class="showcase-slide is-active" aria-roledescription="slide" aria-label="1 of 3: Balanced books">
                         <div class="ledger" aria-hidden="true">
                             <div class="ledger__row ledger__head"><span>Account</span><span>Debit</span><span>Credit</span></div>
                             <div class="ledger__row"><span>Cash</span><span>1,200</span><span></span></div>
@@ -119,7 +117,7 @@
                         </div>
                         <figcaption>Balanced books</figcaption>
                     </figure>
-                    <figure class="showcase-slide" role="group" aria-roledescription="slide" aria-label="2 of 3: Growth" aria-hidden="true">
+                    <figure class="showcase-slide" aria-roledescription="slide" aria-label="2 of 3: Growth" aria-hidden="true">
                         <div class="bars" aria-hidden="true">
                             <div class="bars__bar"><i></i>2021</div>
                             <div class="bars__bar"><i></i>2022</div>
@@ -130,7 +128,7 @@
                         </div>
                         <figcaption>Growth</figcaption>
                     </figure>
-                    <figure class="showcase-slide" role="group" aria-roledescription="slide" aria-label="3 of 3: Code" aria-hidden="true">
+                    <figure class="showcase-slide" aria-roledescription="slide" aria-label="3 of 3: Code" aria-hidden="true">
                         <pre class="typewriter" aria-hidden="true"><code><span class="typewriter__line"><span class="kw">const</span> entries = ledger.read(<span class="str">'2026-Q3'</span>);</span><span class="typewriter__line"><span class="kw">const</span> debits = total(entries, <span class="str">'debit'</span>);</span><span class="typewriter__line"><span class="kw">const</span> credits = total(entries, <span class="str">'credit'</span>);</span><span class="typewriter__line">assert(debits === credits); <span class="comment">// balanced</span></span></code></pre>
                         <figcaption>Code</figcaption>
                     </figure>

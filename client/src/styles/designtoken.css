@@ -1,10 +1,15 @@
 
+/* Contrast against the cream background (#ffead1) and the sand cards (#f0ddc5), per WCAG AA:
+   --red       4.1:1 on cream: fills, large headings and decoration (white text on it: 4.8:1)
+   --red-text  5.5:1 on cream, 4.9:1 on sand: red text below 24px and small badges
+   --muted     5.5:1 on cream, 4.9:1 on sand: secondary text */
 :root {
     --background: #ffead1;
-    --red: #ff0808;
+    --red: #e60000;
+    --red-text: #c00000;
     --black: #030303;
     --charcoal: #252323;
-    --muted: #9e999b;
+    --muted: #625d5b;
     --portrait: #9f9698;
     --line: rgba(37, 35, 35, 0.12);
 }
@@ -29,4 +34,35 @@ body {
 a {
     color: inherit;
     text-decoration: none;
+}
+
+/* One visible focus ring for every control; components may override the colour. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+    outline: 3px solid var(--red);
+    outline-offset: 3px;
+}
+
+/* Keyboard users can jump past the navigation. Hidden until it receives focus. */
+.skip-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    padding: 0.75rem 1rem;
+    color: var(--background);
+    background: var(--black);
+    font-weight: 700;
+    transform: translateY(-120%);
+    transition: transform 120ms ease;
+}
+
+.skip-link:focus-visible {
+    transform: none;
+}
+
+/* The skip link moves focus here; the page itself needs no ring. */
+main:focus {
+    outline: none;
 }

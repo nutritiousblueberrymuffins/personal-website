@@ -33,17 +33,27 @@
     object-fit: cover;
 }
 
+/* Each dot is drawn inside a 24px button, the minimum comfortable touch target. */
 .portrait-pagination button {
-    width: 8px;
-    height: 8px;
+    position: relative;
+    width: 24px;
+    height: 24px;
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: #d8c6b8;
+    background: transparent;
     cursor: pointer;
 }
 
-.portrait-pagination button[aria-selected="true"] {
+.portrait-pagination button::before {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: #d8c6b8;
+}
+
+.portrait-pagination button[aria-selected="true"]::before {
     background: var(--black);
 }
 
@@ -56,14 +66,15 @@
 
 .track-artist {
     margin: 2px 0 0;
-    color: #64748b;
+    color: var(--muted);
     font-size: 13px;
     font-weight: 600;
 }
 
 #progress {
     width: 100%;
-    margin: 14px 0 0;
+    min-height: 24px;
+    margin: 10px 0 0;
     accent-color: var(--red);
     cursor: pointer;
 }
@@ -89,7 +100,7 @@
 
 .track-credit {
     margin: 10px 0 0;
-    color: #64748b;
+    color: var(--muted);
     font-size: 11px;
     font-weight: 600;
 }
@@ -101,7 +112,7 @@
 
 .track-credit a:hover,
 .track-credit a:focus-visible {
-    color: var(--red);
+    color: var(--red-text);
 }
 
 /* The vinyl is drawn as a tilted ellipse (156 x 137). Rotating it directly would wobble, so the
@@ -327,5 +338,32 @@
     .showcase-slide figcaption {
         left: 10px;
         bottom: 6px;
+    }
+}
+
+/* Phones: a taller panel keeps the six ledger rows clear of the caption. */
+@media (max-width: 500px) {
+    .animation-panel {
+        aspect-ratio: 4 / 3;
+    }
+}
+
+/* Room for the caption below the slide content, whatever the panel's size. */
+.showcase-slide {
+    padding-bottom: 40px;
+}
+
+@media (max-width: 400px) {
+    .ledger__row {
+        padding: 4px 0;
+        font-size: 12px;
+    }
+}
+
+/* Tablets show the hero in two columns, so the showcase panel is at its narrowest. */
+@media (min-width: 761px) and (max-width: 900px) {
+    .ledger__row {
+        padding: 4px 0;
+        font-size: 13px;
     }
 }

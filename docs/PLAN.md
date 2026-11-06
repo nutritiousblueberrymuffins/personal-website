@@ -1,7 +1,7 @@
 # Personal Website — Plan (approved 2026-11-05)
 
 Status: **approved 2026-11-05** with the recommended choices, hosting changed to GitHub Pages the same day.
-Phases 0 to 5 are done, except for content that needs files or facts from Tony: the resume PDF, real portrait photos, and real timeline entries (the sample entries are drafts, shown in local development only). The site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. Phase 6 (polish) is next.
+Phases 0 to 6 are done, except for content that needs files or facts from Tony: the resume PDF, real portrait photos, and real timeline entries (the sample entries are drafts, shown in local development only). The site is live at https://nutritiousblueberrymuffins.github.io/personal-website/. The polish checks and Lighthouse scores are recorded in the README.
 
 ## Hosting change (2026-11-05)
 
@@ -227,6 +227,16 @@ Audio is the only realistic way to approach the 100 GB/month bandwidth cap.
 | 6. Polish | Responsive QA 360 to 1440 px, a11y pass (keyboard, contrast, labels), Lighthouse 90+, optional custom domain | Scores recorded in README |
 
 Phases 3, 4 and 5 are independent of each other once phase 1 is in.
+
+Done 2026-11-06 (phase 6): layouts checked from 320 to 1440 px with headless Chrome, a keyboard
+walkthrough of both pages, and Lighthouse runs locally and on the live site (scores in the README).
+Three design tokens changed to meet WCAG AA contrast: the brand red is now `#e60000` (white text on
+it passes), small red text and badges use `#c00000`, and the muted grey is `#625d5b` (the old
+`#9e999b` was 2.4:1 on cream). The responsive rules had been sitting in `animations.css`, which
+`site.css` overrode, so phones were getting the desktop layout; they now live at the end of
+`site.css`. Also added: skip links, a site-wide focus ring, 24 px touch targets, an Open Graph
+image, a touch icon and a sitemap. No custom domain yet: there is nothing to configure until one is
+bought, and the README says which URLs to update then.
 
 ## 10. Tooling to install
 

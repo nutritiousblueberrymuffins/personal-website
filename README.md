@@ -107,3 +107,46 @@ npm run preview -- --base /personal-website/
 ```
 
 The preview then serves the site at http://localhost:4173/personal-website/ .
+
+## Quality checks
+
+The polish pass (2026-11-06) checked the live site with Lighthouse 13.6, a layout sweep from 320
+to 1440 px in headless Chrome, and a keyboard walkthrough of both pages. Lighthouse scores on the
+live site, mobile / desktop:
+
+| Page | Performance | Accessibility | Best practices | SEO |
+|------|-------------|---------------|----------------|-----|
+| Home | 99 / 100 | 100 / 100 | 100 / 100 | 100 / 100 |
+| Timeline | 100 / 100 | 100 / 100 | 100 / 100 | 100 / 100 |
+
+Mobile performance moves a point or two between runs, because it is a throttled simulation; the
+other scores are stable. What the pass covers:
+
+- **Layout** from 320 to 1440 px: no horizontal overflow on any page; the header keeps one row
+  down to 501 px and stacks below that; the project grid becomes one column below 761 px; the
+  timeline moves its line to the left below 901 px.
+- **Keyboard:** a "Skip to content" link is the first Tab stop on every page, every control shows
+  a 3 px focus ring, only the selected portrait dot is in the Tab order (the arrow keys choose the
+  others), and the player, showcase buttons, project cards, filters and links are all reachable.
+- **Contrast** (WCAG AA): the brand red is `#e60000`, small red text uses `#c00000` and secondary
+  text uses `#625d5b`; the ratios are noted in `client/src/styles/designtoken.css`.
+- **Motion:** with "reduce motion" switched on, nothing animates and every element shows its final
+  state.
+- **Sharing:** the Open Graph tags point at `og-image.png`; paste the site URL into a chat app or a
+  social post to see the card.
+
+To run Lighthouse again (it uses the installed Chrome and opens the report in the browser):
+
+```bash
+npx lighthouse https://nutritiousblueberrymuffins.github.io/personal-website/ --view
+```
+
+```bash
+npx lighthouse https://nutritiousblueberrymuffins.github.io/personal-website/timeline/ --preset=desktop --view
+```
+
+https://pagespeed.web.dev/ runs the same audit on Google's machines, with no install.
+
+Two informational notes in the report cannot be acted on with GitHub Pages: it does not allow
+custom response headers, so there is no Content-Security-Policy or HSTS header, and it serves every
+file with a ten-minute cache lifetime. Neither affects the scores.

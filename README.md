@@ -106,6 +106,15 @@ the thread turns vertical and the photo and about panel move under their text; b
 header stacks. Checked from 320 to 1920 px in 10 px steps and on iPhone, Pixel and iPad
 emulation: no sideways scrolling and nothing cut off.
 
+## Analytics
+
+The site has its own visitor analytics, with no third party: `client/src/scripts/analytics.js`
+records page views, clicks, rage and dead clicks, scroll depth, sections viewed, time on page,
+timeline filters and errors, without cookies or IP addresses, and sends them to a Cloudflare
+Worker in `analytics/` that stores them in D1 and serves a password-protected dashboard with a
+click heatmap. It stays off until the Cloudflare secrets and the `ANALYTICS_ENDPOINT` variable
+are set; [analytics/README.md](analytics/README.md) has the steps.
+
 ## How deploys work
 
 The workflow in `.github/workflows/deploy-pages.yml` runs on every push to `main`: it builds the

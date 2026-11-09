@@ -1,0 +1,111 @@
+name: Deploy analytics
+
+# Publishes the analytics collector and dashboard (analytics/) to Cloudflare Workers, creating
+# its D1 database on the first run. Needs these repository secrets (Settings > Secrets and
+# variables > Actions); until they exist the job does nothing:
+#   CLOUDFLARE_API_TOKEN          token with "Edit Cloudflare Workers" + Account > D1 > Edit
+#   CLOUDFLARE_ACCOUNT_ID         the account id shown in the Cloudflare dashboard
+#   ANALYTICS_DASHBOARD_PASSWORD  the password for the dashboard page
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'analytics/**'
+      - '.github/workflows/deploy-analytics.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: analytics
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: analytics
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      DASHBOARD_PASSWORD: ${{ secrets.ANALYTICS_DASHBOARD_PASSWORD }}
+      WRANGLER_SEND_METRICS: 'false'
+      DB_NAME: personal-website-analytics
+    steps:
+      - name: Check for the Cloudflare secrets
+        id: secrets
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::notice::Analytics not deployed: add the CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets (see analytics/README.md)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+        working-directory: .
+
+      - name: Check out
+        if: steps.secrets.outputs.ready == 'true'
+        uses: actions/checkout@v7
+
+      - name: Set up Node
+        if: steps.secrets.outputs.ready == 'true'
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: analytics/package-lock.json
+
+      - name: Install
+        if: steps.secrets.outputs.ready == 'true'
+        run: npm ci
+
+      - name: Test
+        if: steps.secrets.outputs.ready == 'true'
+        run: npm test
+
+      - name: Find or create the database
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          find_id() {
+            npx wrangler d1 list --json | node -e '
+              let s = ""; process.stdin.on("data", (d) => (s += d)).on("end", () => {
+                const db = JSON.parse(s).find((d) => d.name === process.env.DB_NAME);
+                process.stdout.write(db ? db.uuid : "");
+              });'
+          }
+          id="$(find_id)"
+          if [ -z "$id" ]; then
+            npx wrangler d1 create "$DB_NAME"
+            id="$(find_id)"
+          fi
+          if [ -z "$id" ]; then
+            echo "::error::Could not find or create the $DB_NAME database."
+            exit 1
+          fi
+          sed -i "s/REPLACE_WITH_DATABASE_ID/$id/" wrangler.toml
+          npx wrangler d1 execute "$DB_NAME" --remote --file=schema.sql
+
+      - name: Deploy the Worker
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          npx wrangler deploy 2>&1 | tee deploy.log
+          url="$(grep -oE 'https://[a-z0-9.-]+\.workers\.dev' deploy.log | head -n 1)"
+          {
+            echo "### Analytics deployed"
+            echo ""
+            echo "- Dashboard: ${url:-see the Cloudflare dashboard}/"
+            echo "- Collector: ${url:-<worker url>}/collect"
+            echo ""
+            echo "Set the repository variable ANALYTICS_ENDPOINT to the collector address, then re-run \"Deploy to GitHub Pages\" so the site starts sending events."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Set the dashboard password
+        if: steps.secrets.outputs.ready == 'true'
+        run: |
+          if [ -n "$DASHBOARD_PASSWORD" ]; then
+            printf '%s' "$DASHBOARD_PASSWORD" | npx wrangler secret put DASHBOARD_PASSWORD
+          else
+            echo "::warning::ANALYTICS_DASHBOARD_PASSWORD is not set, so the dashboard stays locked."
+          fi

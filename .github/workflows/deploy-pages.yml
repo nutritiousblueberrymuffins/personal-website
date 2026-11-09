@@ -45,6 +45,8 @@ jobs:
         env:
           # "/personal-website" for a project site, empty for a user site or a custom domain.
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # The analytics collector's address (repository variable); empty = tracking off.
+          VITE_ANALYTICS_ENDPOINT: ${{ vars.ANALYTICS_ENDPOINT }}
 
       - name: Upload site
         uses: actions/upload-pages-artifact@v5

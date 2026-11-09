@@ -25,3 +25,7 @@ desktop.ini
 
 # Claude Code session config (launch targets)
 .claude/
+
+# Cloudflare Wrangler: local state and local-only settings
+.wrangler/
+.dev.vars

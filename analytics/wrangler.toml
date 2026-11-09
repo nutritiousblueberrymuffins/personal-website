@@ -1,0 +1,32 @@
+# Cloudflare Worker that collects the website's interaction events into a D1 database and
+# serves the analytics dashboard. See analytics/README.md.
+name = "personal-website-analytics"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# The dashboard page is bundled as text.
+[[rules]]
+type = "Text"
+globs = ["**/*.html"]
+fallthrough = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "personal-website-analytics"
+# Filled in by `wrangler d1 create`; see README.
+database_id = "REPLACE_WITH_DATABASE_ID"
+
+[vars]
+# Pages allowed to send events (comma-separated origins).
+ALLOWED_ORIGINS = "https://nutritiousblueberrymuffins.github.io"
+# The page the dashboard's click heatmap draws on.
+SITE_URL = "https://nutritiousblueberrymuffins.github.io/personal-website/"
+# Events older than this are deleted by the daily cleanup.
+RETENTION_DAYS = "395"
+
+# Daily cleanup of old events.
+[triggers]
+crons = ["17 3 * * *"]
+
+# The dashboard password is a secret, never in this file:
+#   npx wrangler secret put DASHBOARD_PASSWORD

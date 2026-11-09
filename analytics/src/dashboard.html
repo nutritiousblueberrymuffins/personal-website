@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Website analytics</title>
+<style>
+  /* Threadline colours. Chart marks use one validated blue per mode (dataviz validator:
+     #3b5fc4 on light, #6f8ff0 on dark); text never wears the chart colour. */
+  :root {
+    --surface: #ffffff;
+    --canvas: #f6f8fb;
+    --ink: #222b36;
+    --muted: #687482;
+    --border: #e2e7ed;
+    --grid: #edf0f4;
+    --brand: #273b70;
+    --on-brand: #f5f5f5;
+    --series: #3b5fc4;
+    --series-wash: rgb(59 95 196 / 0.1);
+    --critical: #c62828;
+    --warning: #b45309;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface: #141a24;
+      --canvas: #0e131b;
+      --ink: #e8edf4;
+      --muted: #9aa6b5;
+      --border: #263040;
+      --grid: #1e2633;
+      --brand: #8ea5e0;
+      --on-brand: #0e131b;
+      --series: #6f8ff0;
+      --series-wash: rgb(111 143 240 / 0.14);
+      --critical: #ff6b6b;
+      --warning: #f0a54a;
+      color-scheme: dark;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font: 14px/20px Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+    padding: 20px clamp(16px, 4vw, 48px);
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  h1 { margin: 0; color: var(--brand); font-size: 20px; line-height: 26px; }
+  h1 span { color: var(--muted); font-weight: 400; font-size: 14px; margin-left: 8px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .range { display: inline-flex; padding: 3px; gap: 2px; background: var(--canvas); border: 1px solid var(--border); border-radius: 999px; }
+  .range button {
+    padding: 6px 12px; border: 0; border-radius: 999px; background: transparent;
+    color: var(--ink); font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .range button[aria-pressed="true"] { background: var(--brand); color: var(--on-brand); font-weight: 600; }
+  .range button:hover:not([aria-pressed="true"]) { background: var(--grid); }
+  .status { color: var(--muted); font-size: 12px; min-width: 9em; }
+  button:focus-visible { outline: 2px solid var(--series); outline-offset: 2px; }
+  main {
+    display: grid;
+    gap: 16px;
+    padding: 20px clamp(16px, 4vw, 48px) 48px;
+    max-width: 1440px;
+    margin: 0 auto;
+    transition: opacity 150ms;
+  }
+  main.loading { opacity: 0.55; }
+  .tiles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+  @media (max-width: 760px) { .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .tile, .card { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; }
+  .tile { padding: 14px 16px; }
+  .tile .label { color: var(--muted); font-size: 12px; }
+  .tile .value { font-size: 26px; line-height: 32px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .tile .note { color: var(--muted); font-size: 12px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 16px; }
+  .card { padding: 16px 18px 18px; min-width: 0; }
+  .card h2 { margin: 0; font-size: 15px; line-height: 20px; }
+  .card .sub { margin: 2px 0 12px; color: var(--muted); font-size: 12px; }
+  .empty { color: var(--muted); font-size: 13px; padding: 12px 0; }
+  /* Ranked bars */
+  .bars { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .bar {
+    display: grid; grid-template-columns: minmax(0, 38%) minmax(0, 1fr); align-items: center; gap: 10px;
+    border-radius: 6px; padding: 2px 4px; margin: 0 -4px;
+  }
+  .bar:hover, .bar:focus-within { background: var(--grid); }
+  .bar .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+  .bar .track { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .bar .fill { height: 14px; min-width: 2px; background: var(--series); border-radius: 0 4px 4px 0; }
+  .bar .fill.critical { background: var(--critical); }
+  .bar .fill.warning { background: var(--warning); }
+  .bar .num { color: var(--muted); font-size: 12px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  /* Time charts */
+  .chart { position: relative; }
+  .chart svg { display: block; width: 100%; height: 200px; overflow: visible; }
+  .chart .gridline { stroke: var(--grid); stroke-width: 1; }
+  .chart .axis { fill: var(--muted); font-size: 11px; }
+  .chart .line { fill: none; stroke: var(--series); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .chart .area { fill: var(--series-wash); }
+  .chart .col { fill: var(--series); }
+  .chart .col.hover { opacity: 0.75; }
+  .chart .cross { stroke: var(--muted); stroke-width: 1; }
+  .chart .dot { fill: var(--series); stroke: var(--surface); stroke-width: 2; }
+  .tooltip {
+    position: fixed; z-index: 10; pointer-events: none; padding: 6px 10px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    box-shadow: 0 4px 16px rgb(0 0 0 / 0.12); font-size: 12px; line-height: 16px; white-space: nowrap;
+  }
+  .tooltip strong { display: block; font-size: 14px; line-height: 18px; }
+  .tooltip span { color: var(--muted); }
+  /* Heatmap */
+  .heat-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font-size: 12px; }
+  .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: -1px; }
+  .heat-frame { position: relative; overflow: hidden; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
+  .heat-inner { position: absolute; top: 0; left: 0; transform-origin: 0 0; }
+  .heat-inner iframe { display: block; border: 0; pointer-events: none; background: #fff; }
+  .heat-inner canvas { position: absolute; inset: 0; pointer-events: none; }
+  /* Recent */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--muted); font-weight: 500; }
+  td.when { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  td.what { max-width: 360px; overflow-wrap: anywhere; }
+  .scroll { overflow-x: auto; }
+  .tag { display: inline-block; padding: 0 6px; border-radius: 999px; background: var(--grid); font-size: 11px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>✦ Website analytics <span id="site"></span></h1>
+  <div class="controls">
+    <div class="range" role="group" aria-label="Date range">
+      <button type="button" data-days="1">24 h</button>
+      <button type="button" data-days="7">7 days</button>
+      <button type="button" data-days="30" aria-pressed="true">30 days</button>
+      <button type="button" data-days="90">90 days</button>
+      <button type="button" data-days="365">1 year</button>
+    </div>
+    <span class="status" id="status" role="status" aria-live="polite"></span>
+  </div>
+</header>
+
+<main id="main" class="loading">
+  <section class="tiles" id="tiles" aria-label="Totals"></section>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Visits per day</h2>
+      <p class="sub">One visit is one page load (no cookies, so a returning visitor counts again). Days in UTC.</p>
+      <div class="chart" id="visits-chart"></div>
+    </section>
+    <section class="card">
+      <h2>Clicks per day</h2>
+      <p class="sub">Clicks on links, buttons and cards. Days in UTC.</p>
+      <div class="chart" id="clicks-chart"></div>
+    </section>
+  </div>
+
+  <div class="grid">
+    <section class="card"><h2>How far visitors get</h2><p class="sub">Share of visits that saw each section</p><div id="sections"></div></section>
+    <section class="card"><h2>Most clicked</h2><p class="sub">By visible text, or the element when it has none</p><div id="top-clicks"></div></section>
+    <section class="card"><h2>Projects opened</h2><p class="sub">Clicks on each project card</p><div id="projects"></div></section>
+    <section class="card"><h2>Contact methods</h2><p class="sub">Clicks on each contact card</p><div id="contacts"></div></section>
+    <section class="card"><h2>"On this thread" links</h2><p class="sub">Which hero cards visitors follow</p><div id="thread-links"></div></section>
+    <section class="card"><h2>Timeline filters</h2><p class="sub">Which entry types visitors filter by</p><div id="filters"></div></section>
+    <section class="card"><h2>Scroll depth</h2><p class="sub">Share of visits that scrolled at least this far</p><div id="scroll"></div></section>
+    <section class="card"><h2>Frustration</h2><p class="sub">Rage clicks (3+ fast clicks in one spot) and dead clicks (something looked clickable but nothing happened)</p><div id="frustration"></div></section>
+    <section class="card"><h2>Where visitors come from</h2><p class="sub">Referring site</p><div id="referrers"></div></section>
+    <section class="card"><h2>Countries</h2><p class="sub">From Cloudflare's network; IP addresses are not stored</p><div id="countries"></div></section>
+    <section class="card"><h2>Devices</h2><p class="sub">Page views by device type</p><div id="devices"></div></section>
+    <section class="card"><h2>Browsers</h2><p class="sub">Page views by browser</p><div id="browsers"></div></section>
+    <section class="card"><h2>Pages</h2><p class="sub">Page views by path</p><div id="pages"></div></section>
+    <section class="card"><h2>JavaScript errors</h2><p class="sub">Errors visitors' browsers hit on the site</p><div id="errors"></div></section>
+  </div>
+
+  <section class="card">
+    <h2>Click heatmap</h2>
+    <p class="sub">Where visitors clicked, drawn over the live page. Positions are relative to page size, so they are approximate across screen sizes.</p>
+    <div class="heat-controls">
+      <div class="range" role="group" aria-label="Screen size">
+        <button type="button" data-heat="desktop" aria-pressed="true">Desktop</button>
+        <button type="button" data-heat="mobile">Phone</button>
+      </div>
+      <div class="legend">
+        <span><i style="background: var(--series)"></i>Click</span>
+        <span><i style="background: var(--critical)"></i>Rage click</span>
+        <span><i style="background: var(--warning)"></i>Dead click</span>
+        <span id="heat-count"></span>
+      </div>
+    </div>
+    <div class="heat-frame" id="heat-frame">
+      <div class="heat-inner" id="heat-inner">
+        <iframe id="heat-page" title="The website, under the click heatmap" tabindex="-1"></iframe>
+        <canvas id="heat-canvas"></canvas>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Recent activity</h2>
+    <p class="sub">The latest 40 events, newest first</p>
+    <div class="scroll"><table id="recent"><thead><tr><th>When</th><th>Event</th><th>What</th><th>Where</th></tr></thead><tbody></tbody></table></div>
+  </section>
+</main>
+
+<div class="tooltip" id="tooltip" hidden></div>
+
+<script>
+'use strict';
+// Every name and label below comes from visitors' browsers: it is untrusted, so it only ever
+// goes into the page through textContent, never innerHTML.
+
+const fmt = new Intl.NumberFormat('en-US');
+const $ = (id) => document.getElementById(id);
+const tooltip = $('tooltip');
+let days = 30;
+let data = null;
+let heatMode = 'desktop';
+
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined && text !== null) node.textContent = String(text);
+  return node;
+}
+
+function svg(tag, attrs = {}) {
+  const node = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) node.setAttribute(k, v);
+  return node;
+}
+
+function duration(ms) {
+  if (!ms) return '0 s';
+  const s = Math.round(ms / 1000);
+  return s < 60 ? `${s} s` : `${Math.floor(s / 60)} min ${s % 60} s`;
+}
+
+function percent(part, whole) {
+  return whole ? `${Math.round((part / whole) * 100)}%` : '0%';
+}
+
+function showTip(event, value, label) {
+  tooltip.replaceChildren(el('strong', '', value), el('span', '', label));
+  tooltip.hidden = false;
+  const pad = 14;
+  const box = tooltip.getBoundingClientRect();
+  let x = event.clientX + pad;
+  let y = event.clientY + pad;
+  if (x + box.width > innerWidth - 8) x = event.clientX - box.width - pad;
+  if (y + box.height > innerHeight - 8) y = event.clientY - box.height - pad;
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top = `${y}px`;
+}
+
+function hideTip() {
+  tooltip.hidden = true;
+}
+
+// ---------- Tiles ----------
+function tile(label, value, note) {
+  const node = el('div', 'tile');
+  node.append(el('div', 'label', label), el('div', 'value', value));
+  if (note) node.append(el('div', 'note', note));
+  return node;
+}
+
+function renderTiles() {
+  const t = data.totals;
+  const visits = t.visits || 0;
+  $('tiles').replaceChildren(
+    tile('Visits', fmt.format(visits)),
+    tile('Page views', fmt.format(t.pageviews || 0)),
+    tile('Clicks', fmt.format(t.clicks || 0), visits ? `${(t.clicks / visits).toFixed(1)} per visit` : ''),
+    tile('Visits that clicked', percent(data.clickingVisits.visits || 0, visits)),
+    tile('Avg. time on page', duration(data.engagement.avg_engaged_ms), 'while the tab was visible'),
+    tile('Rage clicks', fmt.format(t.rage_clicks || 0)),
+    tile('Dead clicks', fmt.format(t.dead_clicks || 0)),
+    tile('JavaScript errors', fmt.format(t.errors || 0)),
+  );
+}
+
+// ---------- Ranked bars ----------
+function bars(container, rows, { valueText, tone, total } = {}) {
+  const target = $(container);
+  if (!rows.length) {
+    target.replaceChildren(el('p', 'empty', 'No data for this period yet.'));
+    return;
+  }
+  const max = Math.max(...rows.map((r) => r.n), 1);
+  const list = el('ul', 'bars');
+  for (const row of rows) {
+    const item = el('li', 'bar');
+    item.tabIndex = 0;
+    const name = el('span', 'name', row.name ?? '(none)');
+    name.title = row.name ?? '';
+    const track = el('span', 'track');
+    const fill = el('span', `fill${row.tone || tone ? ` ${row.tone || tone}` : ''}`);
+    fill.style.width = `${Math.max((row.n / max) * 100, 1)}%`;
+    const text = valueText ? valueText(row) : fmt.format(row.n);
+    track.append(fill, el('span', 'num', text));
+    item.append(name, track);
+    const label = total ? `${row.name} · ${fmt.format(row.n)} of ${fmt.format(total)}` : row.name;
+    item.addEventListener('pointermove', (e) => showTip(e, text, label ?? ''));
+    item.addEventListener('pointerleave', hideTip);
+    item.addEventListener('focus', () => {
+      const r = item.getBoundingClientRect();
+      showTip({ clientX: r.right - 120, clientY: r.top }, text, label ?? '');
+    });
+    item.addEventListener('blur', hideTip);
+    list.append(item);
+  }
+  target.replaceChildren(list);
+}
+
+const SECTION_ORDER = ['top', 'about', 'projects', 'timeline', 'contact'];
+const SECTION_NAMES = { top: 'Hero (top)', about: 'About', projects: 'Projects', timeline: 'Timeline', contact: 'Contact' };
+
+function renderBars() {
+  const visits = data.totals.visits || 0;
+  const pct = (row) => percent(row.n, visits);
+
+  const seen = Object.fromEntries(data.sections.map((r) => [r.name, r.n]));
+  bars('sections', SECTION_ORDER.map((id) => ({ name: SECTION_NAMES[id], n: seen[id] || 0 })).filter((r, i) => r.n || i === 0), { valueText: pct, total: visits });
+
+  bars('top-clicks', data.topClicks.map((r) => ({ name: r.name || r.href || '(unlabelled)', n: r.n })));
+  const tracked = (kind) => data.tracked.filter((r) => r.kind === kind).map((r) => ({ name: r.name, n: r.n }));
+  bars('projects', tracked('project'));
+  bars('contacts', tracked('contact'));
+  bars('thread-links', tracked('section'));
+  bars('filters', data.filters.map((r) => ({ name: r.name || 'all', n: r.n })));
+  bars('scroll', data.scrollDepth.map((r) => ({ name: `${r.depth}% of the page`, n: r.n })), { valueText: pct, total: visits });
+  bars('frustration', data.frustration.map((r) => ({
+    name: `${r.type === 'rage_click' ? 'Rage' : 'Dead'} · ${r.name || '(unlabelled)'}`,
+    n: r.n,
+    tone: r.type === 'rage_click' ? 'critical' : 'warning',
+  })));
+  bars('referrers', data.referrers);
+  bars('countries', data.countries);
+  bars('devices', data.devices);
+  bars('browsers', data.browsers);
+  bars('pages', data.pages);
+  bars('errors', data.errors.map((r) => ({ name: r.name || '(no message)', n: r.n, tone: 'critical' })));
+}
+
+// ---------- Time charts ----------
+function dayList() {
+  const out = [];
+  const today = new Date();
+  for (let i = Math.min(days, 365) - 1; i >= 0; i--) {
+    const d = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - i));
+    out.push(d.toISOString().slice(0, 10));
+  }
+  return out;
+}
+
+function niceMax(value) {
+  if (value <= 4) return 4;
+  const step = 10 ** Math.floor(Math.log10(value));
+  for (const m of [1, 2, 2.5, 5, 10]) {
+    if (m * step >= value) return m * step;
+  }
+  return 10 * step;
+}
+
+function shortDay(day) {
+  return new Date(`${day}T00:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+}
+
+function timeChart(containerId, key, kind, noun) {
+  const container = $(containerId);
+  const byDay = Object.fromEntries(data.daily.map((r) => [r.day, r[key] || 0]));
+  const dayKeys = days === 1 ? [new Date().toISOString().slice(0, 10)] : dayList();
+  const values = dayKeys.map((d) => byDay[d] || 0);
+  if (!values.some(Boolean)) {
+    container.replaceChildren(el('p', 'empty', 'No data for this period yet.'));
+    return;
+  }
+  const W = Math.max(container.clientWidth, 280);
+  const H = 200;
+  const pad = { l: 36, r: 12, t: 10, b: 24 };
+  const iw = W - pad.l - pad.r;
+  const ih = H - pad.t - pad.b;
+  const max = niceMax(Math.max(...values));
+  const n = values.length;
+  const xAt = (i) => pad.l + (n === 1 ? iw / 2 : (i / (n - 1)) * iw);
+  const yAt = (v) => pad.t + ih - (v / max) * ih;
+  const root = svg('svg', { viewBox: `0 0 ${W} ${H}`, role: 'img', 'aria-label': `${noun} per day` });
+
+  for (let k = 0; k <= 4; k++) {
+    const v = (max / 4) * k;
+    root.append(svg('line', { class: 'gridline', x1: pad.l, x2: W - pad.r, y1: yAt(v), y2: yAt(v) }));
+    const label = svg('text', { class: 'axis', x: pad.l - 6, y: yAt(v) + 4, 'text-anchor': 'end' });
+    label.textContent = fmt.format(v);
+    root.append(label);
+  }
+  const every = Math.max(1, Math.ceil(n / Math.max(2, Math.floor(iw / 70))));
+  dayKeys.forEach((d, i) => {
+    if (i % every === 0 || i === n - 1) {
+      const t = svg('text', { class: 'axis', x: xAt(i), y: H - 6, 'text-anchor': i === 0 ? 'start' : i === n - 1 ? 'end' : 'middle' });
+      t.textContent = shortDay(d);
+      root.append(t);
+    }
+  });
+
+  let marks = [];
+  if (kind === 'line') {
+    const pts = values.map((v, i) => `${xAt(i)},${yAt(v)}`);
+    root.append(svg('path', { class: 'area', d: `M${xAt(0)},${yAt(0)} L${pts.join(' L')} L${xAt(n - 1)},${yAt(0)} Z` }));
+    root.append(svg('path', { class: 'line', d: `M${pts.join(' L')}` }));
+    const last = svg('circle', { class: 'dot', cx: xAt(n - 1), cy: yAt(values[n - 1]), r: 4 });
+    root.append(last);
+  } else {
+    const slot = iw / n;
+    const bw = Math.min(24, Math.max(2, slot - 2));
+    marks = values.map((v, i) => {
+      const h = (v / max) * ih;
+      const x = pad.l + slot * i + (slot - bw) / 2;
+      const y = yAt(v);
+      const r = Math.min(4, bw / 2, h);
+      const d = h <= 0 ? '' : `M${x},${yAt(0)} V${y + r} Q${x},${y} ${x + r},${y} H${x + bw - r} Q${x + bw},${y} ${x + bw},${y + r} V${yAt(0)} Z`;
+      const bar = svg('path', { class: 'col', d });
+      root.append(bar);
+      return bar;
+    });
+  }
+
+  const cross = svg('line', { class: 'cross', y1: pad.t, y2: pad.t + ih, visibility: 'hidden' });
+  const hoverDot = svg('circle', { class: 'dot', r: 4, visibility: 'hidden' });
+  root.append(cross, hoverDot);
+  const hit = svg('rect', { x: pad.l, y: pad.t, width: iw, height: ih, fill: 'transparent', tabindex: 0 });
+  root.append(hit);
+
+  const pick = (clientX) => {
+    const box = root.getBoundingClientRect();
+    const x = ((clientX - box.left) / box.width) * W;
+    return Math.max(0, Math.min(n - 1, kind === 'line' ? Math.round(((x - pad.l) / iw) * (n - 1)) : Math.floor(((x - pad.l) / iw) * n)));
+  };
+  const show = (i, e) => {
+    const cx = kind === 'line' ? xAt(i) : pad.l + (iw / n) * (i + 0.5);
+    cross.setAttribute('x1', cx);
+    cross.setAttribute('x2', cx);
+    cross.setAttribute('visibility', 'visible');
+    if (kind === 'line') {
+      hoverDot.setAttribute('cx', xAt(i));
+      hoverDot.setAttribute('cy', yAt(values[i]));
+      hoverDot.setAttribute('visibility', 'visible');
+    }
+    marks.forEach((m, k) => m.classList.toggle('hover', k === i));
+    showTip(e, fmt.format(values[i]), `${noun} · ${shortDay(dayKeys[i])}`);
+  };
+  const clear = () => {
+    cross.setAttribute('visibility', 'hidden');
+    hoverDot.setAttribute('visibility', 'hidden');
+    marks.forEach((m) => m.classList.remove('hover'));
+    hideTip();
+  };
+  hit.addEventListener('pointermove', (e) => show(pick(e.clientX), e));
+  hit.addEventListener('pointerleave', clear);
+  let focusIndex = n - 1;
+  hit.addEventListener('focus', () => {
+    const r = hit.getBoundingClientRect();
+    show(focusIndex, { clientX: r.right - 140, clientY: r.top });
+  });
+  hit.addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    focusIndex = Math.max(0, Math.min(n - 1, focusIndex + (e.key === 'ArrowRight' ? 1 : -1)));
+    const r = hit.getBoundingClientRect();
+    show(focusIndex, { clientX: r.left + ((xAt(focusIndex) - pad.l) / iw) * r.width, clientY: r.top });
+    e.preventDefault();
+  });
+  hit.addEventListener('blur', clear);
+  container.replaceChildren(root);
+}
+
+// ---------- Heatmap ----------
+const HEAT = {
+  desktop: { width: 1440, test: (vw) => vw >= 900 },
+  mobile: { width: 390, test: (vw) => vw < 900 },
+};
+
+function median(list) {
+  if (!list.length) return 0;
+  const s = [...list].sort((a, b) => a - b);
+  return s[Math.floor(s.length / 2)];
+}
+
+function renderHeatmap() {
+  const mode = HEAT[heatMode];
+  const points = data.heatmap.filter((p) => p.vw && mode.test(p.vw));
+  $('heat-count').textContent = `${fmt.format(points.length)} clicks shown`;
+  const frame = $('heat-frame');
+  const inner = $('heat-inner');
+  const page = $('heat-page');
+  const canvas = $('heat-canvas');
+  // The page height a visitor of this kind saw, scaled to the drawing width.
+  const heights = points.filter((p) => p.doc_h).map((p) => (p.doc_h * mode.width) / Math.max(p.vw, 1));
+  const height = Math.round(median(heights) || (heatMode === 'desktop' ? 3400 : 6000));
+  const scale = Math.min(1, frame.clientWidth / mode.width);
+  inner.style.width = `${mode.width}px`;
+  inner.style.height = `${height}px`;
+  inner.style.transform = `scale(${scale})`;
+  frame.style.height = `${Math.min(height * scale, 900)}px`;
+  frame.style.overflowY = height * scale > 900 ? 'auto' : 'hidden';
+  if (data.site && page.dataset.src !== data.site) {
+    page.dataset.src = data.site;
+    page.src = data.site;
+  }
+  page.width = mode.width;
+  page.height = height;
+  canvas.width = mode.width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const styles = getComputedStyle(document.documentElement);
+  const colours = {
+    click: styles.getPropertyValue('--series').trim(),
+    rage_click: styles.getPropertyValue('--critical').trim(),
+    dead_click: styles.getPropertyValue('--warning').trim(),
+  };
+  for (const p of points) {
+    const x = p.x * mode.width;
+    const y = p.y * height;
+    ctx.globalAlpha = p.type === 'click' ? 0.35 : 0.8;
+    ctx.fillStyle = colours[p.type] || colours.click;
+    ctx.beginPath();
+    ctx.arc(x, y, p.type === 'click' ? 9 : 11, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+
+// ---------- Recent ----------
+const EVENT_NAMES = {
+  pageview: 'Page view', click: 'Click', rage_click: 'Rage click', dead_click: 'Dead click',
+  scroll_depth: 'Scrolled', section_viewed: 'Saw section', timeline_filtered: 'Filtered timeline',
+  page_leave: 'Left page', js_error: 'Error',
+};
+
+function describe(row) {
+  let props = {};
+  try { props = JSON.parse(row.props || '{}'); } catch { /* ignore */ }
+  switch (row.type) {
+    case 'pageview': return props.referrer ? `from ${props.referrer}` : (row.path || '');
+    case 'scroll_depth': return `${props.depth}% of the page`;
+    case 'section_viewed': return SECTION_NAMES[props.section] || props.section || '';
+    case 'timeline_filtered': return `${props.filter} (${props.shown} shown)`;
+    case 'page_leave': return `after ${duration(props.engaged_ms)}`;
+    case 'js_error': return props.message || '';
+    default: return row.name || '';
+  }
+}
+
+function renderRecent() {
+  const body = $('recent').tBodies[0];
+  if (!data.recent.length) {
+    const tr = el('tr');
+    const td = el('td', 'empty', 'No events for this period yet.');
+    td.colSpan = 4;
+    tr.append(td);
+    body.replaceChildren(tr);
+    return;
+  }
+  body.replaceChildren(...data.recent.map((row) => {
+    const tr = el('tr');
+    const when = new Date(row.received_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const kind = el('td');
+    kind.append(el('span', 'tag', EVENT_NAMES[row.type] || row.type));
+    tr.append(
+      el('td', 'when', when),
+      kind,
+      el('td', 'what', describe(row)),
+      el('td', '', [row.country, row.device, row.browser].filter(Boolean).join(' · ')),
+    );
+    return tr;
+  }));
+}
+
+// ---------- Loading ----------
+function render() {
+  $('site').textContent = data.site ? new URL(data.site).host + new URL(data.site).pathname : '';
+  renderTiles();
+  timeChart('visits-chart', 'visits', 'line', 'Visits');
+  timeChart('clicks-chart', 'clicks', 'columns', 'Clicks');
+  renderBars();
+  renderHeatmap();
+  renderRecent();
+}
+
+async function load() {
+  $('main').classList.add('loading');
+  $('status').textContent = 'Loading…';
+  try {
+    const response = await fetch(`api/stats?days=${days}`, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    data = await response.json();
+    render();
+    $('status').textContent = `Updated ${new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+  } catch (error) {
+    $('status').textContent = `Could not load: ${error.message}`;
+  } finally {
+    $('main').classList.remove('loading');
+  }
+}
+
+for (const button of document.querySelectorAll('[data-days]')) {
+  button.addEventListener('click', () => {
+    days = Number(button.dataset.days);
+    for (const b of document.querySelectorAll('[data-days]')) b.setAttribute('aria-pressed', String(b === button));
+    load();
+  });
+}
+for (const button of document.querySelectorAll('[data-heat]')) {
+  button.addEventListener('click', () => {
+    heatMode = button.dataset.heat;
+    for (const b of document.querySelectorAll('[data-heat]')) b.setAttribute('aria-pressed', String(b === button));
+    if (data) renderHeatmap();
+  });
+}
+let resizeTimer;
+addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => data && render(), 150);
+});
+load();
+setInterval(load, 60000);
+</script>
+</body>
+</html>

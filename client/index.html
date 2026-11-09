@@ -84,7 +84,7 @@
                     <p class="label-section" id="thread-nav-title">On this thread</p>
                     <ol class="thread thread--nav">
                         <li class="thread__item thread__item--above" style="--col: 1">
-                            <a class="event-card" href="#about">
+                            <a class="event-card" data-track-section="about" href="#about">
                                 <span class="event-card__date">01</span>
                                 <span class="event-card__title">About me</span>
                                 <span class="event-card__type">Who I am and how I got here<span aria-hidden="true">  →</span></span>
@@ -93,7 +93,7 @@
                             <span class="thread__dot" aria-hidden="true"></span>
                         </li>
                         <li class="thread__item thread__item--below" style="--col: 2">
-                            <a class="event-card" href="#projects">
+                            <a class="event-card" data-track-section="projects" href="#projects">
                                 <span class="event-card__date">02</span>
                                 <span class="event-card__title">Projects</span>
                                 <span class="event-card__type">Three things I have built<span aria-hidden="true">  →</span></span>
@@ -102,7 +102,7 @@
                             <span class="thread__dot" aria-hidden="true"></span>
                         </li>
                         <li class="thread__item thread__item--above" style="--col: 3">
-                            <a class="event-card" href="#timeline">
+                            <a class="event-card" data-track-section="timeline" href="#timeline">
                                 <span class="event-card__date">03</span>
                                 <span class="event-card__title">Timeline</span>
                                 <span class="event-card__type">The thread so far<span aria-hidden="true">  →</span></span>
@@ -111,7 +111,7 @@
                             <span class="thread__dot" aria-hidden="true"></span>
                         </li>
                         <li class="thread__item thread__item--below" style="--col: 4">
-                            <a class="event-card" href="#contact">
+                            <a class="event-card" data-track-section="contact" href="#contact">
                                 <span class="event-card__date">04</span>
                                 <span class="event-card__title">Contact</span>
                                 <span class="event-card__type">Let’s talk<span aria-hidden="true">  →</span></span>
@@ -176,7 +176,7 @@
                 </div>
 
                 <div class="project-grid">
-                    <a class="project-card" href="https://github.com/nutritiousblueberrymuffins/retriever-rush" target="_blank" rel="noopener">
+                    <a class="project-card" data-track-project="retriever-rush" href="https://github.com/nutritiousblueberrymuffins/retriever-rush" target="_blank" rel="noopener">
                         <p class="project-card__eyebrow">01  ·  Prototype</p>
                         <h3 class="project-card__title">Retriever Rush</h3>
                         <p class="project-card__description">A campus food, grocery and supplies storefront prototype: a design-token system, a documented design-system page, and product pages built from a JSON catalogue.</p>
@@ -184,7 +184,7 @@
                         <p class="project-card__link">Open on GitHub<span aria-hidden="true">  →</span></p>
                     </a>
 
-                    <a class="project-card" href="https://github.com/nutritiousblueberrymuffins/personal-website" target="_blank" rel="noopener">
+                    <a class="project-card" data-track-project="this-website" href="https://github.com/nutritiousblueberrymuffins/personal-website" target="_blank" rel="noopener">
                         <p class="project-card__eyebrow">02  ·  Portfolio</p>
                         <h3 class="project-card__title">This website</h3>
                         <p class="project-card__description">A Vite front end deployed to GitHub Pages by GitHub Actions, with a drifting dot-grid background and a data-driven timeline.</p>
@@ -192,7 +192,7 @@
                         <p class="project-card__link">Open on GitHub<span aria-hidden="true">  →</span></p>
                     </a>
 
-                    <a class="project-card" href="https://github.com/nutritiousblueberrymuffins/excalidraw-practice---codebase-navigation" target="_blank" rel="noopener">
+                    <a class="project-card" data-track-project="inside-a-large-codebase" href="https://github.com/nutritiousblueberrymuffins/excalidraw-practice---codebase-navigation" target="_blank" rel="noopener">
                         <p class="project-card__eyebrow">03  ·  Open source</p>
                         <h3 class="project-card__title">Inside a large codebase</h3>
                         <p class="project-card__description">Working in the Obsidian Excalidraw plugin, a large TypeScript project: reading unfamiliar code, implementing features and opening pull requests.</p>
@@ -241,28 +241,28 @@
 
                 <ul class="contact-grid">
                     <li>
-                        <a class="contact-card" href="mailto:tony123dragon@gmail.com">
+                        <a class="contact-card" data-track-contact="email" href="mailto:tony123dragon@gmail.com">
                             <img src="/assets/icons/mail.svg" alt="" width="20" height="20">
                             <span class="label-section">Email</span>
                             <span class="contact-card__value">tony123dragon@gmail.com</span>
                         </a>
                     </li>
                     <li hidden>
-                        <a class="contact-card" href="https://www.linkedin.com/in/" target="_blank" rel="noopener">
+                        <a class="contact-card" data-track-contact="linkedin" href="https://www.linkedin.com/in/" target="_blank" rel="noopener">
                             <img src="/assets/icons/linkedin.svg" alt="" width="20" height="20">
                             <span class="label-section">LinkedIn</span>
                             <span class="contact-card__value">linkedin.com/in/</span>
                         </a>
                     </li>
                     <li>
-                        <a class="contact-card" href="https://github.com/nutritiousblueberrymuffins" target="_blank" rel="noopener">
+                        <a class="contact-card" data-track-contact="github" href="https://github.com/nutritiousblueberrymuffins" target="_blank" rel="noopener">
                             <img src="/assets/icons/github.svg" alt="" width="20" height="20">
                             <span class="label-section">GitHub</span>
                             <span class="contact-card__value">nutritiousblueberrymuffins</span>
                         </a>
                     </li>
                     <li hidden>
-                        <a class="contact-card" href="tel:">
+                        <a class="contact-card" data-track-contact="phone" href="tel:">
                             <img src="/assets/icons/phone.svg" alt="" width="20" height="20">
                             <span class="label-section">Phone</span>
                             <span class="contact-card__value"></span>

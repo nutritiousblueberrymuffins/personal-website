@@ -5,6 +5,7 @@
 // unfinished items off the live site. The type filters update ?type= in the address so a
 // filtered view can be shared.
 import data from '../data/timeline.json';
+import { track } from './analytics.js';
 
 const TYPES = [
   ['work', 'Work'],
@@ -138,7 +139,10 @@ function buildFilters() {
   for (const button of filters.querySelectorAll('button')) {
     const type = button.dataset.type;
     button.querySelector('.chip__count').textContent = String(type ? counts[type] ?? 0 : entries.length);
-    button.addEventListener('click', () => setFilter(type));
+    button.addEventListener('click', () => {
+      setFilter(type);
+      track('timeline_filtered', { filter: type || 'all', shown: thread.children.length });
+    });
   }
 }
 

@@ -1,0 +1,17 @@
+{
+  "name": "personal-website-analytics",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Worker that collects the website's interaction events and serves the analytics dashboard",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init:local": "wrangler d1 execute personal-website-analytics --local --file=schema.sql",
+    "db:init": "wrangler d1 execute personal-website-analytics --remote --file=schema.sql",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "wrangler": "^4.159.0"
+  }
+}

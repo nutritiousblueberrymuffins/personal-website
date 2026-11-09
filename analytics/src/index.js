@@ -33,19 +33,28 @@ function corsHeaders(origin) {
   };
 }
 
+// One log line per collect request: what happened and why, never the payload. Visible in the
+// Cloudflare dashboard under the Worker's Logs (observability is on in wrangler.toml).
+function logCollect(outcome, details = {}) {
+  console.log(JSON.stringify({ route: 'collect', outcome, ...details }));
+}
+
 async function collect(request, env) {
   const origin = request.headers.get('Origin') || '';
   if (!allowedOrigins(env).includes(origin)) {
+    logCollect('rejected', { reason: 'origin', origin: origin.slice(0, 100) || '(none)' });
     return new Response('origin not allowed', { status: 403 });
   }
   const headers = corsHeaders(origin);
   const userAgent = request.headers.get('User-Agent') || '';
   // Bots and headless browsers are answered but not stored (ALLOW_HEADLESS is for local tests).
   if (isBot(userAgent) && env.ALLOW_HEADLESS !== 'true') {
+    logCollect('skipped', { reason: 'bot', userAgent: userAgent.slice(0, 160) });
     return new Response(null, { status: 204, headers });
   }
   const length = Number(request.headers.get('Content-Length') || 0);
   if (length > MAX_BODY_BYTES) {
+    logCollect('rejected', { reason: 'too large', bytes: length });
     return new Response('too large', { status: 413, headers });
   }
   const body = await request.text();
@@ -56,6 +65,7 @@ async function collect(request, env) {
   try {
     batch = JSON.parse(body);
   } catch {
+    logCollect('rejected', { reason: 'bad json', bytes: body.length });
     return new Response('bad json', { status: 400, headers });
   }
   const { rows, error } = toRows(batch, {
@@ -64,6 +74,7 @@ async function collect(request, env) {
     country: request.cf?.country,
   });
   if (error) {
+    logCollect('rejected', { reason: error });
     return new Response(error, { status: 400, headers });
   }
   const statement = env.DB.prepare(INSERT);
@@ -75,6 +86,7 @@ async function collect(request, env) {
       ),
     ),
   );
+  logCollect('stored', { events: rows.length, types: [...new Set(rows.map((r) => r.type))] });
   return new Response(null, { status: 204, headers });
 }
 

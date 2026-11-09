@@ -1070,3 +1070,107 @@ button.event-card[aria-current="true"] {
         text-align: left;
     }
 }
+
+/* ---------- Section guide ----------
+   Fixed on the right edge on wide screens (section-flow.js builds it): a thin vertical thread
+   with a dot per section. The navy part of the thread fills to the current section; the current
+   dot is navy and larger. Names show on hover or focus, and briefly when a section is reached. */
+.section-guide {
+    display: none;
+}
+
+@media (min-width: 1280px) {
+    .section-guide {
+        display: block;
+        position: fixed;
+        top: 50%;
+        right: clamp(1rem, 2vw, 2rem);
+        z-index: 40;
+        transform: translateY(-50%);
+    }
+}
+
+.section-guide ol {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* The thread, and its navy fill up to the current section. */
+.section-guide ol::before,
+.section-guide ol::after {
+    content: "";
+    position: absolute;
+    top: 0.75rem;
+    bottom: 0.75rem;
+    right: calc(0.75rem - 1px);
+    width: 2px;
+    background: var(--color-axis);
+    border-radius: 1px;
+}
+
+.section-guide ol::after {
+    background: var(--color-brand);
+    transform: scaleY(var(--progress, 0));
+    transform-origin: center top;
+    transition: transform 600ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+.section-guide a {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: 1.5rem;
+    color: var(--color-ink);
+}
+
+.section-guide__dot {
+    position: relative;
+    z-index: 1;
+    flex: none;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-right: 0.375rem;
+    border: 2px solid var(--color-axis);
+    border-radius: 50%;
+    background: var(--color-surface);
+    transition: transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), background-color 200ms ease, border-color 200ms ease;
+}
+
+.section-guide a:hover .section-guide__dot {
+    border-color: var(--color-brand);
+}
+
+.section-guide a[aria-current="true"] .section-guide__dot {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+    transform: scale(1.35);
+}
+
+.section-guide__name {
+    padding: 0.125rem 0.625rem;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.125rem;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateX(0.375rem);
+    transition: opacity 220ms ease, transform 220ms ease;
+    pointer-events: none;
+}
+
+.section-guide:hover .section-guide__name,
+.section-guide a:focus-visible .section-guide__name,
+.section-guide.is-announcing a[aria-current="true"] .section-guide__name {
+    opacity: 1;
+    transform: none;
+}

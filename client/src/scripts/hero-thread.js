@@ -43,9 +43,8 @@ if (marquee && track) {
     for (const item of [...track.children].slice(setSize)) {
       item.remove();
     }
-    const first = track.children[0].getBoundingClientRect();
-    const second = track.children[1].getBoundingClientRect();
-    pitch = second.left - first.left;
+    // Layout positions, unaffected by the hero's scale as it scrolls away.
+    pitch = track.children[1].offsetLeft - track.children[0].offsetLeft;
     period = pitch * setSize;
     const sets = Math.max(2, Math.ceil(marquee.clientWidth / period) + 1);
     for (let copy = 1; copy < sets; copy++) {

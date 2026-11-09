@@ -177,6 +177,8 @@
     <section class="card"><h2>Contact methods</h2><p class="sub">Clicks on each contact card</p><div id="contacts"></div></section>
     <section class="card"><h2>"On this thread" links</h2><p class="sub">Which hero cards visitors follow</p><div id="thread-links"></div></section>
     <section class="card"><h2>Timeline filters</h2><p class="sub">Which entry types visitors filter by</p><div id="filters"></div></section>
+    <section class="card"><h2>Timeline entries viewed</h2><p class="sub">Entries visitors moved to with the arrows, a drag, a swipe or a click</p><div id="timeline-entries"></div></section>
+    <section class="card"><h2>How visitors move through the timeline</h2><p class="sub">Each step from one entry to another</p><div id="timeline-via"></div></section>
     <section class="card"><h2>Scroll depth</h2><p class="sub">Share of visits that scrolled at least this far</p><div id="scroll"></div></section>
     <section class="card"><h2>Frustration</h2><p class="sub">Rage clicks (3+ fast clicks in one spot) and dead clicks (something looked clickable but nothing happened)</p><div id="frustration"></div></section>
     <section class="card"><h2>Where visitors come from</h2><p class="sub">Referring site</p><div id="referrers"></div></section>
@@ -343,6 +345,9 @@ function renderBars() {
   bars('contacts', tracked('contact'));
   bars('thread-links', tracked('section'));
   bars('filters', data.filters.map((r) => ({ name: r.name || 'all', n: r.n })));
+  bars('timeline-entries', data.timelineEntries.map((r) => ({ name: r.name || '(unknown)', n: r.n })));
+  const VIA = { arrow: 'Back / forward arrows', drag: 'Dragging with a mouse', swipe: 'Swiping or scrolling', card: 'Clicking a card', key: 'Arrow keys' };
+  bars('timeline-via', data.timelineVia.map((r) => ({ name: VIA[r.name] || r.name || '(unknown)', n: r.n })));
   bars('scroll', data.scrollDepth.map((r) => ({ name: `${r.depth}% of the page`, n: r.n })), { valueText: pct, total: visits });
   bars('frustration', data.frustration.map((r) => ({
     name: `${r.type === 'rage_click' ? 'Rage' : 'Dead'} · ${r.name || '(unlabelled)'}`,
@@ -548,7 +553,7 @@ function renderHeatmap() {
 const EVENT_NAMES = {
   pageview: 'Page view', click: 'Click', rage_click: 'Rage click', dead_click: 'Dead click',
   scroll_depth: 'Scrolled', section_viewed: 'Saw section', timeline_filtered: 'Filtered timeline',
-  page_leave: 'Left page', js_error: 'Error',
+  page_leave: 'Left page', js_error: 'Error', timeline_navigated: 'Moved in timeline',
 };
 
 function describe(row) {
@@ -559,6 +564,7 @@ function describe(row) {
     case 'scroll_depth': return `${props.depth}% of the page`;
     case 'section_viewed': return SECTION_NAMES[props.section] || props.section || '';
     case 'timeline_filtered': return `${props.filter} (${props.shown} shown)`;
+    case 'timeline_navigated': return `${props.entry} (${props.via})`;
     case 'page_leave': return `after ${duration(props.engaged_ms)}`;
     case 'js_error': return props.message || '';
     default: return row.name || '';

@@ -64,6 +64,14 @@ const QUERIES = {
     SELECT json_extract(props, '$.filter') AS name, COUNT(*) AS n
     FROM events WHERE type = 'timeline_filtered' AND received_at >= ?1
     GROUP BY name ORDER BY n DESC`,
+  timelineEntries: `
+    SELECT json_extract(props, '$.entry') AS name, COUNT(*) AS n
+    FROM events WHERE type = 'timeline_navigated' AND received_at >= ?1
+    GROUP BY name ORDER BY n DESC LIMIT 12`,
+  timelineVia: `
+    SELECT json_extract(props, '$.via') AS name, COUNT(*) AS n
+    FROM events WHERE type = 'timeline_navigated' AND received_at >= ?1
+    GROUP BY name ORDER BY n DESC`,
   frustration: `
     SELECT type, COALESCE(label, target) AS name, COUNT(*) AS n
     FROM events WHERE type IN ('rage_click', 'dead_click') AND received_at >= ?1

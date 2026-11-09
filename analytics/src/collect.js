@@ -10,6 +10,7 @@ export const EVENT_TYPES = new Set([
   'scroll_depth',
   'section_viewed',
   'timeline_filtered',
+  'timeline_navigated',
   'page_leave',
   'js_error',
 ]);

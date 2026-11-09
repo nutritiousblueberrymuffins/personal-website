@@ -70,7 +70,10 @@ npm run preview
   full date (`2026-10-09`) also prints the day on the line, a year or month prints the year. An
   entry with `"draft": true` shows in local development only, never on the live site, so samples
   and unfinished items can stay in the file. Filters can be linked to directly, for example
-  `/?type=work#timeline`; old `/timeline/` links forward there.
+  `/?type=work#timeline`; old `/timeline/` links forward there. Visitors move through the timeline with the
+  back / forward arrows, the arrow keys, by clicking a card, or by dragging (mouse) or swiping
+  (touch) the thread; the selected entry's date range, organisation, summary and links show in a
+  panel under it, so `org`, `summary` and `links` are worth filling in.
 - **Projects and contact details:** the project cards, the email link and the GitHub links are plain
   markup in `client/index.html`.
 - **Sharing image and touch icon:** `docs/sharing-image/og.html` and `icon.html` are the sources

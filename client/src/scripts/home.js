@@ -2,3 +2,5 @@
 import './timeline.js';
 // The hero's drifting "On this thread" strip.
 import './hero-thread.js';
+// Section guide on the right edge and chapter markers as each section is reached.
+import './section-flow.js';

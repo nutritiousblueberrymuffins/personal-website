@@ -193,15 +193,16 @@ function renderDetail(entry, index) {
 
 // ---------- Moving the track ----------
 
+// Layout positions (offsetLeft), not on-screen ones: the section scales slightly while it eases
+// into view, and on-screen measurements taken then would be too small.
 function measure() {
   const list = items();
   if (!list.length) {
     return;
   }
-  const trackLeft = thread.getBoundingClientRect().left;
-  const a = list[0].getBoundingClientRect();
-  firstCentre = a.left - trackLeft + a.width / 2;
-  pitch = list.length > 1 ? list[1].getBoundingClientRect().left - a.left : a.width;
+  const a = list[0];
+  firstCentre = a.offsetLeft - thread.offsetLeft + a.offsetWidth / 2;
+  pitch = list.length > 1 ? list[1].offsetLeft - a.offsetLeft : a.offsetWidth;
 }
 
 function place(position, duration = 0) {

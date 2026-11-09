@@ -119,6 +119,13 @@ about two cards), clicking a card still jumps to its section, and tabbing to a c
 drift and brings the card into view. It pauses while off-screen, and stands still for visitors
 who prefer reduced motion (dragging still works).
 
+Moving between sections reads as chapters (`client/src/scripts/section-flow.js` and the end of
+`motion.css`): the page settles at a section's start when you stop scrolling near it, each
+section rises into focus over its first 360 px on screen and dims as it leaves the top, the
+label of the section you reach gets a navy line drawn under it, and on wide screens (1280 px
+and up) a section guide on the right edge shows where you are, with a dot per section to jump
+to. Under reduced motion only the guide remains.
+
 `client/src/styles/motion.css` and `client/src/scripts/motion.js` add the page's movement:
 headings, cards and panels rise in as they scroll into view, the hero and timeline threads draw
 their line and pop their dots, project and contact cards and the photo tilt toward the cursor

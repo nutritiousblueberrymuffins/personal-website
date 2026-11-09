@@ -18,30 +18,38 @@
     --color-canvas: #fafbfd;
     --color-axis: #9daec4;
 
-    --space-xs: 8px;
-    --space-sm: 12px;
-    --space-md: 16px;
-    --space-lg: 24px;
+    --space-xs: 0.5rem;
+    --space-sm: 0.75rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
 
-    --radius-button: 8px;
-    --radius-card: 10px;
+    --radius-button: 0.5rem;
+    --radius-card: 0.625rem;
     --radius-pill: 999px;
 
-    --content-width: 1200px;
+    --content-width: 75rem;
     --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 
     /* Fluid layout: these scale smoothly with the window between a phone and the 1440 px
        Figma frame, so the page shrinks and grows as it is resized instead of jumping at
-       breakpoints. Each clamp() reaches its Figma value at 1440 px wide. */
-    --gutter: clamp(20px, 5vw, 120px);
-    --band-space: clamp(48px, 5.6vw, 80px);
+       breakpoints. Each clamp() reaches its Figma value at 1440 px wide; above that the rem
+       values grow with the root size (see html below). */
+    --gutter: clamp(1.25rem, 5vw, 7.5rem);
+    --band-space: clamp(3rem, 5.6vw, 5rem);
 }
 
 * {
     box-sizing: border-box;
 }
 
+/* Scaling up past the design width. Sizes are in rem (1rem = 16 px in the 1440 px Figma frame),
+   so the root size scales the whole page. Up to 1440 px wide it is the browser's own text size
+   (100%, normally 16 px). Wider than that it grows with the window (1.1111vw is 16 px at
+   1440 px), so the layout keeps the proportions of the Figma frame on big monitors and when
+   the browser is zoomed out, instead of sitting in a 1200 px column with wide empty margins.
+   It stops growing at 2560 px wide (28.44 px). */
 html {
+    font-size: clamp(100%, 1.1111vw, 177.78%);
     scroll-behavior: smooth;
     /* Stops phones enlarging the text on their own when turned sideways. */
     -webkit-text-size-adjust: 100%;
@@ -55,8 +63,8 @@ body {
     margin: 0;
     color: var(--color-ink);
     font-family: var(--font-sans);
-    font-size: 14px;
-    line-height: 20px;
+    font-size: 0.875rem;
+    line-height: 1.25rem;
     -webkit-font-smoothing: antialiased;
 }
 
@@ -82,9 +90,9 @@ a {
 /* Label/Section: Inter Bold 10 / 12, +8%, uppercase */
 .label-section {
     color: var(--color-muted);
-    font-size: 10px;
+    font-size: 0.625rem;
     font-weight: 700;
-    line-height: 12px;
+    line-height: 0.75rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -92,7 +100,7 @@ a {
 /* Display/Hero: Inter Bold 44 / 52, -1%. Scales down to 32 px on phones. */
 .display-hero {
     color: var(--color-ink);
-    font-size: clamp(32px, 14px + 2.1vw, 44px);
+    font-size: clamp(2rem, 0.875rem + 2.1vw, 2.75rem);
     font-weight: 700;
     line-height: 1.18;
     letter-spacing: -0.01em;
@@ -101,7 +109,7 @@ a {
 /* Heading/Section: Inter Bold 30 / 38, -0.5%. Scales down to 24 px on phones. */
 .heading-section {
     color: var(--color-ink);
-    font-size: clamp(24px, 17px + 0.9vw, 30px);
+    font-size: clamp(1.5rem, 1.0625rem + 0.9vw, 1.875rem);
     font-weight: 700;
     line-height: 1.27;
     letter-spacing: -0.005em;
@@ -110,9 +118,9 @@ a {
 /* Body/Large: Inter Regular 16 / 24 */
 .body-large {
     color: var(--color-muted);
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 400;
-    line-height: 24px;
+    line-height: 1.5rem;
 }
 
 /* ---------- Focus and skip link ---------- */
@@ -121,7 +129,7 @@ a {
 a:focus-visible,
 button:focus-visible {
     outline: 2px solid var(--color-brand);
-    outline-offset: 3px;
+    outline-offset: 0.1875rem;
 }
 
 /* Keyboard users can jump past the navigation. Hidden until it receives focus. */
@@ -130,7 +138,7 @@ button:focus-visible {
     top: 0;
     left: 0;
     z-index: 100;
-    padding: 12px 16px;
+    padding: 0.75rem 1rem;
     color: var(--color-on-brand);
     background: var(--color-brand);
     font-weight: 600;

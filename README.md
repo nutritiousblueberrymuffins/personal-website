@@ -98,7 +98,10 @@ stands still for visitors who ask for reduced motion.
 
 The layout is fluid: gutters, section spacing, headings, the photo and the gaps between cards
 scale with the window (via `clamp()` in `designtoken.css` and `site.css`), reaching the Figma
-sizes at 1440 px. The project grid fits as many 300 px columns as there is room for. Below 900 px
+sizes at 1440 px. Above 1440 px the whole page scales up with the window, like zooming the
+Figma frame: sizes are in `rem`, and the root size grows from 16 px at 1440 px to 28.44 px at
+2560 px, so big monitors and a zoomed-out browser keep the design's proportions instead of a
+narrow column with wide margins. Hairline borders and the 2 px thread line stay in pixels. The project grid fits as many 300 px columns as there is room for. Below 900 px
 the thread turns vertical and the photo and about panel move under their text; below 640 px the
 header stacks. Checked from 320 to 1920 px in 10 px steps and on iPhone, Pixel and iPad
 emulation: no sideways scrolling and nothing cut off.

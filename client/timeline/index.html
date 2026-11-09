@@ -4,71 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="color-scheme" content="light">
-    <meta name="description" content="Timeline of Tony's work, education, certifications and projects.">
-    <title>Timeline | Tony</title>
-    <link rel="canonical" href="https://nutritiousblueberrymuffins.github.io/personal-website/timeline/">
-    <meta name="theme-color" content="#ffead1">
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Timeline | Tony">
-    <meta property="og:description" content="Timeline of Tony's work, education, certifications and projects.">
-    <meta property="og:url" content="https://nutritiousblueberrymuffins.github.io/personal-website/timeline/">
-    <meta property="og:image" content="https://nutritiousblueberrymuffins.github.io/personal-website/og-image.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Tony, CPA and aspiring software engineer">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="stylesheet" href="../src/styles/designtoken.css">
-    <link rel="stylesheet" href="../src/styles/animations.css">
-    <link rel="stylesheet" href="../src/styles/site.css">
-    <link rel="stylesheet" href="../src/styles/timeline.css">
+    <meta name="robots" content="noindex">
+    <title>Timeline | Tony Nguyen</title>
+    <!-- The timeline moved onto the home page. This page forwards old links there, keeping a
+         ?type= filter (for example /timeline/?type=work). -->
+    <link rel="canonical" href="https://nutritiousblueberrymuffins.github.io/personal-website/#timeline">
+    <meta http-equiv="refresh" content="0; url=../#timeline">
+    <script>
+        window.location.replace(`../${window.location.search}#timeline`);
+    </script>
 </head>
 
 <body>
-    <a class="skip-link" href="#main">Skip to content</a>
-
-    <header class="site-header">
-        <nav class="navigation" aria-label="Primary navigation">
-            <a class="logo" href="../">nutritiousblueberrymuffins</a>
-
-            <ul class="nav-links">
-                <li><a href="../#about">About</a></li>
-                <li><a href="../#projects">Projects</a></li>
-                <li><a class="active" href="./" aria-current="page">Timeline</a></li>
-                <li><a href="../#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main id="main" tabindex="-1">
-        <section class="timeline-section" aria-labelledby="timeline-title">
-            <div class="section-heading">
-                <h1 id="timeline-title">Timeline</h1>
-                <p>Work, education, certifications and projects, newest first.</p>
-            </div>
-
-            <!-- One chip per entry type. timeline.js fills in the counts and handles the clicks; the chips
-                 are in the HTML so the page does not jump when the script runs. -->
-            <div class="timeline-filters" id="timeline-filters" role="group" aria-label="Filter by type">
-                <button type="button" data-type="" aria-pressed="true">All <span></span></button>
-                <button type="button" data-type="work" aria-pressed="false">Work <span></span></button>
-                <button type="button" data-type="education" aria-pressed="false">Education <span></span></button>
-                <button type="button" data-type="certification" aria-pressed="false">Certification <span></span></button>
-                <button type="button" data-type="project" aria-pressed="false">Project <span></span></button>
-                <button type="button" data-type="milestone" aria-pressed="false">Milestone <span></span></button>
-            </div>
-
-            <p class="timeline-status" id="timeline-status" role="status" aria-live="polite"></p>
-
-            <!-- Filled by timeline.js: year groups of entries from src/data/timeline.json. -->
-            <div class="timeline" id="timeline"></div>
-        </section>
-    </main>
-
-    <script type="module" src="../src/scripts/main.js"></script>
-    <script type="module" src="../src/scripts/timeline.js"></script>
+    <p>The timeline is now on the <a href="../#timeline">home page</a>.</p>
 </body>
 
 </html>

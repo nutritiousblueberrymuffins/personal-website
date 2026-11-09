@@ -11,16 +11,14 @@ Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
 | Path | What it is |
 |------|------------|
 | `client/` | The site: a Vite project with plain HTML, CSS and JavaScript |
-| `client/index.html` | Home page: hero, projects grid, contact |
-| `client/timeline/index.html` | Timeline page: year groups, type filters, reveal on scroll |
+| `client/index.html` | The one-page site: hero with the thread links, about, projects, timeline, contact |
+| `client/timeline/index.html` | Forwards old `/timeline/` links to the home page's timeline, keeping any filter |
 | `client/404.html` | Not-found page, served by GitHub Pages for unknown URLs |
 | `client/src/data/timeline.json` | The timeline entries. Edit this file to change the timeline |
 | `client/src/data/timeline.schema.json` | What an entry may contain; editors use it to validate `timeline.json` |
-| `client/src/data/tracks.json` | The music player's track list and credits |
-| `client/src/styles/` | Design tokens (cream `#ffead1`, red `#ff0808`, Outfit font), animations, page and hero styles |
-| `client/src/scripts/` | Page scripts: the hero's music player, portrait slides and animation showcase, and the timeline page |
-| `client/public/` | Files served as they are: icons, the vinyl graphic, placeholder portraits, audio, `sitemap.xml` |
-| `client/public/music/` | The audio files: three tracks by Kevin MacLeod, licensed CC BY 4.0 |
+| `client/src/styles/` | Threadline design tokens (navy `#273b70` on white, Inter font), page and component styles, motion preferences |
+| `client/src/scripts/` | `main.js` (font, shared links) and `timeline.js` (renders and filters the timeline) |
+| `client/public/` | Files served as they are: the icons from Figma, the favicon, `sitemap.xml` |
 | `client/public/og-image.png` | The 1200 x 630 preview image that chat apps and social sites show for links to the site |
 | `docs/sharing-image/` | The HTML the preview image and the touch icon are rendered from |
 | `.github/workflows/deploy-pages.yml` | Builds the client and publishes `client/dist` to GitHub Pages |
@@ -42,8 +40,7 @@ npm run dev
 
 | URL | What you get |
 |-----|--------------|
-| http://localhost:5173/ | Home page |
-| http://localhost:5173/timeline/ | Timeline page |
+| http://localhost:5173/ | The site; in development the timeline also shows the draft sample entries |
 
 Build the site into `client/dist`:
 
@@ -59,30 +56,44 @@ npm run preview
 
 ## Swapping in your own content
 
-- **Portraits:** put photos in `client/public/assets/portraits/` and point the three `<img>` tags
-  of the portrait carousel in `client/index.html` at them. Any size works; they are cropped to
-  the frame. Around 1100 px wide as JPEG or WebP keeps the page fast, and the `alt` text should
-  say what the photo shows.
-- **Sharing image and touch icon:** `docs/sharing-image/og.html` and `icon.html` are the sources.
-  After changing the name or tagline, re-render them with Chrome and copy the results over
-  `client/public/og-image.png` and `client/public/apple-touch-icon.png`:
+- **Photo:** put the photo in `client/public/assets/` and add
+  `<img src="/assets/your-photo.jpg" alt="Tony Nguyen">` as the first child of the hero's
+  `.photo` frame in `client/index.html`. It is cropped to fill the 400 x 480 frame, under the name
+  tag. Around 800 px wide as JPEG or WebP keeps the page fast.
+- **Resume:** put `resume.pdf` in `client/public/` and remove `hidden` from the header's
+  "Resume" link and the hero's "Download resume" button in `client/index.html`.
+- **LinkedIn and phone:** the links are already in `client/index.html` (hero links and contact
+  cards) but hidden. Fill in the URL or `tel:` number and the shown value, then remove `hidden`.
+- **Timeline:** edit `client/src/data/timeline.json`. Each entry has a type (work, education,
+  certification, project or milestone), a start date and optionally an end date;
+  `timeline.schema.json` spells out the rules. The cards show the date, title and type; a
+  full date (`2026-10-09`) also prints the day on the line, a year or month prints the year. An
+  entry with `"draft": true` shows in local development only, never on the live site, so samples
+  and unfinished items can stay in the file. Filters can be linked to directly, for example
+  `/?type=work#timeline`; old `/timeline/` links forward there.
+- **Projects and contact details:** the project cards, the email link and the GitHub links are plain
+  markup in `client/index.html`.
+- **Sharing image and touch icon:** `docs/sharing-image/og.html` and `icon.html` are the sources
+  of `client/public/og-image.png` and `apple-touch-icon.png`. They still show the previous cream
+  and red design and need redrawing in the Threadline style; then re-render them with Chrome:
 
   ```bash
   "C:\Program Files\Google\Chrome\Application\chrome.exe" --headless=new --allow-file-access-from-files --force-device-scale-factor=1 --hide-scrollbars --virtual-time-budget=8000 --window-size=1200,630 --screenshot=client\public\og-image.png docs\sharing-image\og.html
   ```
-- **Music:** add files to `client/public/music/` and describe them in `client/src/data/tracks.json`.
-  Keep the artist and license fields accurate: the player prints them as the credit, which the
-  current CC BY 4.0 tracks require.
-- **Timeline:** edit `client/src/data/timeline.json`. Each entry has a type (work, education,
-  certification, project or milestone), a start date and optionally an end date, a summary, tags
-  and links; `timeline.schema.json` spells out the rules. An entry with `"draft": true` shows in
-  local development only, never on the live site, so samples and unfinished items can stay in the
-  file. Filters can be linked to directly, for example `/timeline/?type=work`.
-- **Projects and contact details:** the project cards, the email link and the GitHub links are plain
-  markup in `client/index.html`.
-- **Resume:** put `resume.pdf` in `client/public/` and add a link such as
-  `<a class="resume-button" href="/resume.pdf">Resume</a>` under the hero's social links in
-  `client/index.html`; the button style already exists in `site.css`.
+
+## The design
+
+The site follows the Figma file "Tony — Personal website (Threadline style)": navy on white, Inter
+throughout, hairline borders, 10 px cards, and one thread line that everything hangs on.
+`client/src/styles/designtoken.css` holds the colours, spacing and text styles under the Figma
+names; `site.css` builds the components (event, project and contact cards, buttons, filter chips,
+the thread) and the page. One difference from Figma: secondary text uses `#687482` instead of
+`#74808e`, which is too light on white for WCAG AA at caption sizes.
+
+Behind every page a dot grid drifts slowly to the right (224 px every 30 s, constant speed) and
+fades between 60% and 30%, matching the Figma prototype. It is one fixed layer animated with
+`transform` and `opacity` only, so it stays smooth, and it stands still for visitors who ask for
+reduced motion.
 
 ## How deploys work
 
@@ -95,7 +106,8 @@ GitHub Pages serves a project site under `/personal-website/`. The workflow pass
 the build as `BASE_PATH`, so asset and page links come out right. Renaming the repo to
 `nutritiousblueberrymuffins.github.io` (which gives a root URL) or adding a custom domain needs no
 change to the build; only the absolute URLs need updating: the canonical, `og:url` and `og:image`
-tags in the two pages' `<head>`, `client/public/sitemap.xml`, and the address printed on the
+tags in `client/index.html`, the canonical in `client/timeline/index.html`,
+`client/public/sitemap.xml`, and the address printed on the
 sharing image. To test the prefixed build locally, pass the same prefix to Vite directly:
 
 ```bash
@@ -110,9 +122,10 @@ The preview then serves the site at http://localhost:4173/personal-website/ .
 
 ## Quality checks
 
-The polish pass (2026-11-06) checked the live site with Lighthouse 13.6, a layout sweep from 320
-to 1440 px in headless Chrome, and a keyboard walkthrough of both pages. Lighthouse scores on the
-live site, mobile / desktop:
+These checks and scores are from the polish pass of the previous design (2026-11-06); run them
+again once the Threadline redesign is live. That pass checked the live site with Lighthouse 13.6,
+a layout sweep from 320 to 1440 px in headless Chrome, and a keyboard walkthrough of both pages.
+Lighthouse scores on the live site, mobile / desktop:
 
 | Page | Performance | Accessibility | Best practices | SEO |
 |------|-------------|---------------|----------------|-----|
@@ -142,7 +155,7 @@ npx lighthouse https://nutritiousblueberrymuffins.github.io/personal-website/ --
 ```
 
 ```bash
-npx lighthouse https://nutritiousblueberrymuffins.github.io/personal-website/timeline/ --preset=desktop --view
+npx lighthouse https://nutritiousblueberrymuffins.github.io/personal-website/ --preset=desktop --view
 ```
 
 https://pagespeed.web.dev/ runs the same audit on Google's machines, with no install.

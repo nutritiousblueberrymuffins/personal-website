@@ -90,7 +90,11 @@
 
                 <nav class="thread-nav" aria-labelledby="thread-nav-title">
                     <p class="label-section" id="thread-nav-title">On this thread</p>
-                    <ol class="thread thread--nav">
+                    <!-- The thread drifts slowly to the left, forever (hero-thread.js repeats the four
+                         cards so it never runs out). Hovering eases it to a stop, dragging or swiping
+                         moves it, and tabbing to a card stops it and brings that card into view. -->
+                    <div class="thread-marquee" id="thread-marquee">
+                    <ol class="thread thread--nav" id="thread-nav-track">
                         <li class="thread__item thread__item--above" style="--col: 1">
                             <a class="event-card" data-track-section="about" href="#about">
                                 <span class="event-card__date">01</span>
@@ -128,6 +132,7 @@
                             <span class="thread__dot" aria-hidden="true"></span>
                         </li>
                     </ol>
+                    </div>
                 </nav>
             </div>
         </section>

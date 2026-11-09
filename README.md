@@ -112,6 +112,13 @@ emulation: no sideways scrolling and nothing cut off.
 
 ## Motion
 
+The hero's "On this thread" strip drifts slowly to the left forever
+(`client/src/scripts/hero-thread.js`): the four section cards repeat so it never runs out.
+Hovering eases it to a stop, dragging or swiping moves it either way (a flick carries on for
+about two cards), clicking a card still jumps to its section, and tabbing to a card stops the
+drift and brings the card into view. It pauses while off-screen, and stands still for visitors
+who prefer reduced motion (dragging still works).
+
 `client/src/styles/motion.css` and `client/src/scripts/motion.js` add the page's movement:
 headings, cards and panels rise in as they scroll into view, the hero and timeline threads draw
 their line and pop their dots, project and contact cards and the photo tilt toward the cursor

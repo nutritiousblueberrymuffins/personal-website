@@ -84,12 +84,6 @@
     }
 }
 
-@keyframes axis-draw-down {
-    from {
-        transform: scaleY(0);
-    }
-}
-
 @keyframes item-in {
     from {
         opacity: 0;
@@ -110,17 +104,6 @@
 
 .motion-ok .thread__item:hover .thread__dot {
     transform: scale(1.3);
-}
-
-/* Below 900 px the hero's thread runs down the left edge, so it draws downwards. */
-@media (max-width: 899px) {
-    .motion-ok .thread--nav::before {
-        transform-origin: center top;
-    }
-
-    .motion-ok .thread--nav.is-revealed::before {
-        animation-name: axis-draw-down;
-    }
 }
 
 /* The about whiteboard: its little thread draws itself too, and its cards drift apart on hover. */

@@ -91,9 +91,17 @@ the thread) and the page. One difference from Figma: secondary text uses `#68748
 `#74808e`, which is too light on white for WCAG AA at caption sizes.
 
 Behind every page a dot grid drifts slowly to the right (224 px every 30 s, constant speed) and
-fades between 60% and 30%, matching the Figma prototype. It is one fixed layer animated with
-`transform` and `opacity` only, so it stays smooth, and it stands still for visitors who ask for
-reduced motion.
+fades between 90% and 50%, like the Figma prototype; the dots are 2.5 px rather than Figma's 2 px
+at 60% to 30%, which were too faint to notice on real screens. It is one fixed, window-sized layer
+animated with `transform` and `opacity` only, so it stays smooth on phones and desktops, and it
+stands still for visitors who ask for reduced motion.
+
+The layout is fluid: gutters, section spacing, headings, the photo and the gaps between cards
+scale with the window (via `clamp()` in `designtoken.css` and `site.css`), reaching the Figma
+sizes at 1440 px. The project grid fits as many 300 px columns as there is room for. Below 900 px
+the thread turns vertical and the photo and about panel move under their text; below 640 px the
+header stacks. Checked from 320 to 1920 px in 10 px steps and on iPhone, Pixel and iPad
+emulation: no sideways scrolling and nothing cut off.
 
 ## How deploys work
 

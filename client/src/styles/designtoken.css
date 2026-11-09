@@ -29,6 +29,12 @@
 
     --content-width: 1200px;
     --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+    /* Fluid layout: these scale smoothly with the window between a phone and the 1440 px
+       Figma frame, so the page shrinks and grows as it is resized instead of jumping at
+       breakpoints. Each clamp() reaches its Figma value at 1440 px wide. */
+    --gutter: clamp(20px, 5vw, 120px);
+    --band-space: clamp(48px, 5.6vw, 80px);
 }
 
 * {
@@ -37,6 +43,9 @@
 
 html {
     scroll-behavior: smooth;
+    /* Stops phones enlarging the text on their own when turned sideways. */
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
     /* The page colour lives on html so the drifting dot grid (body::before, site.css) can sit
        between it and the content. */
     background: var(--color-surface);
@@ -80,21 +89,21 @@ a {
     text-transform: uppercase;
 }
 
-/* Display/Hero: Inter Bold 44 / 52, -1% */
+/* Display/Hero: Inter Bold 44 / 52, -1%. Scales down to 32 px on phones. */
 .display-hero {
     color: var(--color-ink);
-    font-size: 44px;
+    font-size: clamp(32px, 14px + 2.1vw, 44px);
     font-weight: 700;
-    line-height: 52px;
+    line-height: 1.18;
     letter-spacing: -0.01em;
 }
 
-/* Heading/Section: Inter Bold 30 / 38, -0.5% */
+/* Heading/Section: Inter Bold 30 / 38, -0.5%. Scales down to 24 px on phones. */
 .heading-section {
     color: var(--color-ink);
-    font-size: 30px;
+    font-size: clamp(24px, 17px + 0.9vw, 30px);
     font-weight: 700;
-    line-height: 38px;
+    line-height: 1.27;
     letter-spacing: -0.005em;
 }
 

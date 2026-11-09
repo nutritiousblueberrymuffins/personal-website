@@ -4,11 +4,14 @@
    the style guide's rule that below 900 px the thread turns vertical. */
 
 /* ---------- Drifting dot grid ----------
-   One fixed layer behind the whole page: 2 px Axis-coloured dots on a 28 px grid. It slides
-   right by 8 cells (224 px) every 30 s at a constant speed while fading from 60% to 30% and
-   back, then restarts; because 224 px is a whole number of cells the restart is invisible.
+   One fixed layer behind the whole page, the size of the window, so it fits any screen and
+   follows every resize: 2.5 px Axis-coloured dots on a 28 px grid. It slides right by
+   8 cells (224 px) every 30 s at a constant speed while fading from 90% to 50% and back,
+   then restarts; because 224 px is a whole number of cells the restart is invisible.
+   (Figma uses 2 px dots at 60% to 30%; on real screens that was too faint to notice.)
    Only transform and opacity animate, so the browser can move it on the GPU without
-   repainting. animations.css stops it for people who prefer reduced motion. */
+   repainting. A fixed layer's overflow never makes the page scroll sideways.
+   animations.css stops it for people who prefer reduced motion. */
 body::before {
     content: "";
     position: fixed;
@@ -18,9 +21,9 @@ body::before {
     right: 0;
     z-index: -1;
     pointer-events: none;
-    background-image: radial-gradient(circle at 14px 14px, var(--color-axis) 1px, transparent 1.5px);
+    background-image: radial-gradient(circle at 14px 14px, var(--color-axis) 1.25px, transparent 1.75px);
     background-size: 28px 28px;
-    opacity: 0.6;
+    opacity: 0.9;
     animation: dot-drift 30s linear infinite;
     will-change: transform, opacity;
 }
@@ -28,16 +31,16 @@ body::before {
 @keyframes dot-drift {
     0% {
         transform: translateX(0);
-        opacity: 0.6;
+        opacity: 0.9;
     }
 
     50% {
-        opacity: 0.3;
+        opacity: 0.5;
     }
 
     100% {
         transform: translateX(224px);
-        opacity: 0.6;
+        opacity: 0.9;
     }
 }
 
@@ -51,13 +54,15 @@ body::before {
 
 /* ---------- Page structure ---------- */
 
+/* The 1200 px content column, with side gutters that shrink with the window (120 px in the
+   1440 Figma frame, 20 px on a phone). */
 .container {
-    width: min(calc(100% - 64px), var(--content-width));
+    width: min(calc(100% - 2 * var(--gutter)), var(--content-width));
     margin-inline: auto;
 }
 
 .band {
-    padding-block: 80px;
+    padding-block: var(--band-space);
 }
 
 /* Section heading: label, heading and blurb 12 px apart; 32 px to the content. */
@@ -199,7 +204,7 @@ body::before {
     font-size: 11px;
     font-weight: 700;
     line-height: 14px;
-    white-space: pre;
+    white-space: pre-wrap;
 }
 
 .event-card__title {
@@ -213,7 +218,7 @@ body::before {
     color: var(--color-brand);
     font-size: 11px;
     line-height: 14px;
-    white-space: pre;
+    white-space: pre-wrap;
 }
 
 a.event-card,
@@ -246,7 +251,7 @@ a.contact-card:hover {
     font-weight: 700;
     line-height: 14px;
     text-transform: uppercase;
-    white-space: pre;
+    white-space: pre-wrap;
 }
 
 /* Heading/Card: Inter Bold 19 / 24 */
@@ -315,6 +320,8 @@ a.project-card:hover .project-card__link {
     grid-template-columns: repeat(var(--count), minmax(0, var(--card-width)));
     grid-template-rows: auto var(--tick-above) 2px var(--tick-below) auto;
     justify-content: space-between;
+    /* The least space between cards; when the window narrows, the cards shrink instead. */
+    column-gap: 16px;
     margin: 0;
     padding: 0 var(--inset);
     list-style: none;
@@ -390,6 +397,7 @@ a.project-card:hover .project-card__link {
     --card-width: 264px;
     --tick-below: 14px;
     --inset: 0px;
+    column-gap: clamp(16px, 3.3vw, 48px);
 }
 
 .thread--nav .thread__item--above > .thread__tick {
@@ -400,20 +408,22 @@ a.project-card:hover .project-card__link {
 /* ---------- Hero ---------- */
 
 .hero {
-    padding-top: 72px;
-    padding-bottom: 64px;
+    padding-top: clamp(40px, 5vw, 72px);
+    padding-bottom: clamp(48px, 4.4vw, 64px);
 }
 
 .hero__top {
     display: flex;
     align-items: center;
-    gap: 72px;
+    gap: clamp(32px, 5vw, 72px);
 }
 
+/* 400 x 480 in Figma; keeps that shape as it shrinks. */
 .photo {
     position: relative;
     flex: 0 1 400px;
-    height: 480px;
+    min-width: 260px;
+    aspect-ratio: 400 / 480;
     overflow: hidden;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
@@ -468,7 +478,7 @@ a.project-card:hover .project-card__link {
 }
 
 .thread-nav {
-    margin-top: 56px;
+    margin-top: clamp(40px, 3.9vw, 56px);
 }
 
 .thread-nav .label-section {
@@ -480,14 +490,15 @@ a.project-card:hover .project-card__link {
 .about {
     display: flex;
     align-items: flex-start;
-    gap: 64px;
+    gap: clamp(32px, 4.4vw, 64px);
 }
 
 .about__aside {
     display: flex;
-    flex: 0 0 400px;
+    flex: 0 1 400px;
     flex-direction: column;
     gap: var(--space-lg);
+    min-width: 300px;
 }
 
 .about__text {
@@ -624,10 +635,11 @@ a.project-card:hover .project-card__link {
 
 /* ---------- Projects ---------- */
 
-/* 24 px between cards in a grid. */
+/* 24 px between cards in a grid. As many columns as fit at 300 px or wider: three at full
+   width, two on tablets, one on phones, changing as the window is resized. */
 .project-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
     gap: var(--space-lg);
 }
 
@@ -774,34 +786,14 @@ a.project-card:hover .project-card__link {
     padding-top: 120px;
 }
 
-/* ---------- Responsive ---------- */
-
-@media (max-width: 1100px) {
-    .hero__top,
-    .about {
-        gap: 48px;
-    }
-
-    .about__aside {
-        flex-basis: 340px;
-    }
-
-    .project-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-}
+/* ---------- Responsive ----------
+   Sizes, gutters and spacing above are fluid, so the page scales smoothly as the window is
+   resized. The rules below only change the arrangement where the desktop layout stops
+   fitting. */
 
 /* Below 900 px the thread turns vertical: the line runs down the left edge and the cards stack
    on the right. The hero photo and the about aside move under their text. */
 @media (max-width: 899px) {
-    .band {
-        padding-block: 64px;
-    }
-
-    .hero {
-        padding-top: 48px;
-    }
-
     .hero__top,
     .about {
         flex-direction: column;
@@ -812,14 +804,14 @@ a.project-card:hover .project-card__link {
         order: 2;
         flex: none;
         width: min(100%, 400px);
-        height: auto;
-        aspect-ratio: 400 / 480;
+        min-width: 0;
     }
 
     .about__aside {
         order: 2;
         flex: none;
         width: min(100%, 400px);
+        min-width: 0;
     }
 
     /* Stacked, the desktop flex-basis would become a 640 px height. */
@@ -893,11 +885,8 @@ a.project-card:hover .project-card__link {
     }
 }
 
+/* Phones. */
 @media (max-width: 640px) {
-    .container {
-        width: calc(100% - 40px);
-    }
-
     .site-header .container {
         flex-direction: column;
         align-items: flex-start;
@@ -910,17 +899,11 @@ a.project-card:hover .project-card__link {
         gap: 0 20px;
     }
 
-    .display-hero {
-        font-size: 34px;
-        line-height: 42px;
+    /* Nav links get a 44 px tall tap area. */
+    .nav-links a {
+        padding-block: 12px;
     }
 
-    .heading-section {
-        font-size: 26px;
-        line-height: 32px;
-    }
-
-    .project-grid,
     .contact-grid {
         grid-template-columns: 1fr;
     }

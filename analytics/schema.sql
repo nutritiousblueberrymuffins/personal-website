@@ -7,7 +7,8 @@ CREATE TABLE IF NOT EXISTS events (
     ts          INTEGER NOT NULL,  -- browser time, ms since epoch
     session_id  TEXT    NOT NULL,  -- random per page visit
     type        TEXT    NOT NULL,  -- pageview, click, rage_click, dead_click, scroll_depth,
-                                   -- section_viewed, timeline_filtered, page_leave, js_error
+                                   -- section_viewed, timeline_filtered, timeline_navigated,
+                                   -- page_leave, js_error
     path        TEXT,              -- page path, e.g. /personal-website/
     target      TEXT,              -- clicks: a short description of the element, e.g. a.project-card
     label       TEXT,              -- clicks: the element's visible text (trimmed)

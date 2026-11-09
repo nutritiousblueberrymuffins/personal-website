@@ -346,7 +346,7 @@ function renderBars() {
   bars('thread-links', tracked('section'));
   bars('filters', data.filters.map((r) => ({ name: r.name || 'all', n: r.n })));
   bars('timeline-entries', data.timelineEntries.map((r) => ({ name: r.name || '(unknown)', n: r.n })));
-  const VIA = { arrow: 'Back / forward arrows', drag: 'Dragging with a mouse', swipe: 'Swiping or scrolling', card: 'Clicking a card', key: 'Arrow keys' };
+  const VIA = { arrow: 'Back / forward arrows', drag: 'Dragging with a mouse', swipe: 'Swiping on a touch screen', wheel: 'Trackpad or Shift + wheel', card: 'Clicking a card', key: 'Arrow keys' };
   bars('timeline-via', data.timelineVia.map((r) => ({ name: VIA[r.name] || r.name || '(unknown)', n: r.n })));
   bars('scroll', data.scrollDepth.map((r) => ({ name: `${r.depth}% of the page`, n: r.n })), { valueText: pct, total: visits });
   bars('frustration', data.frustration.map((r) => ({

@@ -245,8 +245,11 @@
 
                 <!-- Filled by timeline.js from src/data/timeline.json: drag or swipe it, step through it
                      with the arrows or the arrow keys, and the selected entry's details show below. -->
-                <div class="thread-scroll" id="timeline-viewport">
-                    <ol class="thread thread--timeline" id="timeline-thread" aria-label="Timeline entries, oldest first"></ol>
+                <!-- An endless strip: the track repeats the entries in both directions. Keyboard and
+                     screen-reader users move through it with the arrows or the arrow keys on this
+                     focusable region; the details panel below announces the selected entry. -->
+                <div class="thread-scroll" id="timeline-viewport" tabindex="0" role="region" aria-roledescription="carousel" aria-label="Timeline. Use the left and right arrow keys to move through the entries.">
+                    <ol class="thread thread--timeline" id="timeline-thread" aria-hidden="true"></ol>
                 </div>
 
                 <div class="timeline-detail" id="timeline-detail" aria-live="polite"></div>

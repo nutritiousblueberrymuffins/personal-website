@@ -52,7 +52,8 @@
 }
 
 /* ---------- Threads that draw themselves ----------
-   The line grows from the left, then each entry rises in and its dot pops, one after another.
+   The line grows from the left, then each entry rises in and its dot pops, one after another
+   (outward from the selected entry on the timeline, which sets --stagger).
    Re-rendered timeline entries (after a filter) play it again. */
 .motion-ok .thread:not(.is-revealed) .thread__item {
     opacity: 0;
@@ -69,12 +70,12 @@
 
 .motion-ok .thread.is-revealed .thread__item {
     animation: item-in 600ms var(--ease-out) backwards;
-    animation-delay: calc(200ms + var(--col, 1) * 110ms);
+    animation-delay: calc(200ms + var(--stagger, var(--col, 1)) * 110ms);
 }
 
 .motion-ok .thread.is-revealed .thread__dot {
     animation: dot-pop 500ms var(--ease-spring) backwards;
-    animation-delay: calc(350ms + var(--col, 1) * 110ms);
+    animation-delay: calc(350ms + var(--stagger, var(--col, 1)) * 110ms);
 }
 
 @keyframes axis-draw {

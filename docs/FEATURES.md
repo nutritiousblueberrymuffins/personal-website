@@ -7,6 +7,7 @@ fit together, and what to edit to change it.
 - [README.md](../README.md) covers running the site locally.
 - [analytics/README.md](../analytics/README.md) covers switching analytics on.
 - [docs/PLAN.md](PLAN.md) is the original plan.
+- [docs/CONVERSATION-LOG.md](CONVERSATION-LOG.md) is the step-by-step story of how all of this was built.
 
 ## Contents
 
@@ -859,6 +860,7 @@ the tokens in [section 2](#2-threadline-design-system).
 | `analytics/test/collect.test.js` | Collector tests |
 | `.github/workflows/deploy-pages.yml` | Website deploy |
 | `.github/workflows/deploy-analytics.yml` | Analytics deploy |
+| `docs/CONVERSATION-LOG.md` | The build history, request by request |
 
 ---
 

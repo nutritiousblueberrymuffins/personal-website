@@ -3,7 +3,8 @@
 Tony's portfolio site, built to be linked from the resume. See [docs/PLAN.md](docs/PLAN.md)
 for the plan, the hosting decisions, and the phase checklist, and
 [docs/FEATURES.md](docs/FEATURES.md) for every feature, from the page down to the code and
-the analytics back end.
+the analytics back end. [docs/CONVERSATION-LOG.md](docs/CONVERSATION-LOG.md) records how it
+was all built, request by request.
 
 Hosting: GitHub Pages, deployed by GitHub Actions on every push to `main`.
 Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
@@ -22,6 +23,7 @@ Live site: https://nutritiousblueberrymuffins.github.io/personal-website/
 | `client/src/scripts/` | `main.js` (every page: font, analytics, motion), `home.js` (home page), `timeline.js`, `hero-thread.js`, `section-flow.js`, `motion.js`, `analytics.js` |
 | `analytics/` | The analytics collector and dashboard (Cloudflare Worker + D1) |
 | `docs/FEATURES.md` | Every feature, front end to back end |
+| `docs/CONVERSATION-LOG.md` | The build history, request by request |
 | `client/public/` | Files served as they are: the icons from Figma, the favicon, `sitemap.xml` |
 | `client/public/og-image.png` | The 1200 x 630 preview image that chat apps and social sites show for links to the site |
 | `docs/sharing-image/` | The HTML the preview image and the touch icon are rendered from |

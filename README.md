@@ -62,8 +62,10 @@ npm run preview
   tag. Around 800 px wide as JPEG or WebP keeps the page fast.
 - **Resume:** put `resume.pdf` in `client/public/` and remove `hidden` from the header's
   "Resume" link and the hero's "Download resume" button in `client/index.html`.
-- **LinkedIn and phone:** the links are already in `client/index.html` (hero links and contact
-  cards) but hidden. Fill in the URL or `tel:` number and the shown value, then remove `hidden`.
+- **LinkedIn:** the profile link is in `client/index.html` twice, in the hero links and on the
+  contact card; change both if the URL changes.
+- **Phone:** the link is already in `client/index.html` (hero links and contact card) but hidden.
+  Fill in the `tel:` number and the shown value, then remove `hidden`.
 - **Timeline:** edit `client/src/data/timeline.json`. Each entry has a type (work, education,
   certification, project or milestone), a start date and optionally an end date;
   `timeline.schema.json` spells out the rules. The cards show the date, title and type; a

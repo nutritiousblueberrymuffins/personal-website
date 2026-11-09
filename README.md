@@ -70,7 +70,10 @@ npm run preview
   full date (`2026-10-09`) also prints the day on the line, a year or month prints the year. An
   entry with `"draft": true` shows in local development only, never on the live site, so samples
   and unfinished items can stay in the file. Filters can be linked to directly, for example
-  `/?type=work#timeline`; old `/timeline/` links forward there.
+  `/?type=work#timeline`; old `/timeline/` links forward there. Visitors move through the timeline with the
+  back / forward arrows, the arrow keys, by clicking a card, or by dragging (mouse) or swiping
+  (touch) the thread; the selected entry's date range, organisation, summary and links show in a
+  panel under it, so `org`, `summary` and `links` are worth filling in.
 - **Projects and contact details:** the project cards, the email link and the GitHub links are plain
   markup in `client/index.html`.
 - **Sharing image and touch icon:** `docs/sharing-image/og.html` and `icon.html` are the sources
@@ -105,6 +108,17 @@ narrow column with wide margins. Hairline borders and the 2 px thread line stay 
 the thread turns vertical and the photo and about panel move under their text; below 640 px the
 header stacks. Checked from 320 to 1920 px in 10 px steps and on iPhone, Pixel and iPad
 emulation: no sideways scrolling and nothing cut off.
+
+## Motion
+
+`client/src/styles/motion.css` and `client/src/scripts/motion.js` add the page's movement:
+headings, cards and panels rise in as they scroll into view, the hero and timeline threads draw
+their line and pop their dots, project and contact cards and the photo tilt toward the cursor
+with a glow that follows it, buttons lean toward the pointer and ripple when pressed, links and
+arrows nudge on hover, the photo's name tag floats, and a thin progress bar tracks the scroll.
+A one-line script in each page's `<head>` switches it on before the first paint only when the
+visitor has not asked for reduced motion; otherwise the page is fully visible and still. If
+the script ever fails to load, anything waiting to be revealed shows after 4 seconds anyway.
 
 ## Analytics
 

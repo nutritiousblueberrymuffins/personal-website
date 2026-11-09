@@ -1,0 +1,380 @@
+/* Motion: scroll reveals, threads that draw themselves, click ripples, cursor-following tilt and
+   glow on cards, magnetic buttons, hover nudges and a scroll progress bar. Driven by
+   src/scripts/motion.js.
+
+   Everything here is scoped to html.motion-ok, which a tiny script in each page's <head> adds
+   only when the visitor has not asked for reduced motion; without it the page is fully visible
+   and still, exactly as before. animations.css (loaded after this) also stops all animation
+   under reduced motion. */
+
+:root {
+    --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* ---------- Scroll reveals ----------
+   These elements start hidden and rise into place when they scroll into view; motion.js adds
+   .is-revealed (keep this list in step with REVEAL in motion.js). If the script never runs,
+   the failsafe animation shows them after 4 s anyway. */
+.motion-ok :is(
+    .intro > *,
+    .photo,
+    .section-heading > *,
+    .about__text > *,
+    .glance,
+    .whiteboard,
+    .project-grid > *,
+    .timeline-controls,
+    .contact-grid > li,
+    .site-footer .container,
+    .not-found > *
+):not(.is-revealed) {
+    opacity: 0;
+    animation: reveal-failsafe 0.01s 4s forwards;
+}
+
+/* backwards fill only: once it has played, the element's own hover transforms apply again. */
+.motion-ok .is-revealed:not(.thread) {
+    animation: reveal-up 700ms var(--ease-out) var(--reveal-delay, 0ms) backwards;
+}
+
+@keyframes reveal-up {
+    from {
+        opacity: 0;
+        transform: translateY(18px);
+    }
+}
+
+@keyframes reveal-failsafe {
+    to {
+        opacity: 1;
+    }
+}
+
+/* ---------- Threads that draw themselves ----------
+   The line grows from the left, then each entry rises in and its dot pops, one after another.
+   Re-rendered timeline entries (after a filter) play it again. */
+.motion-ok .thread:not(.is-revealed) .thread__item {
+    opacity: 0;
+    animation: reveal-failsafe 0.01s 4s forwards;
+}
+
+.motion-ok .thread::before {
+    transform-origin: left center;
+}
+
+.motion-ok .thread.is-revealed::before {
+    animation: axis-draw 1000ms var(--ease-out) backwards;
+}
+
+.motion-ok .thread.is-revealed .thread__item {
+    animation: item-in 600ms var(--ease-out) backwards;
+    animation-delay: calc(200ms + var(--col, 1) * 110ms);
+}
+
+.motion-ok .thread.is-revealed .thread__dot {
+    animation: dot-pop 500ms var(--ease-spring) backwards;
+    animation-delay: calc(350ms + var(--col, 1) * 110ms);
+}
+
+@keyframes axis-draw {
+    from {
+        transform: scaleX(0);
+    }
+}
+
+@keyframes axis-draw-down {
+    from {
+        transform: scaleY(0);
+    }
+}
+
+@keyframes item-in {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+}
+
+@keyframes dot-pop {
+    from {
+        transform: scale(0);
+    }
+}
+
+/* Hovering an entry swells its dot. */
+.motion-ok .thread__dot {
+    transition: transform 220ms var(--ease-spring), box-shadow 160ms ease;
+}
+
+.motion-ok .thread__item:hover .thread__dot {
+    transform: scale(1.3);
+}
+
+/* Below 900 px the hero's thread runs down the left edge, so it draws downwards. */
+@media (max-width: 899px) {
+    .motion-ok .thread--nav::before {
+        transform-origin: center top;
+    }
+
+    .motion-ok .thread--nav.is-revealed::before {
+        animation-name: axis-draw-down;
+    }
+}
+
+/* The about whiteboard: its little thread draws itself too, and its cards drift apart on hover. */
+.motion-ok .whiteboard__axis {
+    transform-origin: left center;
+}
+
+.motion-ok .whiteboard.is-revealed .whiteboard__axis {
+    animation: axis-draw 900ms var(--ease-out) 250ms backwards;
+}
+
+.motion-ok .whiteboard.is-revealed .event-card {
+    animation: item-in 600ms var(--ease-out) backwards;
+}
+
+.motion-ok .whiteboard.is-revealed .whiteboard__card-a {
+    animation-delay: 450ms;
+}
+
+.motion-ok .whiteboard.is-revealed .whiteboard__card-b {
+    animation-delay: 650ms;
+}
+
+.motion-ok .whiteboard.is-revealed .whiteboard__dot {
+    animation: dot-pop 500ms var(--ease-spring) backwards;
+}
+
+.motion-ok .whiteboard.is-revealed .whiteboard__dot--a {
+    animation-delay: 600ms;
+}
+
+.motion-ok .whiteboard.is-revealed .whiteboard__dot--b {
+    animation-delay: 800ms;
+}
+
+.motion-ok .whiteboard .event-card {
+    transition: transform 400ms var(--ease-out);
+}
+
+.motion-ok .whiteboard:hover .whiteboard__card-a {
+    transform: translateY(-6px);
+}
+
+.motion-ok .whiteboard:hover .whiteboard__card-b {
+    transform: translateY(6px);
+}
+
+/* The photo's name tag floats gently. */
+.motion-ok .photo .event-card {
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    50% {
+        transform: translateY(-5px);
+    }
+}
+
+/* The timeline's details panel eases in its new content when the selection changes. */
+.motion-ok .timeline-detail.is-swapping > * {
+    animation: item-in 420ms var(--ease-out) backwards;
+}
+
+.motion-ok .timeline-detail.is-swapping > :nth-child(2) {
+    animation-delay: 40ms;
+}
+
+.motion-ok .timeline-detail.is-swapping > :nth-child(3) {
+    animation-delay: 80ms;
+}
+
+.motion-ok .timeline-detail.is-swapping > :nth-child(n + 4) {
+    animation-delay: 120ms;
+}
+
+/* ---------- Cards that follow the cursor ----------
+   motion.js sets --rx / --ry (tilt) and --mx / --my (where the pointer is) while it hovers. */
+.motion-ok :is(.project-card, .contact-card) {
+    position: relative;
+    isolation: isolate;
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px)) scale(var(--press, 1));
+    transition: transform 300ms var(--ease-out), border-color 160ms ease, box-shadow 300ms ease;
+}
+
+.motion-ok .photo {
+    transform: perspective(1200px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 400ms var(--ease-out);
+}
+
+.motion-ok :is(.project-card, .contact-card).is-tilting,
+.motion-ok .photo.is-tilting {
+    transition-duration: 80ms, 160ms, 300ms;
+}
+
+.motion-ok a.project-card:hover,
+.motion-ok a.contact-card:hover {
+    --lift: -4px;
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) translateY(var(--lift, 0px)) scale(var(--press, 1));
+    box-shadow: 0 12px 28px -14px rgb(34 43 54 / 0.28);
+}
+
+/* A soft glow that follows the pointer across cards and panels. */
+.motion-ok :is(.project-card, .contact-card, .glance, .timeline-detail, .thread .event-card) {
+    position: relative;
+    isolation: isolate;
+}
+
+.motion-ok :is(.project-card, .contact-card, .glance, .timeline-detail, .thread .event-card)::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(260px circle at var(--mx, 50%) var(--my, 50%), rgb(59 95 196 / 0.09), transparent 65%);
+    opacity: 0;
+    transition: opacity 300ms ease;
+    pointer-events: none;
+}
+
+.motion-ok :is(.project-card, .contact-card, .glance, .timeline-detail, .thread .event-card):hover::before {
+    opacity: 1;
+}
+
+/* ---------- Buttons ----------
+   Buttons lean a few pixels toward the pointer (motion.js sets --tx / --ty) and press in. */
+.motion-ok :is(.button, .arrow-button) {
+    transform: translate(var(--tx, 0px), var(--ty, 0px)) scale(var(--press, 1));
+    transition: transform 250ms var(--ease-out), background-color 160ms ease, border-color 160ms ease;
+}
+
+.motion-ok :is(.button, .arrow-button, .chip, .project-card, .contact-card):active {
+    --press: 0.96;
+}
+
+.motion-ok .chip {
+    transition: transform 200ms var(--ease-spring), border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.motion-ok .chip:active {
+    transform: scale(0.94);
+}
+
+.motion-ok .chip[aria-pressed="true"] {
+    animation: chip-on 360ms var(--ease-spring);
+}
+
+@keyframes chip-on {
+    40% {
+        transform: scale(1.08);
+    }
+}
+
+/* ---------- Click ripples ---------- */
+.motion-ok :is(.button, .arrow-button, .chip, .project-card, .contact-card, .thread .event-card) {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple {
+    position: absolute;
+    z-index: 0;
+    width: var(--size);
+    height: var(--size);
+    left: var(--x);
+    top: var(--y);
+    margin: calc(var(--size) / -2) 0 0 calc(var(--size) / -2);
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.16;
+    transform: scale(0);
+    pointer-events: none;
+    animation: ripple 650ms var(--ease-out) forwards;
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(1);
+        opacity: 0;
+    }
+}
+
+/* ---------- Hover nudges ---------- */
+
+/* Menu links: an underline slides in from the left and out to the right. */
+.motion-ok .nav-links a {
+    position: relative;
+}
+
+.motion-ok .nav-links a:hover,
+.motion-ok .nav-links a[aria-current="page"] {
+    text-decoration: none;
+}
+
+.motion-ok .nav-links a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.375rem;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--color-brand);
+    transform: scaleX(0);
+    transform-origin: right center;
+    transition: transform 280ms var(--ease-out);
+}
+
+.motion-ok .nav-links a:hover::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+}
+
+/* Arrows in links and cards step forward. */
+.motion-ok :is(.project-card__link, .event-card__type, .timeline-detail__links a) > span[aria-hidden="true"],
+.motion-ok .timeline-detail__links a {
+    display: inline-block;
+    transition: transform 250ms var(--ease-out);
+}
+
+.motion-ok a:hover :is(.project-card__link, .event-card__type) > span[aria-hidden="true"],
+.motion-ok .timeline-detail__links a:hover {
+    transform: translateX(4px);
+}
+
+/* Icons hop up a little. */
+.motion-ok .icon-link img,
+.motion-ok .contact-card img {
+    transition: transform 280ms var(--ease-spring);
+}
+
+.motion-ok .icon-link:hover img,
+.motion-ok .contact-card:hover img {
+    transform: translateY(-3px) rotate(-6deg);
+}
+
+/* The wordmark's star turns a quarter on hover. */
+.motion-ok .wordmark span[aria-hidden="true"] {
+    display: inline-block;
+    transition: transform 500ms var(--ease-spring);
+}
+
+.motion-ok .wordmark:hover span[aria-hidden="true"] {
+    transform: rotate(90deg);
+}
+
+/* ---------- Scroll progress ---------- */
+.scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    height: 3px;
+    background: var(--color-brand);
+    transform: scaleX(0);
+    transform-origin: left center;
+    pointer-events: none;
+}

@@ -52,6 +52,12 @@ undoes it).
 
 Open the dashboard address and sign in with any user name and the dashboard password.
 
+## Checking it is working
+
+Every request to the collector writes one log line saying whether its events were stored,
+skipped (a bot) or rejected, and why. Read them in the Cloudflare dashboard: Workers & Pages >
+personal-website-analytics > Logs.
+
 ## Working on it locally
 
 ```bash

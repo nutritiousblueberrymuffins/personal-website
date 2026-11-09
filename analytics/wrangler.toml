@@ -13,8 +13,8 @@ fallthrough = true
 [[d1_databases]]
 binding = "DB"
 database_name = "personal-website-analytics"
-# Filled in by `wrangler d1 create`; see README.
-database_id = "REPLACE_WITH_DATABASE_ID"
+# The D1 database in Tony's Cloudflare account (not a secret).
+database_id = "5a7355f2-59d8-4d52-993b-7861ebc894b9"
 
 [vars]
 # Pages allowed to send events (comma-separated origins).
@@ -30,3 +30,8 @@ crons = ["17 3 * * *"]
 
 # The dashboard password is a secret, never in this file:
 #   npx wrangler secret put DASHBOARD_PASSWORD
+
+# Workers Logs: one line per collect request (stored, skipped or rejected, and why), viewable
+# in the Cloudflare dashboard under this Worker > Logs.
+[observability]
+enabled = true

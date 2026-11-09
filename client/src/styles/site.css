@@ -1,452 +1,936 @@
+/* Threadline layout and components, built from the Figma file "Tony — Personal website
+   (Threadline style)": Home / Desktop 1440 and the Style guide frame. Tokens and text styles
+   live in designtoken.css. Desktop values are the Figma ones; the breakpoints at the end follow
+   the style guide's rule that below 900 px the thread turns vertical. */
 
-.site-header {
-    border-bottom: 1px solid var(--line);
+/* ---------- Drifting dot grid ----------
+   One fixed layer behind the whole page: 2 px Axis-coloured dots on a 28 px grid. It slides
+   right by 8 cells (224 px) every 30 s at a constant speed while fading from 60% to 30% and
+   back, then restarts; because 224 px is a whole number of cells the restart is invisible.
+   Only transform and opacity animate, so the browser can move it on the GPU without
+   repainting. animations.css stops it for people who prefer reduced motion. */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: -224px;
+    right: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(circle at 14px 14px, var(--color-axis) 1px, transparent 1.5px);
+    background-size: 28px 28px;
+    opacity: 0.6;
+    animation: dot-drift 30s linear infinite;
+    will-change: transform, opacity;
 }
 
-.navigation {
-    width: min(100% - 9.5rem, 1288px);
-    min-height: 84px;
+@keyframes dot-drift {
+    0% {
+        transform: translateX(0);
+        opacity: 0.6;
+    }
+
+    50% {
+        opacity: 0.3;
+    }
+
+    100% {
+        transform: translateX(224px);
+        opacity: 0.6;
+    }
+}
+
+/* The still dot grid inside the photo frame and the whiteboard (Figma "Thread/Dot grid"). */
+.dot-grid {
+    background-color: var(--color-canvas);
+    background-image: radial-gradient(circle at 1px 1px, rgb(157 174 196 / 0.7) 1px, transparent 1.5px);
+    background-size: 28px 28px;
+    background-position: 15px 15px;
+}
+
+/* ---------- Page structure ---------- */
+
+.container {
+    width: min(calc(100% - 64px), var(--content-width));
     margin-inline: auto;
+}
+
+.band {
+    padding-block: 80px;
+}
+
+/* Section heading: label, heading and blurb 12 px apart; 32 px to the content. */
+.section-heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    max-width: 760px;
+    margin-bottom: 32px;
+}
+
+/* ---------- Header ---------- */
+
+.site-header {
+    border-bottom: 1px solid var(--color-border);
+}
+
+.site-header .container {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 2rem;
-    
+    gap: var(--space-lg);
+    min-height: 80px;
 }
 
-.logo {
-    color: var(--red);
-    font-size: 1.5rem;
-    font-weight: 1000;
-    line-height: 1;
-    text-decoration: underline;
-    text-decoration-thickness: 4px;
-    text-underline-offset: 3px;
-    
+/* Wordmark: Inter Bold 21 / 26 */
+.wordmark {
+    color: var(--color-brand);
+    font-size: 21px;
+    font-weight: 700;
+    line-height: 26px;
+    white-space: pre;
 }
 
 .nav-links {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
-    gap: 2.75rem;
+    gap: 32px;
     margin: 0;
     padding: 0;
     list-style: none;
 }
 
+/* Nav: Inter Medium 14 / 20 */
 .nav-links a {
-    font-size: 1.125rem;
-    font-weight: 700;
-    transition: color 160ms ease;
+    display: inline-block;
+    padding-block: 10px;
+    color: var(--color-ink);
+    font-weight: 500;
+    white-space: pre;
 }
 
 .nav-links a:hover,
-.nav-links a:focus-visible,
-.nav-links .active {
-    color: var(--red-text);
+.nav-links a[aria-current="page"] {
+    color: var(--color-brand);
+    text-decoration: underline;
+    text-underline-offset: 6px;
 }
 
-.profile-column,
-.showcase-column {
-    min-width: 0;
+.nav-links .nav-resume {
+    color: var(--color-brand);
 }
 
-.introduction-caption h1 span,
-.resume-button {
-    min-width: 120px;
-    min-height: 53px;
-    display: grid;
-    place-items: center;
-    padding: 0.75rem 1.5rem;
-    color: var(--background);
-    background: var(--black);
-    border-radius: 9px 9px 9px 9px;
-    font-weight: 750;
-    transition: transform 160ms ease, background 160ms ease;
-}
+/* ---------- Buttons and links ---------- */
 
-.resume-button:hover,
-.resume-button:focus-visible {
-    background: var(--red);
-    transform: translateY(-2px);
-}
-
-.social-links {
-    display: flex;
+/* Button: 8 px radius, 10 x 20 px padding, Inter Semi Bold 14 / 20 */
+.button {
+    display: inline-flex;
     align-items: center;
-    gap: 0.9rem;
+    justify-content: center;
+    padding: 10px 20px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-button);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    white-space: nowrap;
+    transition: background-color 160ms ease, border-color 160ms ease;
 }
 
-.social-links a {
-    width: 43px;
-    height: 43px;
-    display: grid;
-    place-items: center;
-    color: var(--background);
-    background: var(--black);
-    border-radius: 50%;
-    transition: transform 160ms ease, background 160ms ease;
+.button--primary {
+    color: var(--color-on-brand);
+    background: var(--color-brand);
 }
 
-.social-links a:hover,
-.social-links a:focus-visible {
-    background: var(--red);
-    transform: translateY(-2px);
+.button--primary:hover {
+    background: #1d2d57;
 }
 
-.social-links img {
-    width: 23px;
-    height: 23px;
+.button--secondary {
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border-color: var(--color-border);
 }
 
-.projects-section {
-    width: min(100% - 9.5rem, 1288px);
-    margin: 6.2rem auto 6rem;
+.button--secondary:hover {
+    border-color: var(--color-axis);
 }
 
-.section-heading {
-    text-align: center;
+/* Icon + label link, Body/Small in Brand. */
+.icon-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    min-height: 24px;
+    color: var(--color-brand);
+    font-size: 13px;
+    line-height: 18px;
 }
 
-.section-heading h2,
-.contact-section h1,
-.contact-section h2 {
-    margin: 0;
-    color: var(--red);
-    font-size: 2.35rem;
-    font-weight: 850;
-    line-height: 1.1;
-    letter-spacing: -0.025em;
+.icon-link:hover span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
-.section-heading p {
-    margin: 1.05rem 0 0;
-    color: var(--muted);
+.icon-link img,
+.contact-card img {
+    display: block;
+    flex: none;
 }
 
-.project-grid {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1.4rem;
-    margin-top: 3.55rem;
-}
+/* ---------- Cards ---------- */
 
-.project-card {
-    min-height: 223px;
-    padding: 1.9rem;
-    color: white;
-    background: var(--red);
-    border-radius: 22px;
-    transition: transform 180ms ease, box-shadow 180ms ease;
-}
-
-.project-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 18px 35px rgba(187, 0, 0, 0.16);
-}
-
-.project-icon {
-    width: 53px;
-    height: 53px;
-    display: grid;
-    place-items: center;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.1);
-}
-
-.project-icon img {
-    width: 28px;
-    height: 28px;
-}
-
-.project-card h3 {
-    margin: 1.25rem 0 0;
-    font-size: 1.25rem;
-    font-weight: 750;
-}
-
-.project-card p {
-    max-width: 330px;
-    margin: 1.25rem 0 0;
-    font-size: 0.93rem;
-    font-weight: 400;
-    line-height: 1.55;
-}
-
-.contact-section {
-    min-height: 485px;
-    padding: 6.25rem 1.5rem 3rem;
-    border-top: 1px solid var(--line);
-    text-align: center;
-}
-
-.contact-section address {
+/* Event card: the unit of the whole site. A timeline entry, a hero illustration and a section
+   link all use it. Caption/Bold date, Heading/Small title, Caption/Regular type. */
+.event-card {
     display: flex;
     flex-direction: column;
-    margin-top: 1.9rem;
-    color: var(--muted);
-    font-size: 1.35rem;
-    font-style: normal;
-    line-height: 1.5;
-}
-
-.contact-section address a:hover,
-.contact-section address a:focus-visible {
-    color: var(--red-text);
-}
-
-.contact-socials {
-    justify-content: center;
-    margin-top: 3.5rem;
-}
-
-.footer-line {
-    margin: 3.8rem 0 0;
-    color: var(--muted);
-    font-size: 1.25rem;
-}
-
-/* Hero layout follows the supplied 1440 x 760 reference. */
-.hero {
-    width: min(calc(100% - 114px), 1326px);
-    margin: 29px auto 0;
-    display: grid;
-    grid-template-columns: minmax(0, 542fr) minmax(0, 699fr);
-    gap: clamp(32px, 5.7vw, 82px);
-    align-items: start;
-}
-.portrait-placeholder {
+    gap: var(--space-xs);
     width: 100%;
-    aspect-ratio: 542 / 470;
-    border: 2px solid var(--black);
-    background: #f0ddc5;
+    padding: var(--space-md);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
 }
-.portrait-pagination {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-    margin-top: 6px;
-}
-.introduction-caption { margin-top: 22px; text-align: center; }
-.introduction-caption h1 {
-    margin: 0;
-    color: var(--black);
-    font-size: clamp(36px, 4.45vw, 64px);
-    font-weight: 900;
-    line-height: 1.1;
-    letter-spacing: -0.025em;
-}
-.introduction-caption p {
-    margin: 8px 0 0;
-    color: var(--red-text);
-    font-size: clamp(16px, 1.75vw, 25px);
-    font-weight: 800;
-    line-height: 1.25;
-}
-.profile-actions { display: flex; justify-content: center; margin-top: 32px; }
-.hero .social-links { gap: 41px; }
-.hero .social-links a { width: 45px; height: 45px; }
-.music-player {
-    display: grid;
-    grid-template-columns: 156px minmax(0, 1fr);
-    gap: 8px;
-    align-items: center;
-    min-height: 137px;
-    color: #111827;
-}
-.record {
-    width: 156px;
-    aspect-ratio: 156 / 137;
-    background: #090b0c;
-    border-radius: 50%;
-}
-.record img { display: block; width: 100%; height: 100%; }
-.track-window { min-width: 0; }
-.track-eyebrow {
-    margin: 0 0 4px;
-    color: var(--muted);
-    font-size: 12px;
+
+.event-card__date {
+    color: var(--color-muted);
+    font-size: 11px;
     font-weight: 700;
-}
-.track-title { margin: 0; font-size: 20px; font-weight: 700; line-height: 1.25; }
-.track-progress { height: 6px; margin-top: 16px; border-radius: 3px; background: #f3f4f6; overflow: hidden; }
-.track-progress span { display: block; height: 100%; width: 44.3%; border-radius: inherit; background: var(--red); }
-.track-times { display: flex; justify-content: space-between; margin-top: 8px; color: var(--muted); font-size: 12px; font-weight: 600; }
-.playback-controls { display: flex; justify-content: center; gap: 12px; margin-top: 5px; }
-.playback-controls button {
-    display: grid;
-    place-items: center;
-    width: 40px;
-    height: 26px;
-    padding: 2px;
-    border: 1px solid #f3f4f6;
-    border-radius: 20px;
-    color: #111827;
-    background: white;
-    box-shadow: 0 2px 4px #00000012;
-}
-.playback-controls .playback-toggle { width: 44px; background: var(--red); border-color: var(--red); box-shadow: none; }
-.playback-controls img { width: 18px; height: 18px; }
-.animation-panel {
-    width: 100%;
-    aspect-ratio: 699 / 454;
-    margin-top: 35px;
-    display: grid;
-    place-items: center;
-    border: 2px solid var(--black);
-    overflow: hidden;
-    border-radius: 0;
-    color: #f4f2ef;
-    background: #f0ddc5;
-    font-size: clamp(36px, 4.45vw, 64px);
-    font-weight: 900;
-}
-.animation-panel span { animation: none; }
-.showcase-controls { display: flex; gap: 11px; margin-top: 22px; }
-.showcase-controls button {
-    display: grid;
-    place-items: center;
-    width: 45px;
-    height: 44px;
-    padding: 0;
-    border: 0;
-    border-radius: 50%;
-    color: white;
-    background: #060202;
-}
-.showcase-controls img { width: 22px; height: 22px; }
-.hero button:disabled { opacity: 1; cursor: default; }
-.hero a:focus-visible { outline: 3px solid var(--red); outline-offset: 5px; }
-@media (max-width: 1100px) {
-    .hero { width: calc(100% - 64px); gap: 32px; }
-    .music-player { grid-template-columns: 112px minmax(0, 1fr); }
-    .record { width: 112px; }
-    .track-title { font-size: 16px; }
-    .hero .social-links { gap: 28px; }
-}
-@media (max-width: 760px) {
-    .hero { width: min(calc(100% - 32px), 620px); grid-template-columns: 1fr; margin-top: 24px; gap: 36px; }
-    .portrait-placeholder { aspect-ratio: 542 / 470; }
-    .introduction-caption h1 { font-size: clamp(36px, 8vw, 56px); }
-    .introduction-caption p { font-size: clamp(16px, 3.5vw, 22px); }
-    .profile-actions { flex-direction: row; align-items: center; margin-top: 28px; }
-    .music-player { grid-template-columns: 112px minmax(0, 1fr); }
-    .animation-panel { margin-top: 24px; font-size: clamp(36px, 8vw, 56px); }
-}
-@media (max-width: 400px) {
-    .music-player { grid-template-columns: 84px minmax(0, 1fr); }
-    .record { width: 84px; }
-    .track-title { font-size: 14px; }
+    line-height: 14px;
+    white-space: pre;
 }
 
-/* Project cards are links to their repositories (phase 4). */
+.event-card__title {
+    color: var(--color-ink);
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 18px;
+}
+
+.event-card__type {
+    color: var(--color-brand);
+    font-size: 11px;
+    line-height: 14px;
+    white-space: pre;
+}
+
+a.event-card,
+a.project-card,
+a.contact-card {
+    transition: border-color 160ms ease, transform 160ms ease;
+}
+
+a.event-card:hover,
+a.project-card:hover,
+a.contact-card:hover {
+    border-color: var(--color-axis);
+    transform: translateY(-2px);
+}
+
+/* Project card: 24 px padding, 12 px between lines. */
 .project-card {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
 }
 
-.project-card:focus-visible {
-    outline: 3px solid var(--black);
-    outline-offset: 4px;
+.project-card__eyebrow {
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 14px;
+    text-transform: uppercase;
+    white-space: pre;
+}
+
+/* Heading/Card: Inter Bold 19 / 24 */
+.project-card__title {
+    color: var(--color-ink);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.project-card__description {
+    flex: 1;
+    color: var(--color-muted);
 }
 
 .project-card__tech {
-    margin: 1.1rem 0 0;
-    font-size: 0.78rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    color: var(--color-brand);
+    font-size: 11px;
+    line-height: 14px;
+    white-space: pre-wrap;
 }
 
-/* ---------- Responsive layout ----------
-   Must stay after the base rules above: the same selectors appear there, and later rules win. */
+.project-card__link {
+    color: var(--color-brand);
+    font-size: 13px;
+    line-height: 18px;
+    white-space: pre;
+}
+
+a.project-card:hover .project-card__link {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+/* Contact card: icon, label, value. */
+.contact-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: var(--space-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+}
+
+.contact-card__value {
+    max-width: 100%;
+    color: var(--color-brand);
+    overflow-wrap: anywhere;
+}
+
+/* ---------- The thread ----------
+   A 2 px Axis line with 12 px Brand dots. Each item is a column: a card above or below the
+   line, joined to its dot by a tick; on the timeline the date sits on the free side.
+
+   Rows: 1 cards above | 2 tick above | 3 the line | 4 tick below | 5 cards below.
+   Items share the rows through subgrid, so the line stays straight whatever the card heights.
+   Each item sets --col; the line is the ::before, spanning every column. */
+.thread {
+    --card-width: 180px;
+    --tick-above: 24px;
+    --tick-below: 22px;
+    --inset: 20px;
+    display: grid;
+    grid-template-columns: repeat(var(--count), minmax(0, var(--card-width)));
+    grid-template-rows: auto var(--tick-above) 2px var(--tick-below) auto;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0 var(--inset);
+    list-style: none;
+}
+
+.thread::before {
+    content: "";
+    grid-row: 3;
+    grid-column: 1 / -1;
+    margin-inline: calc(-1 * var(--inset));
+    background: var(--color-axis);
+}
+
+.thread__item {
+    grid-column: var(--col);
+    grid-row: 1 / -1;
+    display: grid;
+    grid-template-rows: subgrid;
+    justify-items: center;
+    position: relative;
+}
+
+.thread__item > .event-card {
+    grid-row: 1;
+    align-self: end;
+}
+
+.thread__item--below > .event-card {
+    grid-row: 5;
+    align-self: start;
+}
+
+.thread__tick {
+    grid-row: 2;
+    width: 2px;
+    height: 100%;
+    background: var(--color-axis);
+}
+
+.thread__item--below > .thread__tick {
+    grid-row: 4;
+}
+
+.thread__dot {
+    grid-row: 3;
+    align-self: center;
+    z-index: 1;
+    width: 12px;
+    height: 12px;
+    margin-block: -5px;
+    border-radius: 50%;
+    background: var(--color-brand);
+}
+
+/* Axis date (Caption/Regular), on the side of the line away from the card. */
+.thread__date {
+    grid-row: 4;
+    align-self: end;
+    color: var(--color-muted);
+    font-size: 11px;
+    line-height: 14px;
+    white-space: nowrap;
+}
+
+.thread__item--below > .thread__date {
+    grid-row: 2;
+    align-self: start;
+}
+
+/* Hero "On this thread": four 264 px section links, 48 px apart. */
+.thread--nav {
+    --count: 4;
+    --card-width: 264px;
+    --tick-below: 14px;
+    --inset: 0px;
+}
+
+.thread--nav .thread__item--above > .thread__tick {
+    height: 16px;
+    align-self: end;
+}
+
+/* ---------- Hero ---------- */
+
+.hero {
+    padding-top: 72px;
+    padding-bottom: 64px;
+}
+
+.hero__top {
+    display: flex;
+    align-items: center;
+    gap: 72px;
+}
+
+.photo {
+    position: relative;
+    flex: 0 1 400px;
+    height: 480px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+}
+
+/* A photo added to the frame fills it, under the name tag. */
+.photo > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.photo .event-card {
+    position: absolute;
+    left: 19px;
+    bottom: 19px;
+    width: min(240px, calc(100% - 38px));
+}
+
+.intro {
+    display: flex;
+    flex: 0 1 640px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    min-width: 0;
+}
+
+.intro .display-hero {
+    max-width: 560px;
+}
+
+.intro .body-large {
+    max-width: 480px;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+}
+
+.social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 24px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.thread-nav {
+    margin-top: 56px;
+}
+
+.thread-nav .label-section {
+    margin-bottom: 18px;
+}
+
+/* ---------- About ---------- */
+
+.about {
+    display: flex;
+    align-items: flex-start;
+    gap: 64px;
+}
+
+.about__aside {
+    display: flex;
+    flex: 0 0 400px;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.about__text {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+}
+
+.about__text .body-large {
+    max-width: 640px;
+}
+
+.glance {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: 20px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+}
+
+.glance h3 {
+    color: var(--color-ink);
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.glance dl {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    margin: 0;
+}
+
+.glance dl > div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.glance dt {
+    color: var(--color-muted);
+}
+
+.glance dd {
+    margin: 0;
+    color: var(--color-ink);
+    font-weight: 700;
+    line-height: 18px;
+    text-align: right;
+}
+
+/* Whiteboard: a still illustration of the thread. Positions are the Figma ones, as fractions
+   of the 400 px frame so it can shrink on phones. */
+.whiteboard {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+}
+
+.whiteboard__caption {
+    position: absolute;
+    top: 23px;
+    left: 5.75%;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.whiteboard__axis {
+    position: absolute;
+    top: 189px;
+    left: 5.75%;
+    right: 5.75%;
+    height: 2px;
+    background: var(--color-axis);
+}
+
+.whiteboard .event-card {
+    position: absolute;
+    width: 45%;
+}
+
+.whiteboard__card-a {
+    left: 5.75%;
+    bottom: 157px;
+}
+
+.whiteboard__card-b {
+    top: 211px;
+    right: 5.75%;
+}
+
+.whiteboard__tick {
+    position: absolute;
+    width: 2px;
+    background: var(--color-axis);
+}
+
+.whiteboard__tick--a {
+    top: 167px;
+    left: calc(28.25% - 1px);
+    height: 22px;
+}
+
+.whiteboard__tick--b {
+    top: 191px;
+    left: calc(71.25% - 1px);
+    height: 20px;
+}
+
+.whiteboard__dot {
+    position: absolute;
+    top: 184px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--color-brand);
+}
+
+.whiteboard__dot--a {
+    left: calc(28.25% - 6px);
+}
+
+.whiteboard__dot--b {
+    left: calc(71.25% - 6px);
+}
+
+/* ---------- Projects ---------- */
+
+/* 24 px between cards in a grid. */
+.project-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-lg);
+}
+
+/* ---------- Timeline ---------- */
+
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+}
+
+/* Filter chip: pill, 6 x 12 px padding, Body/Small label + Caption/Bold count. */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    font: inherit;
+    font-size: 13px;
+    line-height: 18px;
+    cursor: pointer;
+    transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.chip:hover {
+    border-color: var(--color-axis);
+}
+
+/* Reserves the count's width so the chip does not widen when the script fills it in. */
+.chip__count {
+    display: inline-block;
+    min-width: 1ch;
+    color: var(--color-muted);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 14px;
+    text-align: center;
+}
+
+.chip[aria-pressed="true"] {
+    color: var(--color-on-brand);
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+}
+
+.chip[aria-pressed="true"] .chip__count {
+    color: inherit;
+    opacity: 0.8;
+}
+
+/* Wide timelines scroll sideways rather than squeezing the cards. */
+.thread-scroll {
+    margin-top: 32px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+
+.thread--timeline {
+    min-width: calc(var(--count) * 196px + 24px);
+}
+
+.timeline-status {
+    margin-top: 32px;
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 18px;
+    white-space: pre-wrap;
+}
+
+.timeline-empty {
+    margin-top: 32px;
+    color: var(--color-muted);
+}
+
+/* ---------- Contact and footer ---------- */
+
+.contact {
+    padding-bottom: 0;
+    text-align: center;
+}
+
+.contact .section-heading {
+    align-items: center;
+    gap: var(--space-lg);
+    max-width: 680px;
+    margin-inline: auto;
+    margin-bottom: var(--space-lg);
+}
+
+/* 282 px cards, as many per row as fit (four at full width), centred so a row of two or three
+   still sits in the middle. */
+.contact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, 282px);
+    justify-content: center;
+    gap: var(--space-lg);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+
+.contact-grid > li {
+    display: flex;
+}
+
+.contact-grid .contact-card {
+    flex: 1;
+}
+
+.site-footer {
+    padding-bottom: 40px;
+}
+
+.site-footer .container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--space-xs) var(--space-lg);
+    margin-top: 40px;
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+    color: var(--color-muted);
+    font-size: 13px;
+    line-height: 18px;
+}
+
+.site-footer p {
+    white-space: pre-wrap;
+}
+
+/* ---------- Not-found page ---------- */
+
+.not-found {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    min-height: 60vh;
+    padding-top: 120px;
+}
+
+/* ---------- Responsive ---------- */
 
 @media (max-width: 1100px) {
-    .navigation,
-    .projects-section {
-        width: min(100% - 4rem, 900px);
+    .hero__top,
+    .about {
+        gap: 48px;
     }
 
-    .project-card {
-        padding: 1.5rem;
-    }
-}
-
-@media (max-width: 760px) {
-    .navigation {
-        width: min(100% - 2rem, 620px);
-        min-height: 76px;
-    }
-
-    /* 1.2rem bold still counts as large text, so the brand red keeps enough contrast. */
-    .logo {
-        font-size: 1.2rem;
-        overflow-wrap: anywhere;
-    }
-
-    .nav-links {
-        gap: 1.25rem;
-    }
-
-    .nav-links a {
-        font-size: 1rem;
-    }
-
-    .projects-section {
-        width: min(100% - 2rem, 620px);
-        margin-top: 5rem;
+    .about__aside {
+        flex-basis: 340px;
     }
 
     .project-grid {
-        grid-template-columns: 1fr;
-        margin-top: 2.5rem;
-    }
-
-    .project-card {
-        min-height: 205px;
-    }
-
-    .contact-section {
-        min-height: 0;
-        padding-top: 4.5rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 }
 
-@media (max-width: 500px) {
-    .navigation {
+/* Below 900 px the thread turns vertical: the line runs down the left edge and the cards stack
+   on the right. The hero photo and the about aside move under their text. */
+@media (max-width: 899px) {
+    .band {
+        padding-block: 64px;
+    }
+
+    .hero {
+        padding-top: 48px;
+    }
+
+    .hero__top,
+    .about {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .photo {
+        order: 2;
+        flex: none;
+        width: min(100%, 400px);
+        height: auto;
+        aspect-ratio: 400 / 480;
+    }
+
+    .about__aside {
+        order: 2;
+        flex: none;
+        width: min(100%, 400px);
+    }
+
+    /* Stacked, the desktop flex-basis would become a 640 px height. */
+    .intro {
+        flex: none;
+    }
+
+    .thread,
+    .thread--timeline {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-md);
+        min-width: 0;
+        padding: 0 0 0 30px;
+        position: relative;
+    }
+
+    .thread::before {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 5px;
+        width: 2px;
+        margin: 0;
+    }
+
+    .thread__item {
+        --dot-top: 22px;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 6px;
+        max-width: 480px;
+    }
+
+    .thread__item:has(.thread__date) {
+        --dot-top: 42px;
+    }
+
+    .thread__dot,
+    .thread__item--below > .thread__dot {
+        position: absolute;
+        top: var(--dot-top);
+        left: -30px;
+        margin: 0;
+    }
+
+    .thread__tick,
+    .thread__item--below > .thread__tick,
+    .thread--nav .thread__item--above > .thread__tick {
+        position: absolute;
+        top: calc(var(--dot-top) + 5px);
+        left: -18px;
+        width: 18px;
+        height: 2px;
+    }
+
+    /* Undo the desktop row alignment: dates sit above their card, on the left. */
+    .thread .thread__item > * {
+        align-self: auto;
+    }
+
+    .thread__date,
+    .thread__item--below > .thread__date {
+        order: -1;
+        align-self: flex-start;
+    }
+
+    .thread-scroll {
+        overflow: visible;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        width: calc(100% - 40px);
+    }
+
+    .site-header .container {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0.9rem;
-        padding-block: 1rem;
+        gap: 0;
+        padding-top: 16px;
     }
 
     .nav-links {
-        width: 100%;
-        justify-content: space-between;
-        gap: 0.5rem;
+        flex-wrap: wrap;
+        gap: 0 20px;
     }
 
-    .nav-links a {
-        font-size: 0.95rem;
+    .display-hero {
+        font-size: 34px;
+        line-height: 42px;
     }
 
-    .contact-section address,
-    .footer-line {
-        font-size: 1.05rem;
-    }
-}
-
-/* Tablets: the header's one row must hold the full handle and four links. */
-@media (min-width: 761px) and (max-width: 900px) {
-    .logo {
-        font-size: 1.25rem;
+    .heading-section {
+        font-size: 26px;
+        line-height: 32px;
     }
 
-    .nav-links {
-        gap: 1.5rem;
+    .project-grid,
+    .contact-grid {
+        grid-template-columns: 1fr;
     }
 
-    .nav-links a {
-        font-size: 1rem;
+    .glance dl > div {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .glance dd {
+        text-align: left;
     }
 }

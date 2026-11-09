@@ -1,17 +1,34 @@
+/* Threadline design tokens, matching the "Threadline tokens" variables and text styles in the
+   Figma file "Tony — Personal website (Threadline style)". Navy carries every interactive
+   element; grey-blue does the quiet work.
 
-/* Contrast against the cream background (#ffead1) and the sand cards (#f0ddc5), per WCAG AA:
-   --red       4.1:1 on cream: fills, large headings and decoration (white text on it: 4.8:1)
-   --red-text  5.5:1 on cream, 4.9:1 on sand: red text below 24px and small badges
-   --muted     5.5:1 on cream, 4.9:1 on sand: secondary text */
+   Contrast against white, per WCAG AA (4.5:1 for small text):
+   --color-ink    14.3:1  headings and strong text
+   --color-brand  10.8:1  links, buttons, card types
+   --color-muted   4.8:1  body copy, labels and captions (4.6:1 on --color-canvas). The Figma
+                          value #74808e is 4.0:1, below AA for the 10-13 px captions, so the
+                          site uses this slightly darker grey-blue. */
 :root {
-    --background: #ffead1;
-    --red: #e60000;
-    --red-text: #c00000;
-    --black: #030303;
-    --charcoal: #252323;
-    --muted: #625d5b;
-    --portrait: #9f9698;
-    --line: rgba(37, 35, 35, 0.12);
+    --color-brand: #273b70;
+    --color-on-brand: #f5f5f5;
+    --color-ink: #222b36;
+    --color-muted: #687482;
+    --color-border: #e2e7ed;
+    --color-surface: #ffffff;
+    --color-canvas: #fafbfd;
+    --color-axis: #9daec4;
+
+    --space-xs: 8px;
+    --space-sm: 12px;
+    --space-md: 16px;
+    --space-lg: 24px;
+
+    --radius-button: 8px;
+    --radius-card: 10px;
+    --radius-pill: 999px;
+
+    --content-width: 1200px;
+    --font-sans: "Inter Variable", "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
 * {
@@ -20,15 +37,25 @@
 
 html {
     scroll-behavior: smooth;
+    /* The page colour lives on html so the drifting dot grid (body::before, site.css) can sit
+       between it and the content. */
+    background: var(--color-surface);
 }
 
 body {
     margin: 0;
-    color: var(--black);
-    background: var(--background);
-    font-family: "Outfit Variable", "Trebuchet MS", sans-serif;
-    font-weight: 500;
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 20px;
+    -webkit-font-smoothing: antialiased;
+}
 
+h1,
+h2,
+h3,
+p {
+    margin: 0;
 }
 
 a {
@@ -36,11 +63,55 @@ a {
     text-decoration: none;
 }
 
-/* One visible focus ring for every control; components may override the colour. */
+/* Keeps "hidden" working on elements that a layout rule gives a display value. */
+[hidden] {
+    display: none !important;
+}
+
+/* ---------- Text styles (Figma text styles of the same names) ---------- */
+
+/* Label/Section: Inter Bold 10 / 12, +8%, uppercase */
+.label-section {
+    color: var(--color-muted);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* Display/Hero: Inter Bold 44 / 52, -1% */
+.display-hero {
+    color: var(--color-ink);
+    font-size: 44px;
+    font-weight: 700;
+    line-height: 52px;
+    letter-spacing: -0.01em;
+}
+
+/* Heading/Section: Inter Bold 30 / 38, -0.5% */
+.heading-section {
+    color: var(--color-ink);
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 38px;
+    letter-spacing: -0.005em;
+}
+
+/* Body/Large: Inter Regular 16 / 24 */
+.body-large {
+    color: var(--color-muted);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 24px;
+}
+
+/* ---------- Focus and skip link ---------- */
+
+/* One visible focus ring for every control. */
 a:focus-visible,
-button:focus-visible,
-input:focus-visible {
-    outline: 3px solid var(--red);
+button:focus-visible {
+    outline: 2px solid var(--color-brand);
     outline-offset: 3px;
 }
 
@@ -50,10 +121,10 @@ input:focus-visible {
     top: 0;
     left: 0;
     z-index: 100;
-    padding: 0.75rem 1rem;
-    color: var(--background);
-    background: var(--black);
-    font-weight: 700;
+    padding: 12px 16px;
+    color: var(--color-on-brand);
+    background: var(--color-brand);
+    font-weight: 600;
     transform: translateY(-120%);
     transition: transform 120ms ease;
 }
@@ -65,4 +136,14 @@ input:focus-visible {
 /* The skip link moves focus here; the page itself needs no ring. */
 main:focus {
     outline: none;
+}
+
+/* Visible to screen readers only. */
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }

@@ -6,33 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
     <meta name="robots" content="noindex">
-    <title>Page not found | Tony</title>
+    <meta name="theme-color" content="#ffffff">
+    <title>Page not found | Tony Nguyen</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <link rel="stylesheet" href="./src/styles/designtoken.css">
-    <link rel="stylesheet" href="./src/styles/animations.css">
     <link rel="stylesheet" href="./src/styles/site.css">
+    <link rel="stylesheet" href="./src/styles/animations.css">
 </head>
 
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
+    <!-- GitHub Pages serves this file for any unknown URL, at any depth, so the links use
+         data-home-link and main.js points them at the site root. -->
     <header class="site-header">
-        <nav class="navigation" aria-label="Primary navigation">
-            <a class="logo" href="/" data-home-link>nutritiousblueberrymuffins</a>
-
-            <ul class="nav-links">
-                <li><a href="/" data-home-link>Home</a></li>
-            </ul>
-        </nav>
+        <div class="container">
+            <a class="wordmark" href="/" data-home-link><span aria-hidden="true">✦  </span>Tony Nguyen</a>
+            <nav aria-label="Primary navigation">
+                <ul class="nav-links">
+                    <li><a href="/" data-home-link>Home</a></li>
+                </ul>
+            </nav>
+        </div>
     </header>
 
     <main id="main" tabindex="-1">
-        <!-- GitHub Pages serves this file for any unknown URL, at any depth, so the links use
-             data-home-link and main.js points them at the site root. -->
-        <section class="contact-section" aria-labelledby="not-found-title">
-            <h1 id="not-found-title">Page not found</h1>
-            <p class="footer-line">That link goes nowhere. Head back to the <a href="/" data-home-link>home page</a>.</p>
+        <section class="container not-found" aria-labelledby="not-found-title">
+            <p class="label-section">404</p>
+            <h1 class="heading-section" id="not-found-title">Page not found.</h1>
+            <p class="body-large">That link goes nowhere. The thread picks up again on the home page.</p>
+            <a class="button button--primary" href="/" data-home-link>Back to the home page</a>
         </section>
     </main>
 

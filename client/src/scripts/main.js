@@ -1,7 +1,7 @@
 // Site-wide entry point, loaded by every page.
 
-// Loads the Outfit variable font (weights 100-900); Vite bundles the font files.
-import '@fontsource-variable/outfit/wght.css';
+// Loads the Inter variable font (weights 100-900); Vite bundles the font files.
+import '@fontsource-variable/inter/wght.css';
 
 // Links marked data-home-link always point at the site root, whatever base path the site is
 // deployed under (for example /personal-website/ on GitHub Pages). The 404 page needs this

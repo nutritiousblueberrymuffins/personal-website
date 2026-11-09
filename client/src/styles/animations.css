@@ -1,5 +1,5 @@
-/* Motion preferences. The responsive layout rules that used to live here moved to the end of
-   site.css (phase 6): this file loads before site.css, so site.css was overriding them. */
+/* Motion preferences. Loaded after site.css. With reduced motion the drifting dot grid stands
+   still, and transitions and smooth scrolling are off. */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
     *, *::before, *::after { animation: none !important; transition: none !important; }

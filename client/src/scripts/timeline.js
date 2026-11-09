@@ -523,7 +523,7 @@ function buildFilters() {
     button.querySelector('.chip__count').textContent = String(type ? counts[type] ?? 0 : entries.length);
     button.addEventListener('click', () => {
       setFilter(type);
-      track('timeline_filtered', { filter: type || 'all', shown: thread.children.length });
+      track('timeline_filtered', { filter: type || 'all', shown: shown.length });
     });
   }
 }

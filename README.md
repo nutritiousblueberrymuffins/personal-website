@@ -109,6 +109,17 @@ the thread turns vertical and the photo and about panel move under their text; b
 header stacks. Checked from 320 to 1920 px in 10 px steps and on iPhone, Pixel and iPad
 emulation: no sideways scrolling and nothing cut off.
 
+## Motion
+
+`client/src/styles/motion.css` and `client/src/scripts/motion.js` add the page's movement:
+headings, cards and panels rise in as they scroll into view, the hero and timeline threads draw
+their line and pop their dots, project and contact cards and the photo tilt toward the cursor
+with a glow that follows it, buttons lean toward the pointer and ripple when pressed, links and
+arrows nudge on hover, the photo's name tag floats, and a thin progress bar tracks the scroll.
+A one-line script in each page's `<head>` switches it on before the first paint only when the
+visitor has not asked for reduced motion; otherwise the page is fully visible and still. If
+the script ever fails to load, anything waiting to be revealed shows after 4 seconds anyway.
+
 ## Analytics
 
 The site has its own visitor analytics, with no third party: `client/src/scripts/analytics.js`

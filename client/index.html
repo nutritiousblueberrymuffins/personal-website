@@ -23,7 +23,15 @@
     <title>Tony Nguyen | CPA and Aspiring Software Engineer</title>
     <link rel="stylesheet" href="./src/styles/designtoken.css">
     <link rel="stylesheet" href="./src/styles/site.css">
+    <link rel="stylesheet" href="./src/styles/motion.css">
     <link rel="stylesheet" href="./src/styles/animations.css">
+    <!-- Turns on the page's motion (motion.css / motion.js) before the first paint, unless the
+         visitor prefers reduced motion. -->
+    <script>
+        if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.classList.add('motion-ok');
+        }
+    </script>
 </head>
 
 <body>

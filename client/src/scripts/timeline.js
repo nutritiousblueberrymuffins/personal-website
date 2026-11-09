@@ -166,6 +166,10 @@ function renderDetail(entry, index) {
     body.push(links);
   }
   detail.replaceChildren(...body);
+  // Replays the panel's ease-in (motion.css) for the new entry.
+  detail.classList.remove('is-swapping');
+  void detail.offsetWidth;
+  detail.classList.add('is-swapping');
 }
 
 // ---------- Selection ----------

@@ -202,8 +202,22 @@ function watchForDeadClick(element, details) {
   }, 1000);
 }
 
+// A press that moved more than a few pixels before release was a drag (the timeline and the
+// hero thread can be dragged), not a click: it is not recorded as one, nor as a rage click.
+const DRAG_DISTANCE = 6;
+let pressedAt = null;
+
+function onPointerDown(event) {
+  pressedAt = { x: event.clientX, y: event.clientY };
+}
+
 function onClick(event) {
   if (!(event.target instanceof Element)) {
+    return;
+  }
+  const press = pressedAt;
+  pressedAt = null;
+  if (press && event.detail > 0 && Math.hypot(event.clientX - press.x, event.clientY - press.y) > DRAG_DISTANCE) {
     return;
   }
   const element = event.target.closest(CLICKABLE) || event.target;
@@ -290,6 +304,7 @@ if (enabled) {
     utm_medium: params.get('utm_medium') || undefined,
     utm_campaign: params.get('utm_campaign') || undefined,
   });
+  document.addEventListener('pointerdown', onPointerDown, { capture: true, passive: true });
   document.addEventListener('click', onClick, { capture: true, passive: true });
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();

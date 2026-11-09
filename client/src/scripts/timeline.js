@@ -5,11 +5,12 @@
 // unfinished items off the live site. The type filters update ?type= in the address so a
 // filtered view can be shared.
 //
-// Moving through it: one entry is selected at a time (the newest to start with) and its full
-// details show under the thread. The back and forward arrows, the left and right arrow keys,
-// and clicking a card change the selection; the thread can be dragged with a mouse or swiped
-// on a touch screen, and the entry that comes to rest nearest the middle becomes the selected
-// one.
+// Moving through it: the thread is an endless strip. The entries repeat in both directions, so
+// dragging (mouse) or swiping (touch) keeps going forward or backward, past the newest entry
+// round to the oldest and the other way. A quick flick carries on through several entries;
+// a horizontal trackpad swipe or Shift + wheel moves it too; the back / forward arrows and the
+// arrow keys step one entry and loop the same way. It always settles with one entry centred,
+// which is the selected one, and that entry's full details show under the thread.
 import data from '../data/timeline.json';
 import { track } from './analytics.js';
 
@@ -26,14 +27,18 @@ const ONGOING_TYPES = new Set(['work', 'education']);
 const QUERY_PARAM = 'type';
 const SHARE_NOTE = '  ·  the filters update the address, so a view can be shared.';
 // How far the pointer must move before a press on the thread counts as a drag, not a click.
-const DRAG_THRESHOLD = 5;
+const DRAG_THRESHOLD = 6;
+// A flick carries on for about this long at the speed it was released at.
+const MOMENTUM_MS = 320;
+const MAX_CARRY = 5;
+const EASE = 'cubic-bezier(0.2, 0.7, 0.2, 1)';
 
 const thread = document.getElementById('timeline-thread');
 const viewport = document.getElementById('timeline-viewport');
 const filters = document.getElementById('timeline-filters');
 const status = document.getElementById('timeline-status');
 const detail = document.getElementById('timeline-detail');
-const position = document.getElementById('timeline-position');
+const positionLabel = document.getElementById('timeline-position');
 const prevButton = document.getElementById('timeline-prev');
 const nextButton = document.getElementById('timeline-next');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -43,7 +48,18 @@ const entries = data.entries
   .sort(oldestFirst);
 
 let shown = [];
+// The selected entry's index in `shown`.
 let current = -1;
+// The track: the entries repeated, laid out side by side. `period` items repeat seamlessly (twice
+// the entry count when it is odd, so cards keep their above / below side); the track holds three
+// periods and the settled position is always kept inside the middle one.
+let period = 0;
+let looping = false;
+// Position along the track, in items: the item centred in the window. Fractional while moving.
+let pos = 0;
+// Measured layout: distance between neighbouring items, and the first item's centre.
+let pitch = 0;
+let firstCentre = 0;
 
 // Dates are ISO strings (YYYY, YYYY-MM or YYYY-MM-DD), so string order is date order.
 function oldestFirst(a, b) {
@@ -110,7 +126,8 @@ function element(tag, className, text) {
   return node;
 }
 
-function entryElement(entry, index) {
+// `index` is the item's place on the track; `entryIndex` is which entry it shows.
+function entryElement(entry, index, entryIndex) {
   const item = element('li', `thread__item thread__item--${index % 2 === 0 ? 'above' : 'below'}`);
   item.style.setProperty('--col', String(index + 1));
 
@@ -119,10 +136,12 @@ function entryElement(entry, index) {
   axis.dateTime = entry.start;
   axis.setAttribute('aria-hidden', 'true');
 
-  // The card is a button: clicking it (or Enter / Space) selects the entry.
+  // Clicking a card brings it to the middle. The whole track is hidden from screen readers and
+  // the keyboard (the region and the details panel stand in for it), so cards are not tab stops.
   const card = element('button', 'event-card');
   card.type = 'button';
-  card.dataset.index = String(index);
+  card.dataset.track = String(index);
+  card.dataset.entry = String(entryIndex);
   card.tabIndex = -1;
   card.append(
     element('span', 'event-card__date', cardDate(entry)),
@@ -139,8 +158,8 @@ function entryElement(entry, index) {
   return item;
 }
 
-function cards() {
-  return [...thread.querySelectorAll('.event-card')];
+function items() {
+  return thread.children;
 }
 
 // ---------- The details panel ----------
@@ -172,90 +191,152 @@ function renderDetail(entry, index) {
   detail.classList.add('is-swapping');
 }
 
-// ---------- Selection ----------
+// ---------- Moving the track ----------
 
-let programmaticScroll = false;
-
-// Where a card's middle sits along the scrolling thread, in the thread's scroll coordinates.
-function cardMiddle(card) {
-  const box = card.getBoundingClientRect();
-  return viewport.scrollLeft + box.left - viewport.getBoundingClientRect().left + box.width / 2;
-}
-
-// Scrolls the thread sideways so the card sits in the middle; never scrolls the page itself.
-function centre(index, smooth) {
-  const card = cards()[index];
-  if (!card || viewport.scrollWidth <= viewport.clientWidth) {
+function measure() {
+  const list = items();
+  if (!list.length) {
     return;
   }
-  const target = cardMiddle(card) - viewport.clientWidth / 2;
-  const left = Math.max(0, Math.min(target, viewport.scrollWidth - viewport.clientWidth));
-  if (Math.abs(left - viewport.scrollLeft) < 1) {
-    return;
-  }
-  programmaticScroll = true;
-  viewport.scrollTo({ left, behavior: smooth && !reduceMotion.matches ? 'smooth' : 'auto' });
+  const trackLeft = thread.getBoundingClientRect().left;
+  const a = list[0].getBoundingClientRect();
+  firstCentre = a.left - trackLeft + a.width / 2;
+  pitch = list.length > 1 ? list[1].getBoundingClientRect().left - a.left : a.width;
 }
 
-function select(index, { via, scroll = true, focus = false } = {}) {
+function place(position, duration = 0) {
+  pos = position;
+  const offset = viewport.clientWidth / 2 - (firstCentre + pos * pitch);
+  thread.style.transition = duration ? `transform ${duration}ms ${EASE}` : 'none';
+  thread.style.transform = `translate3d(${offset.toFixed(2)}px, 0, 0)`;
+}
+
+// The entry shown by the track item at a (rounded) position.
+function entryAt(position) {
+  const n = shown.length;
+  return ((Math.round(position) % n) + n) % n;
+}
+
+// Keeps a settled position inside the middle period. The track repeats every `period` items, so
+// this jump is invisible.
+function normalise() {
+  if (!looping) {
+    return;
+  }
+  let p = Math.round(pos);
+  while (p < period) {
+    p += period;
+  }
+  while (p >= 2 * period) {
+    p -= period;
+  }
+  if (p !== Math.round(pos)) {
+    place(p);
+  }
+}
+
+// Highlights the centred card (only that copy, not every repeat of the entry) and updates the
+// "n / total" position.
+function highlight(position) {
+  const centred = Math.round(position);
+  for (const item of items()) {
+    const card = item.querySelector('.event-card');
+    const on = Number(card.dataset.track) === centred;
+    item.classList.toggle('is-current', on);
+    card.setAttribute('aria-current', on ? 'true' : 'false');
+  }
+  positionLabel.textContent = `${entryAt(position) + 1} / ${shown.length}`;
+}
+
+let settleTimer = 0;
+
+// Moves the track to a whole item position and selects the entry there.
+function goTo(target, { via, duration } = {}) {
   if (!shown.length) {
     return;
   }
-  const next = Math.max(0, Math.min(index, shown.length - 1));
-  const changed = next !== current;
-  current = next;
-  cards().forEach((card, i) => {
-    const on = i === current;
-    card.setAttribute('aria-current', on ? 'true' : 'false');
-    card.tabIndex = on ? 0 : -1;
-    card.closest('.thread__item').classList.toggle('is-current', on);
-  });
-  prevButton.disabled = current === 0;
-  nextButton.disabled = current === shown.length - 1;
-  position.textContent = `${current + 1} / ${shown.length}`;
-  renderDetail(shown[current], current);
-  if (scroll) {
-    centre(current, Boolean(via));
+  if (!looping) {
+    target = Math.max(0, Math.min(target, shown.length - 1));
   }
-  if (focus) {
-    cards()[current].focus({ preventScroll: true });
+  target = Math.round(target);
+  const distance = Math.abs(target - pos);
+  const time = reduceMotion.matches ? 0 : duration ?? Math.min(250 + distance * 90, 900);
+  place(target, time);
+  highlight(target);
+  clearTimeout(settleTimer);
+  settleTimer = setTimeout(() => {
+    normalise();
+    select(entryAt(target), via, Math.round(distance));
+  }, time);
+}
+
+function select(index, via, steps = 0) {
+  const changed = index !== current;
+  current = index;
+  highlight(pos);
+  if (!looping) {
+    prevButton.disabled = current === 0;
+    nextButton.disabled = current === shown.length - 1;
+  }
+  if (changed || !detail.childElementCount) {
+    renderDetail(shown[current], current);
   }
   if (via && changed) {
-    track('timeline_navigated', { via, entry: shown[current].id, position: current + 1 });
+    track('timeline_navigated', { via, entry: shown[current].id, position: current + 1, steps });
   }
 }
 
-prevButton.addEventListener('click', () => select(current - 1, { via: 'arrow' }));
-nextButton.addEventListener('click', () => select(current + 1, { via: 'arrow' }));
+prevButton.addEventListener('click', () => goTo(Math.round(pos) - 1, { via: 'arrow' }));
+nextButton.addEventListener('click', () => goTo(Math.round(pos) + 1, { via: 'arrow' }));
 
 thread.addEventListener('click', (event) => {
   const card = event.target.closest('.event-card');
   if (card) {
-    select(Number(card.dataset.index), { via: 'card' });
+    goTo(Number(card.dataset.track), { via: 'card' });
   }
 });
 
-// Left / Right (and Home / End) on a focused card move the selection and the focus with it.
-thread.addEventListener('keydown', (event) => {
-  const moves = { ArrowLeft: current - 1, ArrowRight: current + 1, Home: 0, End: shown.length - 1 };
+// Arrow keys on the strip step one entry (and loop); Home and End jump to the oldest / newest.
+viewport.addEventListener('keydown', (event) => {
+  const here = Math.round(pos);
+  const base = looping ? here - entryAt(here) : 0;
+  const moves = {
+    ArrowLeft: here - 1,
+    ArrowRight: here + 1,
+    Home: base,
+    End: base + shown.length - 1,
+  };
   if (event.key in moves) {
     event.preventDefault();
-    select(moves[event.key], { via: 'key', focus: true });
+    goTo(moves[event.key], { via: 'key' });
   }
 });
 
-// ---------- Dragging and swiping ----------
-// Touch screens scroll the thread natively (a swipe). With a mouse, pressing and dragging moves
-// it; a press that moves less than DRAG_THRESHOLD is still a click on the card.
+// ---------- Dragging, swiping and flicking ----------
+// The track follows the pointer (mouse or finger) item by item. On release it carries on in the
+// same direction for a moment if it was flicked, then settles on the nearest entry.
 
 let drag = null;
 let suppressClick = false;
 
 viewport.addEventListener('pointerdown', (event) => {
-  if (event.pointerType !== 'mouse' || event.button !== 0 || viewport.scrollWidth <= viewport.clientWidth) {
+  if (!shown.length || (event.pointerType === 'mouse' && event.button !== 0)) {
     return;
   }
-  drag = { x: event.clientX, left: viewport.scrollLeft, moved: false, id: event.pointerId };
+  clearTimeout(settleTimer);
+  // Catch the track wherever it is, even mid-animation.
+  const now = new DOMMatrixReadOnly(getComputedStyle(thread).transform).m41;
+  const caught = (viewport.clientWidth / 2 - now - firstCentre) / pitch;
+  place(caught);
+  drag = {
+    id: event.pointerId,
+    type: event.pointerType,
+    x: event.clientX,
+    y: event.clientY,
+    start: caught,
+    moved: false,
+    samples: [{ x: event.clientX, t: event.timeStamp }],
+  };
 });
 
 viewport.addEventListener('pointermove', (event) => {
@@ -263,37 +344,68 @@ viewport.addEventListener('pointermove', (event) => {
     return;
   }
   const dx = event.clientX - drag.x;
-  if (!drag.moved && Math.abs(dx) < DRAG_THRESHOLD) {
-    return;
-  }
   if (!drag.moved) {
+    const dy = event.clientY - drag.y;
+    if (Math.abs(dx) < DRAG_THRESHOLD || Math.abs(dx) < Math.abs(dy)) {
+      return;
+    }
     drag.moved = true;
     viewport.setPointerCapture(event.pointerId);
     viewport.classList.add('is-dragging');
   }
-  viewport.scrollLeft = drag.left - dx;
+  let next = drag.start - dx / pitch;
+  if (!looping) {
+    // Past either end the strip resists, like a rubber band.
+    const max = shown.length - 1;
+    if (next < 0) {
+      next /= 3;
+    } else if (next > max) {
+      next = max + (next - max) / 3;
+    }
+  }
+  place(next);
+  highlight(next);
+  drag.samples.push({ x: event.clientX, t: event.timeStamp });
+  if (drag.samples.length > 12) {
+    drag.samples.shift();
+  }
 });
 
-function endDrag(event) {
+function release(event) {
   if (!drag || (event && event.pointerId !== drag.id)) {
     return;
   }
-  if (drag.moved) {
-    // Swallow the click this release may fire; clear the flag right after, so a later real
-    // click still works when the browser fires none.
-    suppressClick = true;
-    setTimeout(() => {
-      suppressClick = false;
-    }, 0);
-    viewport.classList.remove('is-dragging');
-    settle('drag');
-  }
+  const finished = drag;
   drag = null;
+  viewport.classList.remove('is-dragging');
+  if (!finished.moved) {
+    // A tap or click: settle back where it was.
+    goTo(Math.round(finished.start));
+    return;
+  }
+  // Swallow the click this release may fire; cleared right after so a later click still works.
+  suppressClick = true;
+  setTimeout(() => {
+    suppressClick = false;
+  }, 0);
+  // Speed over the last 100 ms of movement. If the pointer stopped before letting go (a drag
+  // that comes to rest), there is no momentum; a flick carries on.
+  const releasedAt = event?.timeStamp ?? performance.now();
+  const recent = finished.samples.filter((sample) => releasedAt - sample.t <= 100);
+  let velocity = 0; // px per ms, positive = dragged right
+  if (recent.length >= 2 && event?.type !== 'pointercancel') {
+    const first = recent[0];
+    const last = recent[recent.length - 1];
+    velocity = (last.x - first.x) / Math.max(last.t - first.t, 1);
+  }
+  // A hard fling carries on at most MAX_CARRY entries.
+  const carry = Math.max(-MAX_CARRY, Math.min(MAX_CARRY, (velocity * MOMENTUM_MS) / pitch));
+  const target = Math.round(pos - carry);
+  goTo(target, { via: finished.type === 'mouse' ? 'drag' : 'swipe' });
 }
 
-viewport.addEventListener('pointerup', endDrag);
-viewport.addEventListener('pointercancel', endDrag);
-// The click that ends a drag is not a click on a card.
+viewport.addEventListener('pointerup', release);
+viewport.addEventListener('pointercancel', release);
 viewport.addEventListener(
   'click',
   (event) => {
@@ -306,65 +418,70 @@ viewport.addEventListener(
   true,
 );
 
-// When the thread comes to rest after a drag or swipe, the entry nearest the middle (or the
-// first or last, at either end) becomes the selected one.
-function settle(via) {
-  if (!shown.length || viewport.scrollWidth <= viewport.clientWidth) {
-    return;
-  }
-  const max = viewport.scrollWidth - viewport.clientWidth;
-  let index;
-  if (viewport.scrollLeft <= 2) {
-    index = 0;
-  } else if (viewport.scrollLeft >= max - 2) {
-    index = shown.length - 1;
-  } else {
-    const middle = viewport.scrollLeft + viewport.clientWidth / 2;
-    let best = Infinity;
-    cards().forEach((card, i) => {
-      const distance = Math.abs(cardMiddle(card) - middle);
-      if (distance < best) {
-        best = distance;
-        index = i;
-      }
-    });
-  }
-  select(index, { via, scroll: false });
-}
+// Trackpads (and Shift + wheel) scroll it sideways; it settles once the scrolling stops.
+let wheelTimer = 0;
+viewport.addEventListener(
+  'wheel',
+  (event) => {
+    const dx = event.deltaX || (event.shiftKey ? event.deltaY : 0);
+    if (!shown.length || Math.abs(dx) <= Math.abs(event.shiftKey ? 0 : event.deltaY)) {
+      return;
+    }
+    event.preventDefault();
+    clearTimeout(settleTimer);
+    let next = pos + dx / pitch;
+    if (!looping) {
+      next = Math.max(-0.4, Math.min(next, shown.length - 0.6));
+    }
+    place(next);
+    highlight(next);
+    clearTimeout(wheelTimer);
+    wheelTimer = setTimeout(() => goTo(Math.round(pos), { via: 'wheel' }), 140);
+  },
+  { passive: false },
+);
 
-let scrollTimer = null;
-function onScrollRest() {
-  clearTimeout(scrollTimer);
-  if (programmaticScroll) {
-    programmaticScroll = false;
-    return;
-  }
-  if (!drag) {
-    settle('swipe');
-  }
-}
-if ('onscrollend' in window) {
-  viewport.addEventListener('scrollend', onScrollRest);
-} else {
-  viewport.addEventListener('scroll', () => {
-    clearTimeout(scrollTimer);
-    scrollTimer = setTimeout(onScrollRest, 150);
-  }, { passive: true });
-}
+// The layout changes size with the window (and the fonts loading): re-measure and re-centre.
+let resizeFrame = 0;
+const relayout = () => {
+  cancelAnimationFrame(resizeFrame);
+  resizeFrame = requestAnimationFrame(() => {
+    if (shown.length) {
+      measure();
+      place(Math.round(pos));
+    }
+  });
+};
+window.addEventListener('resize', relayout);
+document.fonts?.ready.then(relayout);
 
 // ---------- Filters ----------
 
 function render(type) {
   shown = type ? entries.filter((entry) => entry.type === type) : entries;
-  thread.replaceChildren(...shown.map(entryElement));
-  thread.style.setProperty('--count', String(shown.length));
-  const empty = shown.length === 0;
-  thread.hidden = empty;
+  const n = shown.length;
+  looping = n >= 2;
+  period = n % 2 ? n * 2 : n;
+  const count = looping ? period * 3 : n;
+  // Start on the newest entry, in the middle period of the track.
+  const start = looping ? period + n - 1 : n - 1;
+  const trackItems = [];
+  for (let i = 0; i < count; i++) {
+    const item = entryElement(shown[i % n], i, i % n);
+    // Reveal outward from the starting entry.
+    item.style.setProperty('--stagger', String(Math.min(Math.abs(i - start), 8)));
+    trackItems.push(item);
+  }
+  thread.replaceChildren(...trackItems);
+  thread.style.setProperty('--count', String(count));
+  const empty = n === 0;
+  viewport.hidden = empty;
   detail.hidden = empty;
-  prevButton.disabled = empty;
-  nextButton.disabled = empty;
-  position.textContent = '';
+  prevButton.disabled = empty || n === 1;
+  nextButton.disabled = empty || n === 1;
+  positionLabel.textContent = '';
   current = -1;
+  detail.replaceChildren();
 
   if (empty) {
     status.textContent = type ? `No ${LABELS[type].toLowerCase()} entries yet.` : 'No entries yet.';
@@ -372,8 +489,9 @@ function render(type) {
   }
   const noun = entries.length === 1 ? 'entry' : 'entries';
   status.textContent = `Showing ${shown.length} of ${entries.length} ${noun}${SHARE_NOTE}`;
-  // Start on the newest entry, with the thread scrolled to it.
-  select(shown.length - 1, { scroll: true });
+  measure();
+  place(start);
+  select(n - 1);
 }
 
 function setFilter(type, { updateUrl = true } = {}) {

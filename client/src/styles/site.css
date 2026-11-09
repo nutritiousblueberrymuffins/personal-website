@@ -769,33 +769,43 @@ a.project-card:hover .project-card__link {
     }
 }
 
-/* The thread scrolls sideways at every screen size: drag it with a mouse, swipe it on a touch
-   screen, or scroll it with a trackpad. Cards settle in the middle when it comes to rest. */
+/* The timeline is an endless strip: a window onto a track of entries that repeats in both
+   directions. timeline.js moves the track with transform as it is dragged, swiped, flicked,
+   scrolled sideways or stepped with the arrows, and always settles with one entry centred.
+   Vertical page scrolling still works over it on touch screens (touch-action: pan-y). */
 .thread-scroll {
+    position: relative;
     margin-top: var(--space-md);
     padding-block: 0.25rem 0.75rem;
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-axis) transparent;
+    overflow: hidden;
+    touch-action: pan-y;
     cursor: grab;
+    /* Entries fade in and out at the edges, so the strip reads as going on and on. */
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    border-radius: var(--radius-card);
+}
+
+.thread-scroll:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 4px;
+    -webkit-mask-image: none;
+    mask-image: none;
 }
 
 .thread-scroll.is-dragging {
     cursor: grabbing;
-    scroll-snap-type: none;
     user-select: none;
 }
 
 .thread--timeline {
     --card-width: 12.5rem;
+    --inset: 0px;
+    grid-template-columns: repeat(var(--count), var(--card-width));
+    justify-content: start;
     column-gap: 1.5rem;
-    min-width: calc(var(--count) * 14rem + 1rem);
-}
-
-.thread--timeline .thread__item {
-    scroll-snap-align: center;
+    width: max-content;
+    will-change: transform;
 }
 
 /* Timeline cards are buttons: clicking one selects it. */

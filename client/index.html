@@ -5,22 +5,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="color-scheme" content="light">
-    <meta name="description" content="Portfolio of Tony Nguyen, a CPA moving into software engineering: projects, a timeline of work and learning, and how to get in touch.">
+    <meta name="description" content="Portfolio of Tony Nguyen, a CPA who also builds software: projects, a timeline of work and learning, and how to get in touch.">
     <link rel="canonical" href="https://nutritiousblueberrymuffins.github.io/personal-website/">
     <meta name="theme-color" content="#ffffff">
     <link rel="icon" href="/favicon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="Tony Nguyen | CPA and Aspiring Software Engineer">
-    <meta property="og:description" content="Portfolio of Tony Nguyen, a CPA moving into software engineering: projects, a timeline of work and learning, and how to get in touch.">
+    <meta property="og:title" content="Tony Nguyen | CPA and Software Engineer">
+    <meta property="og:description" content="Portfolio of Tony Nguyen, a CPA who also builds software: projects, a timeline of work and learning, and how to get in touch.">
     <meta property="og:url" content="https://nutritiousblueberrymuffins.github.io/personal-website/">
     <meta property="og:site_name" content="Tony Nguyen">
     <meta property="og:image" content="https://nutritiousblueberrymuffins.github.io/personal-website/og-image.png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Tony, CPA and aspiring software engineer">
+    <meta property="og:image:alt" content="Tony, CPA and software engineer">
     <meta name="twitter:card" content="summary_large_image">
-    <title>Tony Nguyen | CPA and Aspiring Software Engineer</title>
+    <title>Tony Nguyen | CPA and Software Engineer</title>
     <link rel="stylesheet" href="./src/styles/designtoken.css">
     <link rel="stylesheet" href="./src/styles/site.css">
     <link rel="stylesheet" href="./src/styles/motion.css">
@@ -59,20 +59,56 @@
         <section class="hero" id="top" aria-labelledby="intro-title">
             <div class="container">
                 <div class="hero__top">
-                    <!-- Photo frame. To add a photo, put it in client/public/assets/ and add
-                         <img src="/assets/your-photo.jpg" alt="Tony Nguyen"> as the frame's first child. -->
-                    <div class="photo dot-grid">
+                    <!-- Photo frame: a slideshow under the name tag. photo-slides.js shows one photo at a
+                         time and wires the arrows, the counter, clicking or swiping the photo and the
+                         arrow keys (it loops). Without the script the first photo shows.
+                         To add a photo: put it in client/public/assets/photos/ and copy a .photo__slide.
+                         object-position steers the crop; data-fit="contain" keeps a wide shot whole over
+                         a blurred copy of itself (the .photo__fill image). -->
+                    <div class="photo dot-grid" id="photo">
+                        <div class="photo__slides" id="photo-slides" role="group" aria-label="Photos of Tony">
+                            <div class="photo__slide" data-fit="contain">
+                                <img class="photo__fill" src="/assets/photos/stadium-suite.webp" alt="" aria-hidden="true">
+                                <img src="/assets/photos/stadium-suite.webp" alt="A group of nine students posing together in a stadium suite, several in Maryland red." width="1280" height="720" fetchpriority="high">
+                            </div>
+                            <div class="photo__slide">
+                                <img src="/assets/photos/couch-selfie.jpg" alt="Tony and a friend smiling for a selfie on a couch." width="800" height="1067" loading="lazy" style="object-position: 50% 100%">
+                            </div>
+                            <div class="photo__slide">
+                                <img src="/assets/photos/rainy-day.jpg" alt="Tony and a friend sharing a red and black umbrella on a rainy city sidewalk." width="800" height="1422" loading="lazy" style="object-position: 50% 20%">
+                            </div>
+                            <div class="photo__slide">
+                                <img src="/assets/photos/seds-lab.jpg" alt="Two students at a cluttered electronics bench in the SEDS@UMD lab, one typing on a laptop." width="1280" height="960" loading="lazy" style="object-position: 13% 50%">
+                            </div>
+                            <div class="photo__slide" data-fit="contain">
+                                <img class="photo__fill" src="/assets/photos/halloween.jpg" alt="" aria-hidden="true" loading="lazy">
+                                <img src="/assets/photos/halloween.jpg" alt="Tony in a white T-shirt and cap with a friend in face paint at a Halloween party." width="1438" height="960" loading="lazy">
+                            </div>
+                            <div class="photo__slide">
+                                <img src="/assets/photos/networking.jpg" alt="Tony and a friend with name tags at an event, high above the Baltimore skyline." width="590" height="787" loading="lazy" style="object-position: 50% 0%">
+                            </div>
+                        </div>
+                        <div class="photo__controls" role="group" aria-label="Move through the photos" hidden>
+                            <button class="arrow-button photo__arrow" type="button" id="photo-prev" aria-label="Previous photo" aria-controls="photo-slides">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                            <p class="photo__count" id="photo-count" aria-hidden="true"></p>
+                            <button class="arrow-button photo__arrow" type="button" id="photo-next" aria-label="Next photo" aria-controls="photo-slides">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </button>
+                        </div>
+                        <p class="visually-hidden" id="photo-status" role="status" aria-live="polite"></p>
                         <div class="event-card">
                             <p class="event-card__date">2026</p>
                             <p class="event-card__title">Tony Nguyen</p>
-                            <p class="event-card__type">CPA  ·  Aspiring software engineer</p>
+                            <p class="event-card__type">CPA  ·  Software engineer</p>
                         </div>
                     </div>
 
                     <div class="intro">
-                        <p class="label-section">CPA  ·  Aspiring software engineer</p>
-                        <h1 class="display-hero" id="intro-title">From balanced books<br> to working code.</h1>
-                        <p class="body-large">Hello, I'm Tony. I'm a CPA moving into software engineering, and this site is my thread: who I am, what I've built, and where it is going next.</p>
+                        <p class="label-section">CPA  ·  Software engineer</p>
+                        <h1 class="display-hero" id="intro-title">Balanced books<br> and working code.</h1>
+                        <p class="body-large">Hello, I'm Tony. I'm a CPA who also builds software, and this site is my thread: who I am, what I've built, and where it is going next.</p>
                         <div class="actions">
                             <a class="button button--primary" href="#projects">View projects</a>
                             <a class="button button--secondary" href="/resume.pdf" target="_blank" rel="noopener" hidden>Download resume</a>
@@ -107,7 +143,7 @@
                             <a class="event-card" data-track-section="projects" href="#projects">
                                 <span class="event-card__date">02</span>
                                 <span class="event-card__title">Projects</span>
-                                <span class="event-card__type">Three things I have built<span aria-hidden="true">  →</span></span>
+                                <span class="event-card__type">What I’ve worked on<span aria-hidden="true">  →</span></span>
                             </a>
                             <span class="thread__tick" aria-hidden="true"></span>
                             <span class="thread__dot" aria-hidden="true"></span>
@@ -139,22 +175,36 @@
         <section class="band" id="about" aria-labelledby="about-title">
             <div class="container about">
                 <div class="about__aside">
-                    <div class="glance">
+                    <!-- glance.js turns this into one fact at a time, with arrows, dots and the
+                         arrow keys (it loops). Without the script it stays a plain list of four. -->
+                    <div class="glance" id="glance">
                         <h3>At a glance</h3>
-                        <dl>
+                        <dl id="glance-facts">
                             <div><dt>Background</dt><dd>Certified Public Accountant</dd></div>
                             <div><dt>Focus</dt><dd>Front-end and tooling</dd></div>
                             <div><dt>Stack</dt><dd>JavaScript, TypeScript, Vite, Git</dd></div>
                             <div><dt>Next</dt><dd>Software engineering roles</dd></div>
                         </dl>
+                        <div class="glance__controls" hidden>
+                            <div class="glance__dots" role="group" aria-label="Choose a fact"></div>
+                            <div class="timeline-arrows" role="group" aria-label="Step through at a glance">
+                                <button class="arrow-button" type="button" id="glance-prev" aria-label="Previous fact" aria-controls="glance-facts">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                                <button class="arrow-button" type="button" id="glance-next" aria-label="Next fact" aria-controls="glance-facts">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <p class="visually-hidden" id="glance-status" role="status" aria-live="polite"></p>
                     </div>
                 </div>
 
                 <div class="about__text">
                     <p class="label-section">About me</p>
-                    <h2 class="heading-section" id="about-title">A CPA who learned to ship code.</h2>
-                    <p class="body-large">I spent the first years of my career in accounting, where I learned to care about systems that balance, records that can be audited, and work that someone else can pick up later. Those habits came with me when I started writing software.</p>
-                    <p class="body-large">Today I build small, careful web apps in JavaScript and TypeScript, and I document the journey on this site, one entry on the thread at a time.</p>
+                    <h2 class="heading-section" id="about-title">A CPA who also ships code.</h2>
+                    <p class="body-large">I work in accounting, where I care about systems that balance, records that can be audited, and work that someone else can pick up later. I bring the same habits to the software I write.</p>
+                    <p class="body-large">Alongside my accounting work, I build careful apps in JavaScript and TypeScript, and I keep track of both on this site, one entry on the thread at a time.</p>
                 </div>
             </div>
         </section>
@@ -163,34 +213,48 @@
             <div class="container">
                 <div class="section-heading">
                     <p class="label-section">Projects</p>
-                    <h2 class="heading-section" id="projects-title">Three things I have built.</h2>
-                    <p class="body-large">Built while moving from accounting into software.</p>
+                    <h2 class="heading-section" id="projects-title">What I’ve worked on.</h2>
+                    <p class="body-large">Built while working in both accounting and software.</p>
                 </div>
 
-                <div class="project-grid">
-                    <a class="project-card" data-track-project="retriever-rush" href="https://github.com/nutritiousblueberrymuffins/retriever-rush" target="_blank" rel="noopener">
-                        <p class="project-card__eyebrow">01  ·  Prototype</p>
-                        <h3 class="project-card__title">Retriever Rush</h3>
-                        <p class="project-card__description">A campus food, grocery and supplies storefront prototype: a design-token system, a documented design-system page, and product pages built from a JSON catalogue.</p>
-                        <p class="project-card__tech">HTML  ·  CSS  ·  JavaScript</p>
-                        <p class="project-card__link">Open on GitHub<span aria-hidden="true">  →</span></p>
+                <!-- A sideways row of project cards (two at a time, one on phones). The arrows step
+                     one card at a time; it also scrolls by swipe, trackpad and keyboard.
+                     project-carousel.js wires the arrows and hides each at its end. -->
+                <div class="project-carousel">
+                <div class="project-grid" id="project-track">
+                    <a class="project-card" data-track-project="notestudo" href="https://notestudo.com/" target="_blank" rel="noopener">
+                        <img class="project-card__image" src="/assets/projects/notestudo.jpg" alt="NoTestudo’s home page: a plush turtle in glasses waving on a campus lawn, beside the headline “We said October 31. We’re a turtle.”" width="960" height="540" loading="lazy" decoding="async">
+                        <p class="project-card__eyebrow">01  ·  iPhone app</p>
+                        <h3 class="project-card__title">NoTestudo</h3>
+                        <p class="project-card__description">A free iPhone habit tracker that counts your visits for you: goals become places to visit more or less, with streaks, badges and friend groups. Built at the University of Maryland.</p>
+                        <p class="project-card__tech">iOS  ·  Location-based  ·  Habit tracking</p>
+                        <p class="project-card__link">Visit notestudo.com<span aria-hidden="true">  →</span></p>
+                    </a>
+
+                    <a class="project-card" data-track-project="nexus" href="https://trynexus.cc/" target="_blank" rel="noopener">
+                        <img class="project-card__image" src="/assets/projects/nexus.jpg" alt="Nexus’s home page: the headline “See how the work was made.” above a teacher’s Work check view of a class lab report." width="960" height="540" loading="lazy" decoding="async">
+                        <p class="project-card__eyebrow">02  ·  Education</p>
+                        <h3 class="project-card__title">Nexus</h3>
+                        <p class="project-card__description">A Work check for middle and high school teachers: it replays how each assignment was written and asks students to explain their work in their own words.</p>
+                        <p class="project-card__tech">Browser extension  ·  Canvas  ·  Word for the web</p>
+                        <p class="project-card__link">Visit trynexus.cc<span aria-hidden="true">  →</span></p>
                     </a>
 
                     <a class="project-card" data-track-project="this-website" href="https://github.com/nutritiousblueberrymuffins/personal-website" target="_blank" rel="noopener">
-                        <p class="project-card__eyebrow">02  ·  Portfolio</p>
+                        <img class="project-card__image" src="/assets/projects/personal-website.jpg" alt="This site’s home page: the headline “Balanced books and working code.” beside a photo frame, on a dot-grid background." width="960" height="540" loading="lazy" decoding="async">
+                        <p class="project-card__eyebrow">03  ·  Portfolio</p>
                         <h3 class="project-card__title">This website</h3>
                         <p class="project-card__description">A Vite front end deployed to GitHub Pages by GitHub Actions, with a drifting dot-grid background and a data-driven timeline.</p>
                         <p class="project-card__tech">Vite  ·  GitHub Actions  ·  JavaScript</p>
                         <p class="project-card__link">Open on GitHub<span aria-hidden="true">  →</span></p>
                     </a>
-
-                    <a class="project-card" data-track-project="inside-a-large-codebase" href="https://github.com/nutritiousblueberrymuffins/excalidraw-practice---codebase-navigation" target="_blank" rel="noopener">
-                        <p class="project-card__eyebrow">03  ·  Open source</p>
-                        <h3 class="project-card__title">Inside a large codebase</h3>
-                        <p class="project-card__description">Working in the Obsidian Excalidraw plugin, a large TypeScript project: reading unfamiliar code, implementing features and opening pull requests.</p>
-                        <p class="project-card__tech">TypeScript  ·  Git  ·  Pull requests</p>
-                        <p class="project-card__link">Open on GitHub<span aria-hidden="true">  →</span></p>
-                    </a>
+                </div>
+                    <button class="arrow-button project-arrow project-arrow--prev" type="button" id="project-prev" aria-label="Previous project" aria-controls="project-track" hidden>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
+                    <button class="arrow-button project-arrow project-arrow--next" type="button" id="project-next" aria-label="Next project" aria-controls="project-track" hidden>
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M7.5 15L12.5 10L7.5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </button>
                 </div>
             </div>
         </section>

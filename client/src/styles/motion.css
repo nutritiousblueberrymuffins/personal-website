@@ -319,13 +319,13 @@
 
 /* ---------- Moving between sections ----------
    The page settles at a section's start when you stop scrolling near it (proximity snapping,
-   so long sections still scroll freely); the header and footer are snap points too, so the
-   very top and bottom are reachable. */
+   so long sections still scroll freely); the footer is a snap point too, so the very bottom is
+   reachable. The header is pinned, so it is not a snap point. */
 html.motion-ok {
     scroll-snap-type: y proximity;
 }
 
-.motion-ok :is(.site-header, main > section:not(.hero)) {
+.motion-ok main > section:not(.hero) {
     scroll-snap-align: start;
 }
 
@@ -336,17 +336,25 @@ html.motion-ok {
 /* Each section rises and comes into focus over its first 360 px on screen, and dims and
    recedes over its last 360 px as it leaves the top. Driven by scroll position (scroll-driven
    animations), so it plays every time, going down or back up. Browsers without them simply
-   show the sections still. */
+   show the sections still.
+   The section is the timeline's subject, but the moving part is its .container: the browser
+   measures a link's target section with its transform applied, so moving the section itself
+   made #about, #projects and the rest stop short (under the pinned header). */
 @supports (animation-timeline: view()) {
-    .motion-ok main > section:not(.hero) {
+    .motion-ok main > section {
+        view-timeline-name: --section;
+    }
+
+    .motion-ok main > .band > .container,
+    .motion-ok main > .not-found {
         animation: section-in linear both, section-out linear forwards;
-        animation-timeline: view(), view();
+        animation-timeline: --section, --section;
         animation-range: entry 0% entry 360px, exit calc(100% - 360px) exit 100%;
     }
 
-    .motion-ok main > .hero {
+    .motion-ok main > .hero > .container {
         animation: section-out linear forwards;
-        animation-timeline: view();
+        animation-timeline: --section;
         animation-range: exit calc(100% - 360px) exit 100%;
     }
 }

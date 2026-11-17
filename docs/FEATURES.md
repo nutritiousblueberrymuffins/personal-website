@@ -75,7 +75,7 @@ Both halves deploy automatically from GitHub Actions on every push to `main`.
 |------|-----------|----------------|
 | Inline `<script>` in `<head>` | Every page | Adds `motion-ok` to `<html>` before the first paint, unless the visitor prefers reduced motion |
 | `client/src/scripts/main.js` | Every page | Inter font, the analytics tracker (`analytics.js`), the motion layer (`motion.js`), home links |
-| `client/src/scripts/home.js` | Home page | The timeline (`timeline.js`), the hero strip (`hero-thread.js`), the section flow (`section-flow.js`) |
+| `client/src/scripts/home.js` | Home page | The timeline (`timeline.js`), the hero strip (`hero-thread.js`), the photo slideshow (`photo-slides.js`), the "At a glance" stepper (`glance.js`), the project arrows (`project-carousel.js`), the section flow (`section-flow.js`) |
 
 **Stylesheets, in load order:**
 
@@ -127,13 +127,13 @@ Both halves deploy automatically from GitHub Actions on every push to `main`.
   | Component | Description |
   |-----------|-------------|
   | `.event-card` | The basic unit of the site: date, title, type |
-  | `.project-card` | Eyebrow, title, description, tech, link |
+  | `.project-card` | Optional edge-to-edge screenshot (`.project-card__image`, 16:9, from `client/public/assets/projects/`), eyebrow, title, description, tech, link |
   | `.contact-card` | Icon, label, value |
   | `.button--primary` / `.button--secondary` | Buttons |
   | `.icon-link` | Icon plus label |
   | `.chip` | Pill-shaped filter button with a count |
-  | `.arrow-button` | Timeline back / forward |
-  | `.glance` | "At a glance" panel |
+  | `.arrow-button` | Timeline and project carousel back / forward |
+  | `.glance` | "At a glance" panel; `.is-stepping` (added by `glance.js`) shows one fact at a time with `.glance__dots` and arrows |
   | `.thread`, `.thread__item`, `.thread__tick`, `.thread__dot`, `.thread__date` | The thread itself, built on a CSS grid |
 
 **To change it:**
@@ -227,15 +227,16 @@ the hero strip and the section guide link to.
 
 | Section | `id` | Contents |
 |---------|------|----------|
-| Hero | `top` | Photo frame with a name-tag card, intro heading and text, "View projects" button, links to GitHub · LinkedIn · Email, and the "On this thread" strip |
-| About | `about` | "At a glance" panel (background, focus, stack, next) and two paragraphs |
-| Projects | `projects` | Three project cards linking to GitHub |
+| Hero | `top` | Photo frame: a slideshow of six photos (arrows and a "2 / 6" counter in the top-right corner, click or swipe the photo, arrow keys; loops) under a name-tag card, intro heading and text, "View projects" button, links to GitHub · LinkedIn · Email, and the "On this thread" strip |
+| About | `about` | "At a glance" card that steps through background, focus, stack and next one at a time (arrows, dots or the arrow keys; loops; a plain list without JavaScript) and two paragraphs |
+| Projects | `projects` | A sideways carousel of project cards (two at a time, one on phones) with back / forward arrows, each card topped with a screenshot: NoTestudo and Nexus (linking to their sites) and this website (linking to its GitHub repo) |
 | Timeline | `timeline` | Filters, arrows, the endless strip and the details panel (see [section 7](#7-interactive-timeline)) |
 | Contact | `contact` | Email, LinkedIn and GitHub cards |
 
 The page also has:
 
-- a header with the wordmark and nav;
+- a header with the wordmark and nav, pinned to the top while scrolling (`position: sticky`, with a
+  frosted white backing and `scroll-padding-top` on `html` so nav jumps land below it);
 - a footer;
 - a "Skip to content" link as the first Tab stop.
 
@@ -253,7 +254,7 @@ The page also has:
 |------|-----------------|
 | Resume | Put `resume.pdf` in `client/public/`, then remove `hidden` from the header link and the hero button |
 | Phone | Fill in the `tel:` number and the shown value, then remove `hidden` from the hero link and the contact card |
-| Photo | Add `<img src="/assets/your-photo.jpg" alt="Tony Nguyen">` as the first child of `.photo` |
+| Photos | Put the image in `client/public/assets/photos/` and copy a `.photo__slide` in `index.html` (set `object-position` to steer the crop, or `data-fit="contain"` plus a `.photo__fill` copy for a wide shot). Size it to cover about 800 × 960 px |
 
 Every `<a>` and `<section>` that analytics should name carries a `data-track-*` attribute, such as
 `data-track-project`, `data-track-contact` or `data-track-section` (see
@@ -511,11 +512,14 @@ or "Swipe…" on touch screens.
 **Where it lives:**
 
 - **CSS** (`motion.css`, "Moving between sections"):
-  - Settling uses `scroll-snap-type: y proximity` on `html.motion-ok`. The header, the sections (except
-    the hero) and the footer are snap points. Proximity, not mandatory, so long sections still scroll
-    freely.
-  - Rise and recede use scroll-driven animations, `animation-timeline: view()` with `section-in` and
-    `section-out`. Browsers without them show the sections still.
+  - Settling uses `scroll-snap-type: y proximity` on `html.motion-ok`. The sections (except the hero)
+    and the footer are snap points; the header is pinned, so it is not one. Proximity, not mandatory,
+    so long sections still scroll freely.
+  - Rise and recede use scroll-driven animations with `section-in` and `section-out`. Each section is
+    a named view timeline (`view-timeline-name: --section`), but the animation runs on its
+    `.container`, so the section box itself never moves. That keeps nav-link jumps exact: browsers
+    measure a jump target with its transform applied. Browsers without scroll-driven animations show
+    the sections still.
   - The chapter line is `.chapter-label::after`, animated when the section has `.is-current`.
 - **CSS** (`site.css`, "Section guide"): `.section-guide`, which only displays at 1280 px and wider.
 - **JS:** `client/src/scripts/section-flow.js`.
@@ -847,6 +851,9 @@ the tokens in [section 2](#2-threadline-design-system).
 | `client/src/scripts/motion.js` | Reveals, ripples, tilt, glow, magnet, progress bar |
 | `client/src/scripts/hero-thread.js` | Hero "On this thread" drifting strip |
 | `client/src/scripts/timeline.js` | The endless timeline, filters, details panel |
+| `client/src/scripts/photo-slides.js` | Hero photo slideshow: arrows, counter, click / swipe, arrow keys, screen-reader announcements |
+| `client/src/scripts/glance.js` | "At a glance" card: one fact at a time, arrows, dots, arrow keys, screen-reader announcements |
+| `client/src/scripts/project-carousel.js` | Project carousel arrows: step one card, fade out at each end, hide if all cards fit |
 | `client/src/scripts/section-flow.js` | Section guide, chapter lines, current section |
 | `client/src/data/timeline.json` / `.schema.json` | Timeline entries and their schema |
 | `client/public/` | Icons, favicon, sharing image, `sitemap.xml` |

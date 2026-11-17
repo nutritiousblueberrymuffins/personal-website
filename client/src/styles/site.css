@@ -106,12 +106,12 @@ body::before {
     list-style: none;
 }
 
-/* Nav: Inter Medium 14 / 20 */
+/* Nav: Inter Bold 14 / 20, in the brand blue */
 .nav-links a {
     display: inline-block;
     padding-block: 0.625rem;
-    color: var(--color-ink);
-    font-weight: 500;
+    color: var(--color-brand);
+    font-weight: 700;
     white-space: pre;
 }
 

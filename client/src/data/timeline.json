@@ -230,7 +230,10 @@
       "end": null,
       "summary": "Working at narb, where I started doing developer work.",
       "tags": ["development"],
-      "links": []
+      "image": "assets/timeline/narb.jpg",
+      "links": [
+        { "label": "narb.cc", "url": "https://narb.cc/" }
+      ]
     },
     {
       "id": "nexus",
@@ -259,17 +262,6 @@
       "links": [
         { "label": "Repository", "url": "https://github.com/nutritiousblueberrymuffins/personal-website" }
       ]
-    },
-    {
-      "id": "music-player",
-      "type": "project",
-      "title": "Built the music player",
-      "org": "Personal project",
-      "start": "2026-10-10",
-      "end": null,
-      "summary": "Play, pause and track switching over an HTML audio element, later wired into the hero with a seekable progress bar.",
-      "tags": ["javascript", "audio"],
-      "links": []
     },
     {
       "id": "notestudo",
@@ -319,7 +311,10 @@
       "end": null,
       "summary": "The plan for next year: start working toward the CPA.",
       "tags": ["accounting"],
-      "links": []
+      "image": "assets/timeline/cpa-start.jpg",
+      "links": [
+        { "label": "Prometric: CPA exam", "url": "https://www.prometric.com/exams/cpa/" }
+      ]
     }
   ]
 }

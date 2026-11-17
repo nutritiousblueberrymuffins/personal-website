@@ -350,7 +350,7 @@ the thread, in the order they happened.
   greyed out when already there and hidden under filters that don't include the first entry.
 - **Where it is now:** worked out from the visitor's date. A solid navy **Today** card with the real
   date ("Tue, Nov 17, 2026") sits on the thread in date order under every filter (`TODAY_ENTRY` in
-  `timeline.js`; not counted in the chips, the status line or the "n / 24" numbering, where it
+  `timeline.js`; not counted in the chips, the status line or the "n / 23" numbering, where it
   shows as "Today"). It's "● You are here": a pulsing dot (`now-pulse` in `motion.css`), and its
   details name the most recent entry and the next one. The thread opens on it. Entries dated after today are "Upcoming": dashed card, hollow
   dashed dot, dashed tick, and dashed line leading to them. "Jump to now" goes back to the present the
@@ -377,7 +377,7 @@ the thread, in the order they happened.
 - **Bundling:** the JSON is imported by `timeline.js` and bundled at build time, since GitHub Pages has
   no server. Editing the file and pushing updates the live site.
 - **Drafts:** draft entries (`"draft": true`) show only in local development (`import.meta.env.DEV`).
-  Right now there are no drafts, so the live site shows all 24 entries. Drafts are still bundled into the page's script, so keep anything private out of them.
+  Right now there are no drafts, so the live site shows all 23 entries. Drafts are still bundled into the page's script, so keep anything private out of them.
 - **Filter chips:** one per type in the HTML; a type with no entries gets no chip.
 - **Study links:** books link to the publisher's or author's page, never to a copy of the book.
 - **Card links:** on a card whose entry has a link, the type line ("Study ↗") opens the first link in a
@@ -385,13 +385,14 @@ the thread, in the order they happened.
   card's `<button>`, so the thread's click listener opens it). Only the words and arrow are the target;
   a drag that ends on it still just moves the strip. Keyboard and screen-reader users have the same
   link in the details panel.
-- **Resource backdrops:** 18 entries have a screenshot of the page they link to (960 × 540 JPEGs in
-  `client/public/assets/timeline/`, taken with headless Edge in light mode; the three projects reuse
-  their project-card screenshots). The selected entry's screenshot fills the right side of the details
-  panel, fading from white behind the text, which keeps to the left 58%; on phones it sits behind a
+- **Resource backdrops:** 20 entries have a screenshot of the page they link to (960 px wide JPEGs in
+  `client/public/assets/timeline/`, mostly taken with headless Edge in light mode; the three projects
+  reuse their project-card screenshots, and the CPA entry uses a screenshot of Prometric's CPA page
+  taken by hand, since Prometric blocks automated capture). The selected entry's screenshot fills the right side of the details
+  panel and seeps faintly in behind the right part of the text (which keeps to the left 58%, with a
+  soft white glow round the letters), clearer beyond it; on phones it sits behind a
   near-solid veil. The neighbouring entries' images are preloaded. Pre-algebra, Boolean algebra (its
-  publisher page blocks automated capture), narb, the music player, the GitHub Pages milestone, the
-  CPA entry and the Today card have none.
+  publisher page blocks automated capture), the GitHub Pages milestone and the Today card have none.
 - **Date formats:**
 
   | Where | Format |

@@ -44,9 +44,11 @@
     }
 }
 
+/* Ends at the element's --focus (the timeline's fade for cards away from the current one), which
+   everything else leaves unset, so for them it's full opacity. The fill holds this end value. */
 @keyframes reveal-failsafe {
     to {
-        opacity: 1;
+        opacity: var(--focus, 1);
     }
 }
 

@@ -360,15 +360,25 @@ function normalise() {
   }
 }
 
-// Highlights the centred card (only that copy, not every repeat of the entry) and updates the
-// "n / total" position.
+// How strongly a card shows, by how many entries it is from the current one in time order:
+// the current card and its neighbours in full, then fading out (site.css, "Focus").
+const FOCUS = [1, 1, 0.45, 0.2];
+
+// Highlights the centred card (only that copy, not every repeat of the entry), fades the cards
+// away from it, and updates the "n / total" position.
+// The fade counts entries in time order, not places on the strip, so where the loop wraps the
+// last entry beside the first one stays faded: on the START card, the future CPA card next to it
+// doesn't pull the eye. It updates as the strip moves, so cards come back as they're reached.
 function highlight(position) {
   const centred = Math.round(position);
+  const here = entryAt(position);
   for (const item of items()) {
     const card = item.querySelector('.event-card');
     const on = Number(card.dataset.track) === centred;
     item.classList.toggle('is-current', on);
     card.setAttribute('aria-current', on ? 'true' : 'false');
+    const away = Math.abs(Number(card.dataset.entry) - here);
+    item.style.setProperty('--focus', String(FOCUS[Math.min(away, FOCUS.length - 1)]));
   }
   const number = entryNumber(entryAt(position));
   positionLabel.textContent = number ? `${number.n} / ${number.total}` : 'Today';
@@ -628,10 +638,11 @@ function render(type) {
   looping = n >= 2;
   period = n % 2 ? n * 2 : n;
   const count = looping ? period * 3 : n;
-  // Open on "You are here" when it's in this filter (otherwise the newest entry), in the middle
-  // period of the track.
+  // Open on the START card, where the journey began, when it's in this filter (otherwise on
+  // "You are here"), in the middle period of the track. "Jump to now" goes to the present.
   const nowIndex = shown.findIndex((entry) => entry.id === NOW_ID);
-  const opening = nowIndex >= 0 ? nowIndex : n - 1;
+  const startIndex = shown.findIndex((entry) => entry.id === START_ID);
+  const opening = startIndex >= 0 ? startIndex : nowIndex >= 0 ? nowIndex : n - 1;
   const start = looping ? period + opening : opening;
   const trackItems = [];
   for (let i = 0; i < count; i++) {

@@ -341,6 +341,11 @@ the thread, in the order they happened.
 
 - **An endless strip:** dragging, swiping or flicking keeps going forward or backward, looping from the
   newest entry round to the oldest.
+- **Focus:** cards fade by how far they are from the current one in time order (`FOCUS` in
+  `timeline.js`, `--focus` in `site.css`): the current card and its neighbours at full strength, then
+  45%, then 20%. Counting in time order means that where the loop wraps, the newest entries beside
+  the START card stay faded. Cards come back as the strip moves to them; a faded card brightens a
+  little on hover.
 - **One entry selected:** the strip always settles with one entry centred. That entry is selected, and
   its full details show in a panel underneath.
 - **Where it began:** the oldest entry (`START_ID` in `timeline.js`) is marked: a navy "Start" tab on
@@ -352,7 +357,8 @@ the thread, in the order they happened.
   date ("Tue, Nov 17, 2026") sits on the thread in date order under every filter (`TODAY_ENTRY` in
   `timeline.js`; not counted in the chips, the status line or the "n / 23" numbering, where it
   shows as "Today"). It's "● You are here": a pulsing dot (`now-pulse` in `motion.css`), and its
-  details name the most recent entry and the next one. The thread opens on it. Entries dated after today are "Upcoming": dashed card, hollow
+  details name the most recent entry and the next one. "Jump to now" returns to it; the thread
+  opens on the START card instead (or on Today under filters without the first entry). Entries dated after today are "Upcoming": dashed card, hollow
   dashed dot, dashed tick, and dashed line leading to them. "Jump to now" goes back to the present the
   shorter way round. Upcoming entries turn into past ones on their own as the dates pass.
 
@@ -480,7 +486,7 @@ or "Swipe…" on touch screens.
 | Effect | Trigger | Where |
 |--------|---------|-------|
 | Scroll reveals: headings, cards and panels rise and fade in; siblings one after another | Element 12% into view | `motion.js` `setUpReveals()` + `motion.css` "Scroll reveals" |
-| Threads draw themselves: the line grows, then dots pop in, outward from the start | The thread comes into view | `motion.css` "Threads that draw themselves" |
+| Threads draw themselves: the line grows, then dots pop in, outward from the start | Any part of the thread comes into view (threads can be far wider than the window, so they reveal at the first pixel) | `motion.css` "Threads that draw themselves" |
 | Hovering an entry swells its dot | Hover | `motion.css` |
 | Whiteboard: its small thread draws and its two cards drift apart | View / hover | `motion.css` |
 | The photo's name tag floats gently | Always | `motion.css` |

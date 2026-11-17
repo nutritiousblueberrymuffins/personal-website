@@ -46,25 +46,31 @@ function setUpReveals() {
     }
   }
   // Threads draw their line and pop their entries when they come into view.
-  targets.push(...document.querySelectorAll('.thread'));
+  const threads = [...document.querySelectorAll('.thread')];
 
   const reveal = (element) => element.classList.add('is-revealed');
   if (!('IntersectionObserver' in window)) {
-    targets.forEach(reveal);
+    [...targets, ...threads].forEach(reveal);
     return;
   }
-  const observer = new IntersectionObserver(
-    (records) => {
-      for (const record of records) {
-        if (record.isIntersecting) {
-          reveal(record.target);
-          observer.unobserve(record.target);
+  const watch = (elements, threshold) => {
+    const observer = new IntersectionObserver(
+      (records) => {
+        for (const record of records) {
+          if (record.isIntersecting) {
+            reveal(record.target);
+            observer.unobserve(record.target);
+          }
         }
-      }
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -6% 0px' },
-  );
-  targets.forEach((element) => observer.observe(element));
+      },
+      { threshold, rootMargin: '0px 0px -6% 0px' },
+    );
+    elements.forEach((element) => observer.observe(element));
+  };
+  watch(targets, 0.12);
+  // A thread can be far wider than the window (the timeline's looping strip is about 16,000 px),
+  // so only a few percent of it is ever on screen: it reveals as soon as any of it shows.
+  watch(threads, 0);
 }
 
 // ---------- Click ripples ----------

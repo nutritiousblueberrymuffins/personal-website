@@ -258,8 +258,28 @@ journey in 3D (`my-story.js`, "My story" in `site.css`).
    longer: 3.8 s at least, plus about 42 ms a character); when it arrives, that stop comes up. The
    last stop ends on the quote, then the button becomes "Replay".
 4. **Controls:** Pause / Play, back and forward arrows (or the arrow keys), a click on any stop, and
-   × / Escape / a click anywhere around the panel to close. Closing sinks the panel back into the
-   page and returns the camera, and focus goes back to the tab.
+   × / Escape / a press anywhere around the panel to close (with a mouse it closes as the button
+   goes down). Closing is one quick move of about 0.6 s: the panel sinks straight back into the
+   page and fades (0.26 s), while the camera glides back from 0.08 s on. Focus then goes back to
+   the tab.
+
+**Keeping it smooth:**
+
+- Everything that moves is a transform or opacity animation (Web Animations), which the browser
+  runs off the main thread.
+- The page's settings as a sheet (its cut, origin and dot grid) are set as plain properties, not
+  CSS custom properties: custom properties are inherited, so changing one on `.page` restyled all
+  of its ~3,800 elements (about 20 ms each time, also on every scroll while open).
+- Putting the rest of the page to sleep (`inert`) and waking it restyles the whole page too, so
+  it happens just after a frame has gone out, never between the click and the first frame of a
+  move.
+- The sheet's shadow is a plain `box-shadow` on its edge, painted once and then only moved, not a
+  blurred full-screen layer the graphics card would blur again every frame.
+- The panel's lean toward the mouse updates at most once a frame, and measures the panel once.
+
+Measured in Chrome: opening does about 16 ms of main-thread work before its first frame (was
+80 to 90 ms), and closing starts within 2 ms of the press, finishes in 0.6 s (was about 1.3 s,
+in two steps), and keeps every frame on time until it's done.
 
 The stops and the quote are plain HTML in `<template id="my-story">` in `index.html`: each `<li>` is a
 stop (`data-label` is the short name under its dot, then a heading `<p>` and a caption `<p>`), and the

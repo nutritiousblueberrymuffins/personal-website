@@ -2233,41 +2233,41 @@ button.event-card[aria-current="true"] {
     scroll-snap-type: none;
 }
 
-/* The page as a sheet: its own white paper with the dot grid printed on it, cut to the part that
-   was on screen (my-story.js sets --journey-clip). Around it is the site's usual background, the
-   drifting dot grid (body::before), so the sheet lies on the same dots. The things pinned to the
-   window (the mug, the section guide, the progress bar) step aside. */
+/* The page as a sheet: its own white paper with the dot grid printed on it. Around it is the
+   site's usual background, the drifting dot grid (body::before), so the sheet lies on the same
+   dots. That grid holds still while the journey is open. my-story.js cuts the sheet to the part
+   that was on screen (clip-path) and lines its dots up with the grid at the same strength
+   (background-position and -image), so the page doesn't flicker as it lies back or comes up
+   again. It sets those directly on the page rather than through custom properties, which every
+   element on the page would inherit and have to restyle. The things pinned to the window (the
+   mug, the section guide, the progress bar) step aside. */
 html.journey-open .page {
     background-color: var(--color-surface);
     background-image: radial-gradient(circle at 0.875rem 0.875rem, rgb(157 174 196 / 0.7) 0.0781rem, transparent 0.1094rem);
     background-size: 1.75rem 1.75rem;
-    clip-path: var(--journey-clip, none);
+}
+
+html.journey-open body::before {
+    animation-play-state: paused;
 }
 
 html.journey-open :is(.office-toggle, .section-guide, .scroll-progress) {
     visibility: hidden;
 }
 
-/* White on white, the sheet needs an edge: a thin line around it (over the page) and a soft
-   shadow under it. my-story.js moves both with the page; the corners match its 22 px cut. */
-.journey-frame,
-.journey-shadow {
+/* White on white, the sheet needs an edge: a thin line around it, with a soft shadow just outside
+   it. my-story.js moves it with the page; the corners match the page's 22 px cut. It's a plain
+   box-shadow, painted once and then only moved, rather than a blurred layer the graphics card
+   would have to blur again on every frame. */
+.journey-frame {
     position: fixed;
     inset: 0;
-    pointer-events: none;
-    border-radius: 22px;
-    opacity: 0;
-}
-
-.journey-frame {
     z-index: 1;
+    pointer-events: none;
     border: 1px solid rgb(157 174 196 / 0.75);
-}
-
-.journey-shadow {
-    z-index: -1;
-    background: rgb(34 43 54 / 0.32);
-    filter: blur(1.75rem);
+    border-radius: 22px;
+    box-shadow: 0 1.5rem 3rem -1rem rgb(34 43 54 / 0.3);
+    opacity: 0;
 }
 
 /* Over everything but the skip link and the Office banner. The panel sits a little above the
@@ -2303,8 +2303,8 @@ html.journey-open :is(.office-toggle, .section-guide, .scroll-progress) {
     margin: auto;
 }
 
-/* A white slab with a little thickness along its bottom edge. It leans a touch toward the mouse
-   (--rx, --ry from my-story.js). */
+/* A white slab with a little thickness along its bottom edge. It leans a touch toward the mouse:
+   my-story.js sets the same transform with small angles, and it eases there. */
 .journey__card {
     display: flex;
     flex-direction: column;
@@ -2321,7 +2321,7 @@ html.journey-open :is(.office-toggle, .section-guide, .scroll-progress) {
         0 4px 0 #bfc9d7,
         0 28px 60px -22px rgb(34 43 54 / 0.4);
     outline: none;
-    transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
     transition: transform 400ms var(--ease-out, ease);
 }
 
@@ -2692,8 +2692,7 @@ html.journey-open :is(.office-toggle, .section-guide, .scroll-progress) {
 
 @media print {
     .journey,
-    .journey-frame,
-    .journey-shadow {
+    .journey-frame {
         display: none;
     }
 }

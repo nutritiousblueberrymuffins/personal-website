@@ -5,11 +5,16 @@
 // <template id="my-story"> in index.html, so they can be edited as plain HTML; pages without it
 // get no tab. The look lives in site.css ("My story").
 //
-// Close it with the × button, Escape, or a click anywhere around the panel: the panel sinks back
-// into the page and the camera returns. The timeline can be paused, stepped with the arrows (the
-// buttons or the arrow keys), or jumped by clicking a stop. With reduced motion there's no camera
-// move or pop: the panel simply appears over the frosted page, and the line steps from stop to
-// stop instead of running.
+// Close it with the × button, Escape, or a press anywhere around the panel: in one quick move the
+// panel sinks straight back into the page while the camera returns. The timeline can be paused,
+// stepped with the arrows (the buttons or the arrow keys), or jumped by clicking a stop. With
+// reduced motion there's no camera move or pop: the panel simply appears over the frosted page,
+// and the line steps from stop to stop instead of running.
+//
+// Keeping it smooth: everything that moves is a transform or opacity animation, which the browser
+// runs off the main thread. The costly bits of main-thread work (putting the rest of the page to
+// sleep and waking it, about 20 ms each) wait until a frame has gone out, so they never hold up
+// the start of a move or land in the middle of one.
 //
 // Until someone opens it, the tab gives a little tug every few seconds (motion.css, "The My
 // story tab tugs"). Opening it once stops that for good in this browser.
@@ -30,8 +35,14 @@ const CAMERA_EASE = 'cubic-bezier(0.65, 0, 0.35, 1)';
 const POP_DELAY = 550;
 const POP_MS = 950;
 const POP_FROM = 0.22;
-// How much faster than opening it closes.
-const CLOSE_SPEED = { pop: 1.8, camera: 1.3 };
+// Closing is quicker than opening and happens in one go: the panel sinks straight back into the
+// page (speeding up as it goes, and fading out), and a moment after it starts, the camera glides
+// back to the normal view, settling gently.
+const SINK_MS = 260;
+const SINK_EASE = 'cubic-bezier(0.4, 0, 1, 1)';
+const RETURN_DELAY = 80;
+const RETURN_MS = 520;
+const RETURN_EASE = 'cubic-bezier(0.25, 0.1, 0.15, 1)';
 // A caption stays up for a moment plus a little per character, so longer ones stay longer.
 const dwellFor = (text) => Math.max(3800, 1600 + text.length * 42);
 
@@ -49,6 +60,15 @@ function cameraAt(t, viewHeight) {
   const { perspective, back, drop, tilt, turn } = CAMERA;
   return `perspective(${perspective}px) translate3d(0px, ${(drop * viewHeight * t).toFixed(1)}px, ${(-back * t).toFixed(1)}px) `
     + `rotateX(${(tilt * t).toFixed(2)}deg) rotateZ(${(turn * t).toFixed(2)}deg)`;
+}
+
+// The panel standing upright, facing you, in the same list of functions as its pop.
+const UPRIGHT = `translate(0px, 0px) perspective(${CAMERA.perspective}px) translate3d(0px, 0px, 0px) `
+  + 'rotateX(0deg) rotateZ(0deg) translate3d(0px, 0px, 0px) scale(1)';
+
+// Runs after the next frame has gone out.
+function afterNextFrame(callback) {
+  requestAnimationFrame(() => setTimeout(callback, 0));
 }
 
 // The stops and the closing quote, from the template.
@@ -149,12 +169,10 @@ function createJourney({ stops, quote }) {
   });
 
   // Moved with the page while it's open, so the white sheet stands out on the white, dotted
-  // background: a thin edge around it and a soft shadow under it.
+  // background: a thin edge around it, with a soft shadow just outside it.
   const frame = element('div', 'journey-frame');
-  const shadow = element('div', 'journey-shadow');
   frame.setAttribute('aria-hidden', 'true');
-  shadow.setAttribute('aria-hidden', 'true');
-  document.body.append(frame, shadow, root);
+  document.body.append(frame, root);
 
   // ---------- Playing the timeline ----------
   // While a stop is up, the navy line runs on toward the next one; when it gets there, that stop
@@ -254,15 +272,66 @@ function createJourney({ stops, quote }) {
   let camera = [];
   let pop = null;
   let popTimer = 0;
-  let quieted = [];
+  // The panel lying in the page at the tab, where it rises from and sinks back to.
+  let restPose = UPRIGHT;
+
+  // What the page needs as a sheet is set straight on it as plain properties: CSS custom
+  // properties would be inherited by every element on the page, and changing one would restyle
+  // all of them (about 20 ms each time).
+  const SHEET_PROPERTIES = ['clip-path', 'transform-origin', 'background-image', 'background-position'];
 
   // The page as a sheet: cut to the part that was on screen, and turned about its middle.
   function frameSheet() {
     const rect = page.getBoundingClientRect();
     const top = -rect.top;
     const bottom = Math.max(0, rect.height - top - window.innerHeight);
-    page.style.setProperty('--journey-clip', `inset(${top.toFixed(1)}px 0px ${bottom.toFixed(1)}px 0px round 22px)`);
+    page.style.clipPath = `inset(${top.toFixed(1)}px 0px ${bottom.toFixed(1)}px 0px round 22px)`;
     page.style.transformOrigin = `${(document.documentElement.clientWidth / 2 - rect.left).toFixed(1)}px ${(top + window.innerHeight / 2).toFixed(1)}px`;
+  }
+
+  // The sheet carries its own copy of the dot grid. Lined up with the drifting grid around it
+  // (which holds still while the journey is open) and just as strong, the swap between the two
+  // can't be seen when the page lies back or comes back up.
+  function matchDots() {
+    const dots = getComputedStyle(document.body, '::before');
+    const cell = parseFloat(dots.backgroundSize) || 28;
+    const drift = dots.transform === 'none' ? 0 : new DOMMatrixReadOnly(dots.transform).m41;
+    const rect = page.getBoundingClientRect();
+    const phase = (n) => (((n % cell) + cell) % cell).toFixed(2);
+    page.style.backgroundPosition = `${phase((parseFloat(dots.left) || 0) + drift - rect.left)}px ${phase(-rect.top)}px`;
+    page.style.backgroundImage = `radial-gradient(circle at 0.875rem 0.875rem, rgb(157 174 196 / ${dots.opacity}) 0.0781rem, transparent 0.1094rem)`;
+  }
+
+  // While the journey is open the rest of the page sleeps: no focus, no clicks, hidden from screen
+  // readers. Switching that on or off restyles the whole page (about 20 ms), so it waits until a
+  // frame has gone out. Asleep, each element's own setting is kept to put back on waking.
+  let sleepers = [];
+  function sleep() {
+    if (!sleepers.length) {
+      sleepers = [...document.body.children]
+        .filter((node) => node !== root && node !== frame)
+        .map((node) => [node, node.inert]);
+    }
+    afterNextFrame(() => {
+      if (state !== 'closed') {
+        for (const [node] of sleepers) {
+          node.inert = true;
+        }
+      }
+    });
+  }
+  function wake() {
+    afterNextFrame(() => {
+      // Opened again in the meantime: it stays asleep.
+      if (state !== 'closed') {
+        return;
+      }
+      for (const [node, wasInert] of sleepers) {
+        node.inert = wasInert;
+      }
+      sleepers = [];
+      opener?.focus({ preventScroll: true });
+    });
   }
 
   // Lifts the panel out of the page: it starts small, lying in the page where the tab is, and
@@ -276,23 +345,17 @@ function createJourney({ stops, quote }) {
     const tx = from.left + from.width / 2 - viewWidth / 2;
     const ty = from.top + from.height / 2 - viewHeight / 2;
     const p = CAMERA.perspective;
+    restPose = `translate(${-dx}px, ${-dy}px) ${cameraAt(1, viewHeight)} translate3d(${tx}px, ${ty}px, 0px) scale(${POP_FROM})`;
     return panel.animate(
       [
-        {
-          transform: `translate(${-dx}px, ${-dy}px) ${cameraAt(1, viewHeight)} translate3d(${tx}px, ${ty}px, 0px) scale(${POP_FROM})`,
-          opacity: 0,
-          easing: 'cubic-bezier(0.3, 0.6, 0.3, 1)',
-        },
+        { transform: restPose, opacity: 0, easing: 'cubic-bezier(0.3, 0.6, 0.3, 1)' },
         { offset: 0.14, opacity: 1 },
         {
           offset: 0.7,
           transform: `translate(0px, 0px) perspective(${p}px) translate3d(0px, 0px, 60px) rotateX(-7deg) rotateZ(0.6deg) translate3d(0px, 0px, 0px) scale(1)`,
           easing: 'cubic-bezier(0.45, 0, 0.55, 1)',
         },
-        {
-          transform: `translate(0px, 0px) perspective(${p}px) translate3d(0px, 0px, 0px) rotateX(0deg) rotateZ(0deg) translate3d(0px, 0px, 0px) scale(1)`,
-          opacity: 1,
-        },
+        { transform: UPRIGHT, opacity: 1 },
       ],
       { duration: POP_MS, fill: 'both' },
     );
@@ -315,19 +378,18 @@ function createJourney({ stops, quote }) {
     window.scrollTo(window.scrollX, window.scrollY);
     html.style.scrollBehavior = scrollBehavior;
 
-    // Everything else on the page sleeps (no focus, no clicks) and stops scrolling.
-    quieted = [...document.body.children]
-      .filter((node) => node !== root && node !== frame && node !== shadow)
-      .map((node) => [node, node.inert]);
-    for (const [node] of quieted) {
-      node.inert = true;
+    sleep();
+    if (page) {
+      matchDots();
     }
     if (!flat) {
       frameSheet();
     }
-    document.documentElement.classList.add('journey-open');
+    html.classList.add('journey-open');
     root.classList.toggle('journey--flat', flat);
     root.hidden = false;
+    card.style.removeProperty('transform');
+    cardBox = null;
     if (flat) {
       state = 'open';
     }
@@ -344,13 +406,6 @@ function createJourney({ stops, quote }) {
         [
           { transform: cameraAt(0, viewHeight), opacity: 0 },
           { transform: cameraAt(1, viewHeight), opacity: 1 },
-        ],
-        timing,
-      ),
-      shadow.animate(
-        [
-          { transform: `${cameraAt(0, viewHeight)} translate3d(0px, 0px, 0px) scale(1)`, opacity: 0 },
-          { transform: `${cameraAt(1, viewHeight)} translate3d(0px, 3%, 0px) scale(1.03)`, opacity: 1 },
         ],
         timing,
       ),
@@ -371,40 +426,58 @@ function createJourney({ stops, quote }) {
       .catch(() => {});
   }
 
-  // Plays an animation backward from wherever it is. One that hasn't started yet is simply
-  // dropped: played backward from its start, it would jump to its end first.
-  function rewind(animation, speed) {
-    if (!animation) {
-      return Promise.resolve();
-    }
-    if (!(animation.currentTime > 0)) {
-      animation.cancel();
-      return Promise.resolve();
-    }
-    animation.playbackRate = -speed;
-    animation.play();
-    return animation.finished;
-  }
-
-  async function close() {
+  function close() {
     if (state !== 'opening' && state !== 'open') {
       return;
     }
+    const settled = state === 'open';
     state = 'closing';
     run?.pause();
     setPlaying(false);
-    root.classList.add('is-closing');
     clearTimeout(popTimer);
-    try {
-      // Back down into the page, then the camera returns.
-      await rewind(pop, CLOSE_SPEED.pop);
-      root.hidden = true;
-      await Promise.all(camera.map((move) => rewind(move, CLOSE_SPEED.camera)));
-    } catch {}
-    finish();
+    root.classList.add('is-closing');
+    if (flat) {
+      finish();
+      return;
+    }
+
+    // The panel sinks straight back into the page at the tab, fading as it goes. It starts from
+    // wherever it is, so closing while it's still rising doesn't jump.
+    const panelNow = getComputedStyle(panel);
+    const sink = panel.animate(
+      [
+        { transform: settled ? UPRIGHT : panelNow.transform, opacity: panelNow.opacity },
+        { offset: 0.2, opacity: panelNow.opacity },
+        { transform: restPose, opacity: 0 },
+      ],
+      { duration: SINK_MS, easing: SINK_EASE, fill: 'forwards' },
+    );
+    pop?.cancel();
+    pop = sink;
+    sink.finished.then(() => { root.hidden = true; }).catch(() => {});
+
+    // Meanwhile the camera glides back to the normal view, from wherever it has got to.
+    camera = camera.map((move) => {
+      const target = move.effect.target;
+      const [start, end] = move.effect.getKeyframes();
+      const now = getComputedStyle(target);
+      const from = { transform: settled ? end.transform : now.transform };
+      const to = { transform: start.transform };
+      if ('opacity' in start) {
+        from.opacity = settled ? end.opacity : now.opacity;
+        to.opacity = start.opacity;
+      }
+      const back = target.animate([from, to], { duration: RETURN_MS, delay: RETURN_DELAY, easing: RETURN_EASE, fill: 'both' });
+      move.cancel();
+      return back;
+    });
+    Promise.all(camera.map((move) => move.finished)).then(finish).catch(() => {});
   }
 
   function finish() {
+    if (state === 'closed') {
+      return;
+    }
     run?.cancel();
     run = null;
     pop?.cancel();
@@ -416,18 +489,21 @@ function createJourney({ stops, quote }) {
     root.hidden = true;
     root.classList.remove('is-closing', 'journey--flat');
     document.documentElement.classList.remove('journey-open');
-    page?.style.removeProperty('--journey-clip');
-    page?.style.removeProperty('transform-origin');
-    for (const [node, wasInert] of quieted) {
-      node.inert = wasInert;
+    for (const property of SHEET_PROPERTIES) {
+      page?.style.removeProperty(property);
     }
-    quieted = [];
     state = 'closed';
-    opener?.focus({ preventScroll: true });
+    wake();
   }
 
   root.querySelector('.journey__close').addEventListener('click', close);
-  // A click anywhere outside the panel closes it.
+  // Pressing anywhere around the panel closes it: with a mouse as soon as the button goes down,
+  // by touch or pen on the tap.
+  root.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'mouse' && event.button === 0 && !card.contains(event.target)) {
+      close();
+    }
+  });
   root.addEventListener('click', (event) => {
     if (!card.contains(event.target)) {
       close();
@@ -448,6 +524,7 @@ function createJourney({ stops, quote }) {
   // If the window changes size, or the page scrolls anyway, the sheet is cut again from what's on
   // screen.
   const reframe = () => {
+    cardBox = null;
     if (!flat && (state === 'opening' || state === 'open')) {
       frameSheet();
     }
@@ -455,20 +532,32 @@ function createJourney({ stops, quote }) {
   window.addEventListener('resize', reframe);
   window.addEventListener('scroll', reframe, { passive: true });
 
-  // The panel leans a little toward the mouse.
+  // The panel leans a little toward the mouse: at most once a frame, measuring it only once, and
+  // setting its transform directly (no custom properties to restyle the panel's contents).
+  let cardBox = null;
+  let pointer = null;
+  let tiltFrame = 0;
+  function tilt() {
+    tiltFrame = 0;
+    if (!pointer || state !== 'open') {
+      return;
+    }
+    cardBox ??= card.getBoundingClientRect();
+    const lean = (at, start, size) => Math.max(-1, Math.min(1, (at - start - size / 2) / (size / 2)));
+    const x = lean(pointer.x, cardBox.left, cardBox.width) * 3;
+    const y = lean(pointer.y, cardBox.top, cardBox.height) * 3;
+    card.style.transform = `perspective(1000px) rotateX(${(-y).toFixed(2)}deg) rotateY(${x.toFixed(2)}deg)`;
+  }
   root.addEventListener('pointermove', (event) => {
     if (event.pointerType !== 'mouse' || flat || state !== 'open') {
       return;
     }
-    const box = card.getBoundingClientRect();
-    const x = Math.max(-1, Math.min(1, (event.clientX - box.left - box.width / 2) / (box.width / 2)));
-    const y = Math.max(-1, Math.min(1, (event.clientY - box.top - box.height / 2) / (box.height / 2)));
-    card.style.setProperty('--ry', `${(x * 3).toFixed(2)}deg`);
-    card.style.setProperty('--rx', `${(-y * 3).toFixed(2)}deg`);
+    pointer = { x: event.clientX, y: event.clientY };
+    tiltFrame ||= requestAnimationFrame(tilt);
   });
   root.addEventListener('pointerleave', () => {
-    card.style.removeProperty('--rx');
-    card.style.removeProperty('--ry');
+    pointer = null;
+    card.style.removeProperty('transform');
   });
 
   return { open };

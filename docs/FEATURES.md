@@ -174,7 +174,7 @@ every screen from 320 px phones to 2560 px monitors without sideways scrolling.
    |-------|--------|
    | Below 900 px | The hero photo and the About panel stack under their text |
    | Below 640 px | The header stacks, nav links get 44 px tap targets, contact cards go one per row |
-   | 1280 px and up | The section guide appears on the right edge (see [section 9](#9-moving-between-sections)) |
+   | 900 px and up, 400 px tall and up | The section guide appears on the right edge, on a small frosted pill centred below the header; below 1280 px it tucks into the narrower margin, and under 600 px tall its dots close up (see [section 9](#9-moving-between-sections)) |
 
    - The project grid fits as many 300 px columns as there is room for, with no breakpoint.
    - Touch-only screens (`@media (hover: none)`) see "Swipe the thread" instead of "Drag the thread" in
@@ -348,9 +348,11 @@ the thread, in the order they happened.
   panel. The line leading into it from the previous entry (newest looping back to the oldest) is
   dashed. The card shows the tab by not clipping its overflow, so click ripples are off on it. "Back to the start", next to the arrows, rewinds backward through the entries to it; it's
   greyed out when already there and hidden under filters that don't include the first entry.
-- **Where it is now:** worked out from the visitor's date. The latest entry up to today (`NOW_ID`) is
-  "● You are here": a pulsing dot (`now-pulse` in `motion.css`) and the label on its card and in the
-  details panel. The thread opens on it. Entries dated after today are "Upcoming": dashed card, hollow
+- **Where it is now:** worked out from the visitor's date. A solid navy **Today** card with the real
+  date ("Tue, Nov 17, 2026") sits on the thread in date order under every filter (`TODAY_ENTRY` in
+  `timeline.js`; not counted in the chips, the status line or the "n / 24" numbering, where it
+  shows as "Today"). It's "● You are here": a pulsing dot (`now-pulse` in `motion.css`), and its
+  details name the most recent entry and the next one. The thread opens on it. Entries dated after today are "Upcoming": dashed card, hollow
   dashed dot, dashed tick, and dashed line leading to them. "Jump to now" goes back to the present the
   shorter way round. Upcoming entries turn into past ones on their own as the dates pass.
 
@@ -374,8 +376,7 @@ the thread, in the order they happened.
 - **Bundling:** the JSON is imported by `timeline.js` and bundled at build time, since GitHub Pages has
   no server. Editing the file and pushing updates the live site.
 - **Drafts:** draft entries (`"draft": true`) show only in local development (`import.meta.env.DEV`).
-  Right now 2 of the 24 entries are drafts (`narb` and `cpa-exam`, waiting on wording), so the live site
-  shows 22. Drafts are still bundled into the page's script, so keep anything private out of them.
+  Right now there are no drafts, so the live site shows all 24 entries. Drafts are still bundled into the page's script, so keep anything private out of them.
 - **Filter chips:** one per type in the HTML; a type with no entries gets no chip.
 - **Study links:** books link to the publisher's or author's page, never to a copy of the book.
 - **Date formats:**
@@ -516,7 +517,7 @@ or "Swipe…" on touch screens.
    - It dims and recedes over its last 360 px as it leaves the top.
    - This plays every time, scrolling down or back up.
 3. **Chapter line.** Reaching a section draws a navy line under its label, which then fades to 35%.
-4. **Section guide** (windows 1280 px and wider).
+4. **Section guide** (windows 900 px and wider, and 400 px and taller).
    - A thin vertical thread on the right edge with a dot per section: Intro, About, Projects, Timeline,
      Contact.
    - The current dot grows, and the line fills navy up to it.
@@ -535,7 +536,7 @@ or "Swipe…" on touch screens.
     measure a jump target with its transform applied. Browsers without scroll-driven animations show
     the sections still.
   - The chapter line is `.chapter-label::after`, animated when the section has `.is-current`.
-- **CSS** (`site.css`, "Section guide"): `.section-guide`, which only displays at 1280 px and wider.
+- **CSS** (`site.css`, "Section guide"): `.section-guide`, which displays at 900 px wide and 400 px tall and up, on a frosted pill centred in the space below the header. Its names float out to the left without taking width, so the pill stays as narrow as the dots; below 1280 px it slims down and hugs the edge to stay inside the page margin, and under 600 px tall the dots close up.
 - **JS:** `client/src/scripts/section-flow.js`.
   - It builds the guide `<nav>` and marks each section's first `.label-section` as a `.chapter-label`.
   - An `IntersectionObserver` with `rootMargin: '-50% 0px -50% 0px'` (a one-pixel line across the middle
@@ -664,7 +665,7 @@ hero strip) is not recorded as a click or a rage click.
 | `POST /collect` (+ `OPTIONS` preflight) | Public, origin-checked | Receives event batches from the tracker |
 | `GET /` | Password | The dashboard page |
 | `GET /api/stats?days=N` | Password | The dashboard's numbers as JSON (`days` 1–400, default 30) |
-| `GET /api/public-stats` | Public (any origin, cached 5 min) | A 30-day summary for the site's "Site stats" strip, totals only: visits, page views, average time on page, visits per day, sections reached, devices, and countries with at least 3 visits. No clicks, link text, referrers, errors or single events (`publicStats` in `stats.js`) |
+| `GET /api/public-stats` | Public (any origin, cached 5 min) | A 30-day summary for the site's "Site stats" strip, aggregates only: visits, page views, time on page, scroll depth, quick exits (under 10 s), visits and page views per day, sections reached, referring sites and countries with at least 3 visits (plus Direct), devices, browsers, operating systems, and project and contact clicks for the site's own labels. No click positions, link text, URLs, error messages or single events (`publicStats` in `stats.js`) |
 
 Any other path returns 404, and any other method returns 405.
 
@@ -861,7 +862,7 @@ the tokens in [section 2](#2-threadline-design-system).
 | `client/src/styles/motion.css` | Animations and hover effects, section transitions |
 | `client/src/styles/animations.css` | Reduced-motion override |
 | `client/src/scripts/main.js` | Every page: font, analytics, motion, the Office easter egg, the Site stats strip, home links |
-| `client/src/scripts/header-stats.js` | "Site stats": a thin tab hanging from the middle of the header. Pulling it down (24 px) or clicking it opens a drawer under the header with the public 30-day summary from `/api/public-stats` (address built from `VITE_ANALYTICS_ENDPOINT`, falling back to the live Worker); pushing it up, clicking it, ×, Escape or a click elsewhere closes it. Fetched on first open and again after 5 minutes |
+| `client/src/scripts/header-stats.js` | "Site stats": a thin tab hanging from the middle of the header. Pulling it down (24 px) or clicking it opens a drawer under the header with the public 30-day summary from `/api/public-stats` (six tiles, a visits-per-day chart with a scale and dates, and lists; it scrolls when taller than the screen) (address built from `VITE_ANALYTICS_ENDPOINT`, falling back to the live Worker); pushing it up, clicking it, ×, Escape or a click elsewhere closes it. Fetched on first open and again after 5 minutes |
 | `client/src/scripts/office-clip.js` | Easter egg: a mug button fixed bottom-left that jingles every 6 s (`mug-jingle` in `motion.css`) until it has been clicked once, remembered in `localStorage` as `office-mug-found`. Clicking it slides "The Office x LinkedIn" banner, full width, up from the bottom edge (350 ms, ease-out, no fade) until the whole banner is in view, and plays a 9-second clip (`client/public/assets/office/`). A click anywhere or Escape slides it back down and stops the sound |
 | `client/src/scripts/home.js` | Home page: timeline, hero strip, section flow |
 | `client/src/scripts/analytics.js` | The analytics tracker |

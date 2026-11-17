@@ -209,15 +209,14 @@
     },
     {
       "id": "narb",
-      "type": "project",
-      "title": "narb",
-      "org": "Personal project",
+      "type": "work",
+      "title": "Started developer work at narb",
+      "org": "narb",
       "start": "2026-09-01",
       "end": null,
-      "summary": "Draft: replace with a one-line public description, then remove the draft flag.",
-      "tags": [],
-      "links": [],
-      "draft": true
+      "summary": "Working at narb, where I started doing developer work.",
+      "tags": ["development"],
+      "links": []
     },
     {
       "id": "nexus",
@@ -294,16 +293,15 @@
       "links": []
     },
     {
-      "id": "cpa-exam",
+      "id": "cpa-start",
       "type": "certification",
-      "title": "CPA Examination",
+      "title": "Starting the CPA",
       "org": "Uniform CPA Examination",
-      "start": "2027-01",
+      "start": "2027",
       "end": null,
-      "summary": "Draft: dated January 2027 in the source list. Confirm the date and wording (taking it, or passed a section), then remove the draft flag.",
+      "summary": "The plan for next year: start working toward the CPA.",
       "tags": ["accounting"],
-      "links": [],
-      "draft": true
+      "links": []
     }
   ]
 }

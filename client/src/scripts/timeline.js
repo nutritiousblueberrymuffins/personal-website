@@ -57,17 +57,34 @@ const entries = data.entries
 const START_ID = entries[0]?.id;
 const START_LABEL = 'Where it began';
 
-// Where the journey is now, worked out from the visitor's date: entries that start after today
-// are upcoming (dashed card, hollow dot, dashed line leading to them), and the latest entry that
-// isn't is "You are here" (a pulsing dot). The thread opens on it, and "Jump to now" returns to
-// it. Dates compare as strings, so "2027-01" is after "2026-11-17" and "2026-11" is not.
-const TODAY = (() => {
-  const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-})();
+// Where the journey is now, worked out from the visitor's date. A "Today" card with the real
+// current date sits on the thread in date order (under every filter; it isn't counted in the
+// chips), marked "You are here" with a pulsing dot; the thread opens on it and "Jump to now"
+// returns to it. Its details name the most recent entry and the next one. Entries that start
+// after today are upcoming (dashed card, hollow dot, dashed line leading to them). Dates compare
+// as strings, so "2027-01" is after "2026-11-17" and "2026-11" is not.
+const NOW_DATE = new Date();
+const TODAY = `${NOW_DATE.getFullYear()}-${String(NOW_DATE.getMonth() + 1).padStart(2, '0')}-${String(NOW_DATE.getDate()).padStart(2, '0')}`;
 const isUpcoming = (entry) => entry.start > TODAY;
-const NOW_ID = entries.filter((entry) => !isUpcoming(entry)).at(-1)?.id;
+const TODAY_ID = 'today';
+const NOW_ID = TODAY_ID;
 const NOW_LABEL = 'You are here';
+const TODAY_ENTRY = (() => {
+  const latest = entries.filter((entry) => !isUpcoming(entry)).at(-1);
+  const next = entries.find(isUpcoming);
+  const summary = [
+    latest && `The most recent step: ${latest.title} (${longDate(latest.start)}).`,
+    next && `Next up: ${next.title} (${longDate(next.start)}).`,
+  ].filter(Boolean).join(' ');
+  return { id: TODAY_ID, type: 'today', title: 'Today', start: TODAY, end: null, summary, links: [] };
+})();
+LABELS.today = 'The present';
+
+// The list with the Today card slotted in after everything up to and including today.
+function withToday(list) {
+  const at = list.findIndex(isUpcoming);
+  return at < 0 ? [...list, TODAY_ENTRY] : [...list.slice(0, at), TODAY_ENTRY, ...list.slice(at)];
+}
 const UPCOMING_LABEL = 'Upcoming';
 const nowButton = document.getElementById('timeline-now');
 
@@ -97,6 +114,9 @@ function parts(isoDate) {
 
 // On the card: "2018 – 2022" for a span, "Oct 2026" for a dated moment, "2024" otherwise.
 function cardDate(entry) {
+  if (entry.id === TODAY_ID) {
+    return NOW_DATE.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+  }
   const start = parts(entry.start);
   if (entry.end) {
     const end = parts(entry.end);
@@ -133,6 +153,9 @@ function longDate(isoDate) {
 }
 
 function detailDate(entry) {
+  if (entry.id === TODAY_ID) {
+    return NOW_DATE.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+  }
   if (entry.end) {
     return `${longDate(entry.start)} – ${longDate(entry.end)}`;
   }
@@ -189,7 +212,7 @@ function entryElement(entry, index, entryIndex) {
     card.prepend(flag);
   }
   if (entry.id === NOW_ID) {
-    item.classList.add('thread__item--now');
+    item.classList.add('thread__item--now', 'thread__item--today');
     card.prepend(element('span', 'event-card__badge event-card__badge--now', `●  ${NOW_LABEL}`));
   } else if (isUpcoming(entry)) {
     item.classList.add('thread__item--upcoming');
@@ -204,8 +227,19 @@ function items() {
 
 // ---------- The details panel ----------
 
+// "3 / 24" or "Entry 3 of 24": real entries only, so the Today card doesn't shift the numbering;
+// on the Today card itself, just "Today".
+function entryNumber(index) {
+  if (shown[index]?.id === TODAY_ID) {
+    return null;
+  }
+  const before = shown.slice(0, index).filter((entry) => entry.id !== TODAY_ID).length;
+  return { n: before + 1, total: shown.length - 1 };
+}
+
 function renderDetail(entry, index) {
-  const parts = [`Entry ${index + 1} of ${shown.length}`, LABELS[entry.type] ?? entry.type];
+  const number = entryNumber(index);
+  const parts = [number ? `Entry ${number.n} of ${number.total}` : 'Today', LABELS[entry.type] ?? entry.type];
   if (entry.id === START_ID) {
     parts.push(START_LABEL);
   }
@@ -295,7 +329,8 @@ function highlight(position) {
     item.classList.toggle('is-current', on);
     card.setAttribute('aria-current', on ? 'true' : 'false');
   }
-  positionLabel.textContent = `${entryAt(position) + 1} / ${shown.length}`;
+  const number = entryNumber(entryAt(position));
+  positionLabel.textContent = number ? `${number.n} / ${number.total}` : 'Today';
 }
 
 let settleTimer = 0;
@@ -540,7 +575,7 @@ document.fonts?.ready.then(relayout);
 // ---------- Filters ----------
 
 function render(type) {
-  shown = type ? entries.filter((entry) => entry.type === type) : entries;
+  shown = withToday(type ? entries.filter((entry) => entry.type === type) : entries);
   const n = shown.length;
   looping = n >= 2;
   period = n % 2 ? n * 2 : n;
@@ -579,7 +614,8 @@ function render(type) {
     return;
   }
   const noun = entries.length === 1 ? 'entry' : 'entries';
-  status.textContent = `Showing ${shown.length} of ${entries.length} ${noun}${SHARE_NOTE}`;
+  // The Today card isn't an entry, so it isn't counted.
+  status.textContent = `Showing ${shown.length - 1} of ${entries.length} ${noun}${SHARE_NOTE}`;
   measure();
   place(start);
   select(opening);

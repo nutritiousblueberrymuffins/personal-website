@@ -76,7 +76,12 @@ const TODAY_ENTRY = (() => {
     latest && `The most recent step: ${latest.title} (${longDate(latest.start)}).`,
     next && `Next up: ${next.title} (${longDate(next.start)}).`,
   ].filter(Boolean).join(' ');
-  return { id: TODAY_ID, type: 'today', title: 'Today', start: TODAY, end: null, summary, links: [] };
+  // The same two facts as stops on the card's mini timeline.
+  const topics = [
+    latest && { title: 'Most recent', text: `${latest.title}, ${longDate(latest.start)}.` },
+    next && { title: 'Next up', text: `${next.title}, ${longDate(next.start)}.` },
+  ].filter(Boolean);
+  return { id: TODAY_ID, type: 'today', title: 'Today', start: TODAY, end: null, summary, topics, links: [] };
 })();
 LABELS.today = 'The present';
 
@@ -173,36 +178,76 @@ function element(tag, className, text) {
   return node;
 }
 
-// ---------- Card pages ----------
-// Each card is a little book: the cover (date, title, type), then an "About" page with the
-// summary, then a "Covered" (study) or "Highlights" page with the entry's topics. All the pages
-// share one grid cell, so a card is always as tall as its tallest page and flipping never moves
-// the thread. Back / forward arrows and "1 / 3" sit at the bottom; they're spans the thread's
-// click listener handles (a <button> can't hold buttons), and they only turn pages, never move
-// along the timeline. The page turn itself lives in site.css ("Card pages").
+// ---------- Card pages and the mini timeline ----------
+// Each card is a little book. Closed, it shows its cover (date, title, type) with back / forward
+// arrows and "1 / 5" at the bottom. Turning past the cover opens it: the card widens, the cards
+// either side slide apart to make room, and a mini timeline appears inside, with a stop for
+// "About" (the summary) and one for each topic or highlight. The arrows, or a click on a stop,
+// move between the stops, each a page that turns like a book page. Turning back to the cover
+// closes the card to its normal size.
+//
+// Only the centred card opens: an arrow on another card brings that card to the middle first,
+// and moving along the timeline (arrows, keys, drag, wheel, another card) closes it again. The
+// open card stays centred because it widens equally to both sides (site.css, "Opened cards"),
+// so the strip's positions don't change. The arrows and stops are spans the thread's click
+// listener handles: a <button> can't hold buttons.
+
+// How long the card takes to widen or narrow (site.css --open-ms says the same).
+const OPEN_MS = 480;
+// How much wider an open card gets, and the least room it leaves at the window's edges.
+const OPEN_SCALE = 2.2;
+const OPEN_MARGIN = 32;
+// The open track item, if any.
+let openItem = null;
+const unlockTimers = new WeakMap();
+
+// The stops on an entry's mini timeline: About first, then the topics or highlights.
+function stopsFor(entry) {
+  const stops = [];
+  // The Today card's summary says the same as its two stops.
+  if (entry.summary && entry.id !== TODAY_ID) {
+    stops.push({ name: 'About', label: 'About', text: entry.summary });
+  }
+  const topics = entry.topics ?? [];
+  const kind = entry.type === 'study' ? 'Covered' : entry.id === TODAY_ID ? 'Today' : 'Highlights';
+  topics.forEach((topic, i) => {
+    stops.push({ name: topic.title, label: `${kind}  ·  ${i + 1} of ${topics.length}`, heading: topic.title, text: topic.text });
+  });
+  return stops;
+}
 
 function cardBook(entry, cover) {
-  const pages = [cover];
-  if (entry.summary) {
-    pages.push([element('span', 'card-page__label', 'About'), element('span', 'card-page__text', entry.summary)]);
-  }
-  if (entry.topics?.length) {
-    const list = element('span', 'card-page__list');
-    for (const topic of entry.topics) {
-      list.append(element('span', 'card-page__item', topic));
-    }
-    pages.push([element('span', 'card-page__label', entry.type === 'study' ? 'Covered' : 'Highlights'), list]);
-  }
-
   const book = element('span', 'card-pages');
-  pages.forEach((content, i) => {
-    const page = element('span', `card-page${i === 0 ? ' card-page--cover is-current' : ' is-after'}`);
-    page.append(...content);
-    book.append(page);
-  });
-  if (pages.length < 2) {
+  const front = element('span', 'card-page card-page--cover is-current');
+  front.append(...cover);
+  book.append(front);
+  const stops = stopsFor(entry);
+  if (!stops.length) {
     return [book];
   }
+
+  // Inside: the mini timeline, then a page per stop, stacked like the cover.
+  const inside = element('span', 'card-inside');
+  const mini = element('span', 'mini-thread');
+  mini.style.setProperty('--stops', String(stops.length));
+  const stage = element('span', 'card-stage');
+  stops.forEach((stop, i) => {
+    const point = element('span', 'mini-stop');
+    point.dataset.page = String(i + 1);
+    point.title = stop.name;
+    point.append(element('span', 'mini-stop__dot'), element('span', 'mini-stop__label', stop.name));
+    mini.append(point);
+
+    const page = element('span', 'card-page is-after');
+    page.append(element('span', 'card-page__label', stop.label));
+    if (stop.heading) {
+      page.append(element('span', 'card-page__heading', stop.heading));
+    }
+    page.append(element('span', `card-page__text${stop.heading ? '' : ' card-page__text--long'}`, stop.text));
+    stage.append(page);
+  });
+  inside.append(mini, stage);
+  book.append(inside);
 
   const pager = element('span', 'card-pager');
   pager.setAttribute('aria-hidden', 'true');
@@ -211,30 +256,93 @@ function cardBook(entry, cover) {
   back.title = 'Previous page';
   const forward = element('span', 'card-pager__btn', '›');
   forward.dataset.step = '1';
-  forward.title = 'Next page';
-  pager.append(back, element('span', 'card-pager__count', `1 / ${pages.length}`), forward);
+  forward.title = 'Open the card';
+  pager.append(back, element('span', 'card-pager__count', `1 / ${stops.length + 1}`), forward);
   return [book, pager];
 }
 
-// Turns a card one page back or forward. Pages before the current one are turned away over the
-// left edge, pages after it wait underneath.
-function turnPage(card, step) {
+// Shows page `to` of a card (0 is the cover): pages before it are turned away over the left
+// edge, pages after it wait underneath, and the mini timeline fills in up to its stop.
+function setPage(card, to) {
   const pages = [...card.querySelectorAll('.card-page')];
-  const from = Number(card.dataset.page || 0);
-  const to = Math.max(0, Math.min(pages.length - 1, from + step));
-  if (to === from) {
-    return;
-  }
   card.dataset.page = String(to);
   pages.forEach((page, i) => {
     page.classList.toggle('is-current', i === to);
     page.classList.toggle('is-before', i < to);
     page.classList.toggle('is-after', i > to);
   });
-  card.querySelector('.card-pager__count').textContent = `${to + 1} / ${pages.length}`;
+  const count = card.querySelector('.card-pager__count');
+  if (!count) {
+    return;
+  }
+  count.textContent = `${to + 1} / ${pages.length}`;
   const [back, forward] = card.querySelectorAll('.card-pager__btn');
   back.classList.toggle('is-disabled', to === 0);
+  back.title = to === 1 ? 'Close the card' : 'Previous page';
   forward.classList.toggle('is-disabled', to === pages.length - 1);
+  forward.title = to === 0 ? 'Open the card' : 'Next page';
+  const stops = card.querySelectorAll('.mini-stop');
+  stops.forEach((stop, i) => {
+    stop.classList.toggle('is-current', i === to - 1);
+    stop.classList.toggle('is-done', i < to - 1);
+  });
+  const progress = stops.length > 1 ? Math.max(0, to - 1) / (stops.length - 1) : 0;
+  card.querySelector('.mini-thread').style.setProperty('--progress', progress.toFixed(4));
+}
+
+// Turns a card to page `to`, opening it when it leaves the cover and closing it on the way back.
+function showPage(card, to) {
+  const last = card.querySelectorAll('.card-page').length - 1;
+  to = Math.max(0, Math.min(last, to));
+  const item = card.closest('.thread__item');
+  if (to > 0 && openItem !== item) {
+    openCard(item);
+  }
+  setPage(card, to);
+  if (to === 0 && openItem === item) {
+    closeCard();
+  }
+}
+
+// The open card's extra width: about twice as wide, but always inside the window.
+function fitOpenCard() {
+  if (!openItem) {
+    return;
+  }
+  const narrow = openItem.offsetWidth;
+  const wide = Math.max(narrow, Math.min(Math.round(narrow * OPEN_SCALE), viewport.clientWidth - OPEN_MARGIN));
+  thread.style.setProperty('--open-extra', `${wide - narrow}px`);
+}
+
+function openCard(item) {
+  closeCard();
+  const card = item.querySelector('.event-card');
+  // Holds the card at its closed height while it's open: its cover reflows shorter when it's
+  // wider, and the row of cards (and so the line) mustn't move.
+  clearTimeout(unlockTimers.get(card));
+  card.style.minHeight = `${card.offsetHeight}px`;
+  openItem = item;
+  fitOpenCard();
+  item.classList.add('is-open');
+}
+
+// Closes the open card, if any, back to its cover.
+function closeCard() {
+  const item = openItem;
+  if (!item) {
+    return;
+  }
+  openItem = null;
+  const card = item.querySelector('.event-card');
+  setPage(card, 0);
+  item.classList.remove('is-open');
+  unlockTimers.set(card, setTimeout(() => {
+    card.style.minHeight = '';
+  }, OPEN_MS + 50));
+}
+
+function openTrack() {
+  return openItem ? Number(openItem.querySelector('.event-card').dataset.track) : null;
 }
 
 // `index` is the item's place on the track; `entryIndex` is which entry it shows.
@@ -459,6 +567,10 @@ function goTo(target, { via, duration } = {}) {
     target = Math.max(0, Math.min(target, shown.length - 1));
   }
   target = Math.round(target);
+  // Moving to another card closes the open one.
+  if (openItem && openTrack() !== target) {
+    closeCard();
+  }
   const distance = Math.abs(target - pos);
   const time = reduceMotion.matches ? 0 : duration ?? Math.min(250 + distance * 90, 900);
   place(target, time);
@@ -522,11 +634,22 @@ nowButton?.addEventListener('click', () => {
 });
 
 thread.addEventListener('click', (event) => {
-  // A card's page arrows turn its pages and do nothing else: the card isn't selected and the
-  // strip doesn't move.
+  // A card's page arrows turn its pages; past the cover they open it. On the centred card the
+  // strip stays put. On any other card, the forward arrow brings that card to the middle as it
+  // opens, since only the centred card opens.
   const pageArrow = event.target.closest('.card-pager__btn');
   if (pageArrow) {
-    turnPage(pageArrow.closest('.event-card'), Number(pageArrow.dataset.step));
+    const card = pageArrow.closest('.event-card');
+    if (!card.closest('.thread__item').classList.contains('is-current')) {
+      goTo(Number(card.dataset.track), { via: 'card' });
+    }
+    showPage(card, Number(card.dataset.page || 0) + Number(pageArrow.dataset.step));
+    return;
+  }
+  // A stop on an open card's mini timeline turns straight to its page.
+  const stop = event.target.closest('.mini-stop');
+  if (stop) {
+    showPage(stop.closest('.event-card'), Number(stop.dataset.page));
     return;
   }
   // The type line on a card with a link ("Study ↗") opens the resource in a new tab instead of
@@ -542,8 +665,14 @@ thread.addEventListener('click', (event) => {
   }
 });
 
-// Arrow keys on the strip step one entry (and loop); Home and End jump to the oldest / newest.
+// Arrow keys on the strip step one entry (and loop); Home and End jump to the oldest / newest;
+// Escape closes an open card.
 viewport.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape' && openItem) {
+    event.preventDefault();
+    closeCard();
+    return;
+  }
   const here = Math.round(pos);
   const base = looping ? here - entryAt(here) : 0;
   const moves = {
@@ -598,6 +727,7 @@ viewport.addEventListener('pointermove', (event) => {
     drag.moved = true;
     viewport.setPointerCapture(event.pointerId);
     viewport.classList.add('is-dragging');
+    closeCard();
   }
   let next = drag.start - dx / pitch;
   if (!looping) {
@@ -675,6 +805,7 @@ viewport.addEventListener(
     }
     event.preventDefault();
     clearTimeout(settleTimer);
+    closeCard();
     let next = pos + dx / pitch;
     if (!looping) {
       next = Math.max(-0.4, Math.min(next, shown.length - 0.6));
@@ -695,6 +826,7 @@ const relayout = () => {
     if (shown.length) {
       measure();
       place(Math.round(pos));
+      fitOpenCard();
     }
   });
 };
@@ -722,6 +854,7 @@ function render(type) {
     item.style.setProperty('--stagger', String(Math.min(Math.abs(i - start), 8)));
     trackItems.push(item);
   }
+  openItem = null;
   thread.replaceChildren(...trackItems);
   thread.style.setProperty('--count', String(count));
   const empty = n === 0;

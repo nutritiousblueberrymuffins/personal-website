@@ -11,7 +11,12 @@
       "summary": "CS50: Introduction to Computer Science, Harvard's course on problem solving and programming, from C to Python, SQL and the web.",
       "tags": ["computer-science", "c", "python"],
       "image": "assets/timeline/cs50.jpg",
-      "topics": ["C and memory", "Algorithms", "Python and SQL", "HTML, CSS and JavaScript"],
+      "topics": [
+        { "title": "C and memory", "text": "Programs in C: types, arrays, pointers and managing memory by hand." },
+        { "title": "Algorithms", "text": "Searching and sorting, and comparing how their running times grow." },
+        { "title": "Python and SQL", "text": "Rewriting programs in Python, then storing and querying data with SQL." },
+        { "title": "HTML, CSS and JavaScript", "text": "Pages for the web, then a small web app with Flask." }
+      ],
       "links": [
         { "label": "Course page", "url": "https://pll.harvard.edu/course/cs50-introduction-computer-science" }
       ]
@@ -25,7 +30,12 @@
       "end": null,
       "summary": "Rebuilt the math foundations: arithmetic, fractions, ratios and solving basic equations.",
       "tags": ["math"],
-      "topics": ["Order of operations", "Fractions and decimals", "Ratios and percents", "Basic equations"],
+      "topics": [
+        { "title": "Order of operations", "text": "Working through expressions in the right order, brackets and exponents first." },
+        { "title": "Fractions and decimals", "text": "Adding, multiplying and converting between fractions and decimals." },
+        { "title": "Ratios and percents", "text": "Comparing quantities, rates and percent change." },
+        { "title": "Basic equations", "text": "Solving one- and two-step equations for an unknown." }
+      ],
       "links": []
     },
     {
@@ -38,7 +48,12 @@
       "summary": "The core of financial accounting: the accounting cycle, the financial statements and how to read and analyse them.",
       "tags": ["accounting"],
       "image": "assets/timeline/financial-accounting.jpg",
-      "topics": ["The accounting cycle", "Income statement and balance sheet", "Statement of cash flows", "Reading and analysing statements"],
+      "topics": [
+        { "title": "The accounting cycle", "text": "Recording transactions, posting them and closing the books each period." },
+        { "title": "Income statement and balance sheet", "text": "What a business earned over a period, and what it owns and owes at a point in time." },
+        { "title": "Statement of cash flows", "text": "Where cash came from and went: operating, investing and financing." },
+        { "title": "Reading and analysing statements", "text": "Ratios and comparisons that turn the statements into insight." }
+      ],
       "links": [
         { "label": "Publisher page", "url": "https://www.pearson.com/en-us/subject-catalog/p/introduction-to-financial-accounting/P200000005928/9780133251036" }
       ]
@@ -53,7 +68,12 @@
       "summary": "Algebra through problem solving: polynomials, functions, inequalities, sequences and series.",
       "tags": ["math"],
       "image": "assets/timeline/intermediate-algebra.jpg",
-      "topics": ["Polynomials", "Functions", "Inequalities", "Sequences and series"],
+      "topics": [
+        { "title": "Polynomials", "text": "Factoring, dividing and finding the roots of polynomials." },
+        { "title": "Functions", "text": "Graphs, transformations, compositions and inverses." },
+        { "title": "Inequalities", "text": "The classic inequalities, and how to prove them." },
+        { "title": "Sequences and series", "text": "Arithmetic and geometric sequences, sums and telescoping." }
+      ],
       "links": [
         { "label": "Book page", "url": "https://artofproblemsolving.com/store/book/intermediate-algebra" }
       ]
@@ -67,7 +87,12 @@
       "end": null,
       "summary": "Sets, symbolic logic and Boolean algebra, applied to switching circuits: the math underneath digital logic.",
       "tags": ["math", "logic"],
-      "topics": ["Algebra of sets", "Symbolic logic", "Boolean algebra", "Switching circuits"],
+      "topics": [
+        { "title": "Algebra of sets", "text": "Unions, intersections and complements, and the laws they follow." },
+        { "title": "Symbolic logic", "text": "Statements, connectives and truth tables." },
+        { "title": "Boolean algebra", "text": "The abstract system behind both sets and logic, from its axioms." },
+        { "title": "Switching circuits", "text": "Designing and simplifying switching circuits with Boolean algebra." }
+      ],
       "links": [
         { "label": "Book page", "url": "https://store.doverpublications.com/products/9780486477671" }
       ]
@@ -82,7 +107,12 @@
       "summary": "How computers work from the ground up: from codes and relays to logic gates, memory and a working processor.",
       "tags": ["computer-science", "hardware"],
       "image": "assets/timeline/code-petzold.jpg",
-      "topics": ["Codes and binary", "Relays and logic gates", "Memory", "A working processor"],
+      "topics": [
+        { "title": "Codes and binary", "text": "Morse code, Braille and bits: information written with two symbols." },
+        { "title": "Relays and logic gates", "text": "Building AND, OR and NOT out of switches and relays." },
+        { "title": "Memory", "text": "Latches and flip-flops that hold a bit, scaled up into memory." },
+        { "title": "A working processor", "text": "Adders, memory and control put together into a computer." }
+      ],
       "links": [
         { "label": "Author's page", "url": "https://www.charlespetzold.com/code/" }
       ]
@@ -97,7 +127,11 @@
       "summary": "The structure of web pages: elements, semantics, forms and accessibility.",
       "tags": ["html", "web"],
       "image": "assets/timeline/mdn-html.jpg",
-      "topics": ["Elements and semantics", "Forms", "Accessibility"],
+      "topics": [
+        { "title": "Elements and semantics", "text": "Choosing the element that says what the content is." },
+        { "title": "Forms", "text": "Inputs, labels and sending what people type." },
+        { "title": "Accessibility", "text": "Markup that works with screen readers and the keyboard." }
+      ],
       "links": [
         { "label": "MDN: HTML", "url": "https://developer.mozilla.org/en-US/docs/Web/HTML" }
       ]
@@ -112,7 +146,11 @@
       "summary": "Why trust in software depends on the chain of compilers that built it, and how projects rebuild that chain from small, hand-checkable code.",
       "tags": ["compilers", "security"],
       "image": "assets/timeline/bootstrapping-article.jpg",
-      "topics": ["How compilers are built", "Trusting the toolchain", "Rebuilding from small code"],
+      "topics": [
+        { "title": "How compilers are built", "text": "Compilers are compiled by earlier compilers, back to a first one." },
+        { "title": "Trusting the toolchain", "text": "A tampered compiler could plant a backdoor that survives every rebuild." },
+        { "title": "Rebuilding from small code", "text": "Projects like stage0 start again from a tiny, hand-checkable seed." }
+      ],
       "links": [
         { "label": "Read the article", "url": "https://notgull.net/bootstrapping/" }
       ]
@@ -127,7 +165,12 @@
       "summary": "MDN's structured path through building for the web, from the first page to styling and scripting it.",
       "tags": ["web"],
       "image": "assets/timeline/mdn-learn-web.jpg",
-      "topics": ["How the web works", "Structuring with HTML", "Styling with CSS", "Scripting with JavaScript"],
+      "topics": [
+        { "title": "How the web works", "text": "Browsers, servers, requests and what happens when a page loads." },
+        { "title": "Structuring with HTML", "text": "Headings, lists, links, images and page structure." },
+        { "title": "Styling with CSS", "text": "Selectors, the box model and laying out a page." },
+        { "title": "Scripting with JavaScript", "text": "Making pages respond: variables, functions and events." }
+      ],
       "links": [
         { "label": "MDN: Learn web development", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development" }
       ]
@@ -142,7 +185,12 @@
       "summary": "The language itself: values, functions, objects, the DOM and asynchronous code.",
       "tags": ["javascript", "web"],
       "image": "assets/timeline/mdn-javascript.jpg",
-      "topics": ["Values and functions", "Objects", "The DOM", "Asynchronous code"],
+      "topics": [
+        { "title": "Values and functions", "text": "Types, variables, functions and scope." },
+        { "title": "Objects", "text": "Objects, prototypes and classes." },
+        { "title": "The DOM", "text": "Finding, changing and listening to elements on the page." },
+        { "title": "Asynchronous code", "text": "Promises, async and await, and fetching data." }
+      ],
       "links": [
         { "label": "MDN: JavaScript", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript" }
       ]
@@ -157,7 +205,12 @@
       "summary": "Algorithms, illustrated: binary search, sorting, recursion, hash tables, graph search, Dijkstra's algorithm and dynamic programming.",
       "tags": ["algorithms", "computer-science"],
       "image": "assets/timeline/grokking-algorithms.jpg",
-      "topics": ["Binary search", "Sorting and recursion", "Hash tables", "Graphs and Dijkstra's algorithm"],
+      "topics": [
+        { "title": "Binary search", "text": "Halving a sorted list until the answer is found, in logarithmic time." },
+        { "title": "Sorting and recursion", "text": "Selection sort, quicksort and thinking in base and recursive cases." },
+        { "title": "Hash tables", "text": "Fast lookups by hashing keys into slots." },
+        { "title": "Graphs and Dijkstra's algorithm", "text": "Breadth-first search, then finding the cheapest path." }
+      ],
       "links": [
         { "label": "Book page", "url": "https://www.manning.com/books/grokking-algorithms-second-edition" }
       ]
@@ -172,7 +225,11 @@
       "summary": "The official Python tutorial and reference: the language, its data structures and the standard library.",
       "tags": ["python"],
       "image": "assets/timeline/python-docs.jpg",
-      "topics": ["The tutorial", "Data structures", "The standard library"],
+      "topics": [
+        { "title": "The tutorial", "text": "The language step by step: control flow, functions, modules and classes." },
+        { "title": "Data structures", "text": "Lists, tuples, dictionaries and sets, and when to use each." },
+        { "title": "The standard library", "text": "What comes built in: files, dates, maths and more." }
+      ],
       "links": [
         { "label": "Python docs", "url": "https://docs.python.org/3/" }
       ]
@@ -187,7 +244,12 @@
       "summary": "Styling and layout: the cascade, the box model, flexbox and grid.",
       "tags": ["css", "web"],
       "image": "assets/timeline/mdn-css.jpg",
-      "topics": ["The cascade", "The box model", "Flexbox", "Grid"],
+      "topics": [
+        { "title": "The cascade", "text": "How specificity, order and inheritance decide which rule wins." },
+        { "title": "The box model", "text": "Content, padding, border and margin, and how they add up." },
+        { "title": "Flexbox", "text": "Lining things up in one direction and sharing out the space." },
+        { "title": "Grid", "text": "Two-dimensional layouts with rows, columns and areas." }
+      ],
       "links": [
         { "label": "MDN: CSS", "url": "https://developer.mozilla.org/en-US/docs/Web/CSS" }
       ]
@@ -202,7 +264,12 @@
       "summary": "C from the people who made it: types, control flow, pointers and arrays, structures and the standard library.",
       "tags": ["c"],
       "image": "assets/timeline/c-programming-language.jpg",
-      "topics": ["Types and control flow", "Pointers and arrays", "Structures", "The standard library"],
+      "topics": [
+        { "title": "Types and control flow", "text": "Variables, operators, loops and functions in C." },
+        { "title": "Pointers and arrays", "text": "Addresses, pointer arithmetic, and how arrays relate to pointers." },
+        { "title": "Structures", "text": "Grouping data with structs, and building lists and trees from them." },
+        { "title": "The standard library", "text": "Input and output, strings and memory from the standard library." }
+      ],
       "links": [
         { "label": "About the book", "url": "https://en.wikipedia.org/wiki/The_C_Programming_Language" }
       ]
@@ -217,7 +284,10 @@
       "summary": "An explainer on what a terminal actually is and how it works under the shell.",
       "tags": ["terminal"],
       "image": "assets/timeline/how-terminals-work.jpg",
-      "topics": ["What a terminal is", "Terminals and shells"],
+      "topics": [
+        { "title": "What a terminal is", "text": "The program that draws the text and passes your keystrokes on." },
+        { "title": "Terminals and shells", "text": "How the terminal and the shell running inside it split the work." }
+      ],
       "links": [
         { "label": "Read it", "url": "https://how-terminals-work.vercel.app/" }
       ]
@@ -232,7 +302,12 @@
       "summary": "Client- and server-side web programming: HTML, CSS, JavaScript, PHP and the pieces that connect them.",
       "tags": ["web"],
       "image": "assets/timeline/programming-the-www.jpg",
-      "topics": ["HTML and CSS", "JavaScript", "PHP on the server", "Client and server"],
+      "topics": [
+        { "title": "HTML and CSS", "text": "Marking up and styling pages." },
+        { "title": "JavaScript", "text": "Scripting the page in the browser." },
+        { "title": "PHP on the server", "text": "Building pages on the server with PHP." },
+        { "title": "Client and server", "text": "How browsers and servers talk, and which piece runs where." }
+      ],
       "links": [
         { "label": "Publisher page", "url": "https://www.pearson.com/en-us/subject-catalog/p/programming-the-world-wide-web/P200000003412/9780133775983" }
       ]
@@ -247,7 +322,11 @@
       "summary": "Working at narb, where I started doing developer work.",
       "tags": ["development"],
       "image": "assets/timeline/narb.jpg",
-      "topics": ["AI-powered law firm", "Location-aware habit app", "Multi-model answer engine"],
+      "topics": [
+        { "title": "AI-powered law firm", "text": "One of narb's products: legal work powered by AI." },
+        { "title": "Location-aware habit app", "text": "A habit-change app that works from the places you go." },
+        { "title": "Multi-model answer engine", "text": "A research engine that draws on several AI models." }
+      ],
       "links": [
         { "label": "narb.cc", "url": "https://narb.cc/" }
       ]
@@ -262,7 +341,11 @@
       "summary": "A Work check for middle and high school teachers: it replays how each assignment was written and asks students to explain their work in their own words.",
       "tags": ["education", "browser-extension"],
       "image": "assets/projects/nexus.jpg",
-      "topics": ["Writing replays", "Explain your work", "Works in Canvas, Word and more"],
+      "topics": [
+        { "title": "Writing replays", "text": "Teachers can replay how each assignment was drafted, session by session." },
+        { "title": "Explain your work", "text": "Three short questions ask students to explain their own writing." },
+        { "title": "Works in Canvas, Word and more", "text": "Runs alongside Word for the web, Canvas, Schoology and other platforms." }
+      ],
       "links": [
         { "label": "trynexus.cc", "url": "https://trynexus.cc/" }
       ]
@@ -277,7 +360,11 @@
       "summary": "First commit: the hero layout, the design tokens, and the project cards.",
       "tags": ["html", "css", "portfolio"],
       "image": "assets/projects/personal-website.jpg",
-      "topics": ["Hero layout", "Design tokens", "Project cards"],
+      "topics": [
+        { "title": "Hero layout", "text": "The intro, photo frame and name tag at the top of the page." },
+        { "title": "Design tokens", "text": "Colours, spacing and type defined once and used everywhere." },
+        { "title": "Project cards", "text": "A card for each project, linking out to its site or code." }
+      ],
       "links": [
         { "label": "Repository", "url": "https://github.com/nutritiousblueberrymuffins/personal-website" }
       ]
@@ -292,7 +379,12 @@
       "summary": "A free iPhone habit tracker that counts your visits for you: goals become places to visit more or less, with streaks, badges and friend groups.",
       "tags": ["ios", "app"],
       "image": "assets/projects/notestudo.jpg",
-      "topics": ["Counts visits for you", "Place-based goals", "Streaks and badges", "Friend groups"],
+      "topics": [
+        { "title": "Counts visits for you", "text": "Notices when you arrive at and leave your chosen places." },
+        { "title": "Place-based goals", "text": "Goals become places to visit more or less, with weekly targets." },
+        { "title": "Streaks and badges", "text": "Weekly progress in hours and dollars, with streaks and badges." },
+        { "title": "Friend groups", "text": "Groups with shared goals, while your places and visits stay private." }
+      ],
       "links": [
         { "label": "notestudo.com", "url": "https://notestudo.com/" }
       ]
@@ -307,7 +399,11 @@
       "summary": "Worked from the community's recommended resources for beginners: version control, branches and pull requests.",
       "tags": ["git", "github"],
       "image": "assets/timeline/learning-github.jpg",
-      "topics": ["Version control", "Branches", "Pull requests"],
+      "topics": [
+        { "title": "Version control", "text": "Tracking changes with commits and their history." },
+        { "title": "Branches", "text": "Working on changes side by side without breaking main." },
+        { "title": "Pull requests", "text": "Proposing, reviewing and merging changes." }
+      ],
       "links": [
         { "label": "The discussion", "url": "https://github.com/orgs/community/discussions/161493" }
       ]
@@ -321,7 +417,11 @@
       "end": null,
       "summary": "Planned the design, the timeline feature and the build phases; chose GitHub Pages for free hosting and set up the deploy workflow.",
       "tags": ["github-pages", "planning"],
-      "topics": ["The design", "The timeline feature", "Deploying to GitHub Pages"],
+      "topics": [
+        { "title": "The design", "text": "The look and layout, planned before building." },
+        { "title": "The timeline feature", "text": "A thread of entries to drag, filter and explore." },
+        { "title": "Deploying to GitHub Pages", "text": "Free hosting, published by a workflow on every push." }
+      ],
       "links": []
     },
     {
@@ -334,7 +434,10 @@
       "summary": "The plan for next year: start working toward the CPA.",
       "tags": ["accounting"],
       "image": "assets/timeline/cpa-start.jpg",
-      "topics": ["The Uniform CPA Examination", "Taken at Prometric test centres"],
+      "topics": [
+        { "title": "The Uniform CPA Examination", "text": "Four sections: three core (auditing, financial reporting, tax) and one discipline." },
+        { "title": "Taken at Prometric test centres", "text": "Each section is sat on a computer at a Prometric test centre." }
+      ],
       "links": [
         { "label": "Prometric: CPA exam", "url": "https://www.prometric.com/exams/cpa/" }
       ]

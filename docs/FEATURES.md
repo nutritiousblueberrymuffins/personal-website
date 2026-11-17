@@ -375,7 +375,7 @@ the thread, in the order they happened.
   | `start`, `end` | `YYYY`, `YYYY-MM` or `YYYY-MM-DD` |
   | `summary` | Text for the details panel |
   | `tags` | List of tags |
-  | `topics` | Optional. Up to four short topics or highlights for the card's last page |
+  | `topics` | Optional. Up to four `{title, text}` topics (study) or highlights (everything else): each is a stop on the card's mini timeline, with a one-sentence `text` |
   | `image` | Optional. A screenshot of the resource (`assets/timeline/<id>.jpg`, relative to `client/public/`), shown faded behind the details panel |
   | `links` | List of `{label, url}` |
   | `draft` | Optional. `true` keeps the entry out of the live site |
@@ -387,12 +387,24 @@ the thread, in the order they happened.
   Right now there are no drafts, so the live site shows all 23 entries. Drafts are still bundled into the page's script, so keep anything private out of them.
 - **Filter chips:** one per type in the HTML; a type with no entries gets no chip.
 - **Study links:** books link to the publisher's or author's page, never to a copy of the book.
-- **Card pages:** each card is a little book (`cardBook` / `turnPage` in `timeline.js`, "Card pages" in
-  `site.css`): the cover (date, title, type), an "About" page with the summary (five lines at most),
-  and a "Covered" (study) or "Highlights" page with the entry's `topics`. Back / forward arrows and
-  "1 / 3" sit at the bottom; a turn swings the page over its left edge like a book page. The arrows
-  only page within the card: they don't select it or move the strip. All pages share one grid cell,
-  so a card is as tall as its tallest page and flipping never moves the thread.
+- **Card pages and the mini timeline:** each card is a little book (`cardBook` / `showPage` in
+  `timeline.js`, "Card pages" and "Opened cards" in `site.css`). Closed, it shows its cover (date,
+  title, type) with back / forward arrows and "1 / 6" at the bottom. The forward arrow opens it: the
+  card widens to about twice its width (never wider than the window, `OPEN_SCALE` / `OPEN_MARGIN`),
+  growing equally to both sides, while the cards before it slide left and the cards after it slide
+  right by the same amount, in step, so nothing overlaps. Inside is a mini timeline: a dot for
+  "About" (the summary, three lines) and one for each of the entry's `topics` ("Covered · 2 of 4" for
+  study, "Highlights" otherwise; the Today card has "Most recent" and "Next up"), with the stretch
+  already travelled in navy. The arrows or a click on a dot move between stops; each stop is a page
+  that turns like a book page. Back on the cover, the card returns to its normal size.
+  - Only the centred card opens. The forward arrow on another card brings it to the middle as it
+    opens; on the centred card the strip doesn't move. Moving along the timeline (arrows, keys, drag,
+    wheel, clicking another card, the jump buttons) closes the open card, and so does Escape.
+  - The card's height never changes: the inside is laid over the cover's space, every card leaves
+    room for it (`.card-pages` min-height), and an open card is held at its closed height. So the
+    line and the rows of cards stay put.
+  - The dashed stretch into the start card or an upcoming card lengthens by the same amount when the
+    card before it, or the card itself, opens (`--prev-extra`).
 - **Card links:** on a card whose entry has a link, the type line ("Study ↗") opens the first link in a
   new tab instead of selecting the card (`.event-card__type--link`; a real `<a>` can't sit inside the
   card's `<button>`, so the thread's click listener opens it). Only the words and arrow are the target;

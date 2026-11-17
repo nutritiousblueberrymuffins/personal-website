@@ -48,9 +48,17 @@
           },
           "topics": {
             "type": "array",
-            "items": { "type": "string" },
             "maxItems": 4,
-            "description": "Up to four short topics or highlights, shown on the card's last page (\"Covered\" for study, \"Highlights\" otherwise)."
+            "description": "Up to four topics (study) or highlights (everything else). Each becomes a stop on the card's mini timeline, after About, with its own page.",
+            "items": {
+              "type": "object",
+              "required": ["title", "text"],
+              "additionalProperties": false,
+              "properties": {
+                "title": { "type": "string", "description": "A few words, shown as the stop's name." },
+                "text": { "type": "string", "description": "One sentence about it." }
+              }
+            }
           },
           "image": {
             "type": "string",

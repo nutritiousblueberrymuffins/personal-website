@@ -396,7 +396,7 @@ a.project-card:hover .project-card__link {
    A faded card brightens a little on hover, so it still reads as clickable. */
 .thread--timeline .thread__item {
     opacity: var(--focus, 1);
-    transition: opacity 320ms ease;
+    transition: opacity 320ms ease, translate var(--open-ms) var(--open-ease);
 }
 
 .thread--timeline .thread__item:hover {
@@ -1063,6 +1063,10 @@ a.project-card:hover .project-card__link {
 
 .thread--timeline {
     --card-width: 12.5rem;
+    /* How an opened card widens (timeline.js OPEN_MS says the same), and by how much
+       (timeline.js sets --open-extra). See "Opened cards". */
+    --open-ms: 480ms;
+    --open-ease: cubic-bezier(0.3, 0.7, 0.25, 1);
     --inset: 0px;
     grid-template-columns: repeat(var(--count), var(--card-width));
     justify-content: start;
@@ -1166,9 +1170,10 @@ button.event-card[aria-current="true"] {
     grid-row: 3;
     justify-self: start;
     align-self: stretch;
-    width: calc(var(--card-width) + 1.5rem);
-    margin-left: calc(-1.5rem - var(--card-width) / 2);
+    width: calc(var(--card-width) + 1.5rem + var(--prev-extra, 0px));
+    margin-left: calc(-1.5rem - var(--card-width) / 2 - var(--prev-extra, 0px));
     background: repeating-linear-gradient(90deg, var(--color-axis) 0 0.375rem, var(--color-surface) 0.375rem 0.75rem);
+    transition: width var(--open-ms) var(--open-ease), margin-left var(--open-ms) var(--open-ease);
 }
 
 .event-card__badge {
@@ -1240,9 +1245,10 @@ button.event-card[aria-current="true"] {
     grid-row: 3;
     justify-self: start;
     align-self: stretch;
-    width: calc(var(--card-width) + 1.5rem);
-    margin-left: calc(-1.5rem - var(--card-width) / 2);
+    width: calc(var(--card-width) + 1.5rem + var(--prev-extra, 0px));
+    margin-left: calc(-1.5rem - var(--card-width) / 2 - var(--prev-extra, 0px));
     background: repeating-linear-gradient(90deg, var(--color-axis) 0 0.375rem, var(--color-surface) 0.375rem 0.75rem);
+    transition: width var(--open-ms) var(--open-ease), margin-left var(--open-ms) var(--open-ease);
 }
 
 .event-card__badge--upcoming {
@@ -2261,13 +2267,19 @@ button.event-card[aria-current="true"] {
 }
 
 /* ---------- Card pages ----------
-   timeline.js makes each card a little book: the cover (date, title, type), an "About" page and a
-   "Covered" / "Highlights" page, with back / forward arrows and "1 / 3" at the bottom. All pages
-   share one grid cell, so the card is as tall as its tallest page and flipping never moves the
-   thread. Turning forward swings the current page away over its left edge like a book page while
-   the next one shows underneath; turning back swings it back. */
+   timeline.js makes each card a little book: the cover (date, title, type) with back / forward
+   arrows and "1 / 5" at the bottom. Turning past the cover opens the card (see "Opened cards"):
+   inside are a mini timeline and a page per stop on it. Turning forward swings the current page
+   away over its left edge like a book page while the next one shows underneath; turning back
+   swings it back.
+
+   The inside is laid over the cover's space rather than beside it, so it never changes the
+   card's height: every card keeps room for it (min-height), and the open card is held at its
+   closed height. The line and the other cards stay put. */
 .card-pages {
+    position: relative;
     display: grid;
+    min-height: 7rem;
     perspective: 800px;
 }
 
@@ -2315,43 +2327,184 @@ button.event-card[aria-current="true"] {
     text-transform: uppercase;
 }
 
-/* Kept to five lines; the details panel has the whole text. */
+.card-page__heading {
+    color: var(--color-ink);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    line-height: 1.0625rem;
+}
+
+/* A topic's sentence in two lines, the About summary in three; the details panel under the
+   thread has the whole text. */
 .card-page__text {
     display: -webkit-box;
     overflow: hidden;
     color: var(--color-ink);
     font-size: 0.75rem;
     line-height: 1.0625rem;
-    -webkit-line-clamp: 5;
+    -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
 }
 
-.card-page__list {
+.card-page__text--long {
+    -webkit-line-clamp: 3;
+}
+
+/* ---------- Opened cards ----------
+   timeline.js adds .is-open to the centred track item when its card turns past the cover, and
+   sets --open-extra on the thread: how much wider the card gets (about twice as wide, never
+   wider than the window). The card grows by half of that to each side, so its middle (and the
+   strip's positions) stay put, while every card before it slides left by half and every card
+   after it slides right by half, so nothing overlaps; the two run in step. The dashed stretch
+   into a start or upcoming card reaches between dots, so it lengthens by the same half where its
+   ends move apart (--prev-extra). Turning back to the cover reverses it all. */
+.thread--timeline .thread__item {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.thread--timeline .thread__item > button.event-card {
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease,
+        width var(--open-ms) var(--open-ease), margin var(--open-ms) var(--open-ease);
+}
+
+.thread--timeline .thread__item.is-open > button.event-card {
+    width: calc(100% + var(--open-extra, 0px));
+    margin-inline: calc(var(--open-extra, 0px) / -2);
+}
+
+.thread--timeline .thread__item.is-open > button.event-card:hover {
+    transform: none;
+}
+
+.thread--timeline .thread__item.is-open ~ .thread__item {
+    translate: calc(var(--open-extra, 0px) / 2) 0;
+}
+
+.thread--timeline .thread__item:has(~ .thread__item.is-open) {
+    translate: calc(var(--open-extra, 0px) / -2) 0;
+}
+
+.thread--timeline .thread__item.is-open,
+.thread--timeline .thread__item.is-open + .thread__item {
+    --prev-extra: calc(var(--open-extra, 0px) / 2);
+}
+
+/* The inside: the mini timeline over the stop's page. It fades in once the card has started to
+   widen, and out at once when it closes. */
+.card-inside {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
+    gap: 0.625rem;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 140ms ease, visibility 0s 140ms;
+}
+
+.is-open .card-inside {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 280ms ease 180ms, visibility 0s;
+}
+
+.card-stage {
+    display: grid;
+    flex: 1;
+    min-height: 0;
+    perspective: 800px;
+}
+
+.card-stage .card-page {
     gap: 0.25rem;
 }
 
-.card-page__item {
+/* The mini timeline: a dot per stop on a thin line, like the big one, with the stretch already
+   travelled in navy. Labels sit under the dots and are cut short with an ellipsis when long; the
+   page below names the stop in full. */
+.mini-thread {
+    --dot: 0.625rem;
     position: relative;
-    padding-left: 0.75rem;
-    overflow: hidden;
-    color: var(--color-ink);
-    font-size: 0.75rem;
-    line-height: 1rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: grid;
+    grid-template-columns: repeat(var(--stops), minmax(0, 1fr));
 }
 
-.card-page__item::before {
+.mini-thread::before,
+.mini-thread::after {
     content: "";
     position: absolute;
-    top: 0.4375rem;
-    left: 0.125rem;
-    width: 0.25rem;
-    height: 0.25rem;
-    border-radius: 50%;
+    top: calc(var(--dot) / 2 - 1px);
+    left: calc(50% / var(--stops));
+    height: 2px;
+    border-radius: 1px;
+}
+
+.mini-thread::before {
+    right: calc(50% / var(--stops));
+    background: var(--color-axis);
+}
+
+.mini-thread::after {
+    width: calc((100% - 100% / var(--stops)) * var(--progress, 0));
     background: var(--color-brand);
+    transition: width 420ms var(--open-ease);
+}
+
+.mini-stop {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3125rem;
+    min-width: 0;
+    cursor: pointer;
+}
+
+.mini-stop__dot {
+    width: var(--dot);
+    height: var(--dot);
+    border: 2px solid var(--color-axis);
+    border-radius: 50%;
+    background: var(--color-surface);
+    transition: border-color 200ms ease, background-color 200ms ease, box-shadow 200ms ease, transform 200ms ease;
+}
+
+.mini-stop:hover .mini-stop__dot {
+    border-color: var(--color-brand);
+    transform: scale(1.25);
+}
+
+.mini-stop.is-done .mini-stop__dot,
+.mini-stop.is-current .mini-stop__dot {
+    border-color: var(--color-brand);
+    background: var(--color-brand);
+}
+
+.mini-stop.is-current .mini-stop__dot {
+    box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 3.5px var(--color-brand);
+}
+
+.mini-stop__label {
+    max-width: 100%;
+    padding-inline: 0.125rem;
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: 0.625rem;
+    line-height: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 200ms ease;
+}
+
+.mini-stop:hover .mini-stop__label,
+.mini-stop.is-current .mini-stop__label {
+    color: var(--color-ink);
+}
+
+.mini-stop.is-current .mini-stop__label {
+    font-weight: 700;
 }
 
 /* The pager: back, "1 / 3", forward, under a faint rule. */
@@ -2403,12 +2556,38 @@ button.event-card[aria-current="true"] {
 }
 
 .thread__item--today .card-page__text,
-.thread__item--today .card-page__item {
+.thread__item--today .card-page__heading,
+.thread__item--today .mini-stop:hover .mini-stop__label,
+.thread__item--today .mini-stop.is-current .mini-stop__label {
     color: var(--color-on-brand);
 }
 
-.thread__item--today .card-page__item::before {
+.thread__item--today .mini-stop__label {
+    color: rgb(245 245 245 / 0.75);
+}
+
+.thread__item--today .mini-thread::before {
+    background: rgb(245 245 245 / 0.3);
+}
+
+.thread__item--today .mini-thread::after {
     background: var(--color-on-brand);
+}
+
+.thread__item--today .mini-stop__dot {
+    border-color: rgb(245 245 245 / 0.5);
+    background: var(--color-brand);
+}
+
+.thread__item--today .mini-stop:hover .mini-stop__dot,
+.thread__item--today .mini-stop.is-done .mini-stop__dot,
+.thread__item--today .mini-stop.is-current .mini-stop__dot {
+    border-color: var(--color-on-brand);
+    background: var(--color-on-brand);
+}
+
+.thread__item--today .mini-stop.is-current .mini-stop__dot {
+    box-shadow: 0 0 0 2px var(--color-brand), 0 0 0 3.5px var(--color-on-brand);
 }
 
 .thread__item--today .card-pager {

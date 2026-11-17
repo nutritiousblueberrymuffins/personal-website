@@ -30,9 +30,10 @@ heatmap over the live page (desktop and phone), and the latest events.
 ## Privacy
 
 The public summary (`/api/public-stats`, `publicStats` in `src/stats.js`) has the last 30 days
-as totals only: visits, page views, average time on page, visits per day, sections reached,
-devices, and countries with at least 3 visits. Clicks, link text, referrers, errors and single
-events stay behind the dashboard password.
+as aggregates only: visits, page views, time on page, scroll depth, quick exits, daily counts,
+sections reached, devices, browsers and operating systems, referring sites and countries with
+at least 3 visits (plus Direct), and project and contact clicks for the site's own labels. Click
+positions, link text, URLs, error messages and single events stay behind the dashboard password.
 
 No cookies and no IP addresses. A visit is a random id that exists only while the page is
 open. Text typed into fields is never read. Browsers sending Do Not Track or Global Privacy

@@ -243,7 +243,7 @@ The page also has:
 
 | Detail | Value | Appears in |
 |--------|-------|------------|
-| Email | `TonyNScholar@Gmail.com` | Hero link and contact card (`mailto:`) |
+| Email | `tonynscholar@gmail.com` | Hero link and contact card (`mailto:`) |
 | LinkedIn | https://www.linkedin.com/in/tonyngyn/ | Hero link and contact card |
 | GitHub | https://github.com/nutritiousblueberrymuffins | Hero link and contact card |
 

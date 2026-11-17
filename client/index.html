@@ -152,7 +152,7 @@
                             <a class="event-card" data-track-section="timeline" href="#timeline">
                                 <span class="event-card__date">03</span>
                                 <span class="event-card__title">Timeline</span>
-                                <span class="event-card__type">The thread so far<span aria-hidden="true">  →</span></span>
+                                <span class="event-card__type">The road so far<span aria-hidden="true">  →</span></span>
                             </a>
                             <span class="thread__tick" aria-hidden="true"></span>
                             <span class="thread__dot" aria-hidden="true"></span>
@@ -263,14 +263,15 @@
             <div class="container">
                 <div class="section-heading">
                     <p class="label-section">Timeline</p>
-                    <h2 class="heading-section" id="timeline-title">The thread so far.</h2>
-                    <p class="body-large">Work, education, certifications and projects, in the order they happened.</p>
+                    <h2 class="heading-section" id="timeline-title">The road so far: my software journey.</h2>
+                    <p class="body-large">What I’ve studied, built and worked on, in the order it happened.</p>
                 </div>
 
                 <!-- One chip per entry type. timeline.js fills in the counts and handles the clicks;
                      the chips are in the HTML so the page does not jump when the script runs. -->
                 <div class="filters" id="timeline-filters" role="group" aria-label="Filter by type">
                     <button class="chip" type="button" data-type="" aria-pressed="true">All <span class="chip__count"></span></button>
+                    <button class="chip" type="button" data-type="study" aria-pressed="false">Study <span class="chip__count"></span></button>
                     <button class="chip" type="button" data-type="work" aria-pressed="false">Work <span class="chip__count"></span></button>
                     <button class="chip" type="button" data-type="education" aria-pressed="false">Education <span class="chip__count"></span></button>
                     <button class="chip" type="button" data-type="certification" aria-pressed="false">Certification <span class="chip__count"></span></button>
@@ -288,6 +289,18 @@
                         </button>
                     </div>
                     <p class="timeline-position" id="timeline-position" aria-hidden="true"></p>
+                    <!-- timeline.js shows this when the first entry is in the current filter: it rewinds the
+                         thread back through every entry to where the journey began. -->
+                    <button class="chip timeline-start" type="button" id="timeline-start" hidden>
+                        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 3v10M13 3.5 6.5 8l6.5 4.5v-9Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        Back to the start
+                    </button>
+                    <!-- Shown when the "You are here" entry (the latest one up to today) is in the
+                         current filter: it brings the thread back to the present. -->
+                    <button class="chip timeline-now" type="button" id="timeline-now" hidden>
+                        <span class="timeline-now__dot" aria-hidden="true"></span>
+                        Jump to now
+                    </button>
                     <p class="timeline-hint"><span class="hint-pointer">Drag the thread or use the arrows</span><span class="hint-touch">Swipe the thread or use the arrows</span></p>
                 </div>
 

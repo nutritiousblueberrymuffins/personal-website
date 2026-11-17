@@ -74,7 +74,7 @@ Both halves deploy automatically from GitHub Actions on every push to `main`.
 | File | Loaded by | What it starts |
 |------|-----------|----------------|
 | Inline `<script>` in `<head>` | Every page | Adds `motion-ok` to `<html>` before the first paint, unless the visitor prefers reduced motion |
-| `client/src/scripts/main.js` | Every page | Inter font, the analytics tracker (`analytics.js`), the motion layer (`motion.js`), home links |
+| `client/src/scripts/main.js` | Every page | Inter font, the analytics tracker (`analytics.js`), the motion layer (`motion.js`), the Office easter egg (`office-clip.js`), home links |
 | `client/src/scripts/home.js` | Home page | The timeline (`timeline.js`), the hero strip (`hero-thread.js`), the photo slideshow (`photo-slides.js`), the "At a glance" stepper (`glance.js`), the project arrows (`project-carousel.js`), the section flow (`section-flow.js`) |
 
 **Stylesheets, in load order:**
@@ -335,13 +335,24 @@ left forever. Visitors can interact with it:
 
 ## 7. Interactive timeline
 
-**What it does:** shows work, education, certifications, projects and milestones on the thread, in the
-order they happened.
+**What it does:** under the heading "The road so far: my software journey.", shows what has been
+studied (books, courses, docs, articles), work, education, certifications, projects and milestones on
+the thread, in the order they happened.
 
 - **An endless strip:** dragging, swiping or flicking keeps going forward or backward, looping from the
   newest entry round to the oldest.
 - **One entry selected:** the strip always settles with one entry centred. That entry is selected, and
   its full details show in a panel underneath.
+- **Where it began:** the oldest entry (`START_ID` in `timeline.js`) is marked: a navy "Start" tab on
+  its card's top edge, a ringed dot, a "✦ Where it began" label on its card and in the details
+  panel. The line leading into it from the previous entry (newest looping back to the oldest) is
+  dashed. The card shows the tab by not clipping its overflow, so click ripples are off on it. "Back to the start", next to the arrows, rewinds backward through the entries to it; it's
+  greyed out when already there and hidden under filters that don't include the first entry.
+- **Where it is now:** worked out from the visitor's date. The latest entry up to today (`NOW_ID`) is
+  "● You are here": a pulsing dot (`now-pulse` in `motion.css`) and the label on its card and in the
+  details panel. The thread opens on it. Entries dated after today are "Upcoming": dashed card, hollow
+  dashed dot, dashed tick, and dashed line leading to them. "Jump to now" goes back to the present the
+  shorter way round. Upcoming entries turn into past ones on their own as the dates pass.
 
 ### Data
 
@@ -350,7 +361,7 @@ order they happened.
   | Field | Contents |
   |-------|----------|
   | `id` | Unique id |
-  | `type` | `work`, `education`, `certification`, `project` or `milestone` |
+  | `type` | `study`, `work`, `education`, `certification`, `project` or `milestone` |
   | `title` | Entry title |
   | `org` | Organisation |
   | `start`, `end` | `YYYY`, `YYYY-MM` or `YYYY-MM-DD` |
@@ -363,7 +374,10 @@ order they happened.
 - **Bundling:** the JSON is imported by `timeline.js` and bundled at build time, since GitHub Pages has
   no server. Editing the file and pushing updates the live site.
 - **Drafts:** draft entries (`"draft": true`) show only in local development (`import.meta.env.DEV`).
-  Right now 3 of the 6 entries are drafts, so the live site shows 3.
+  Right now 2 of the 24 entries are drafts (`narb` and `cpa-exam`, waiting on wording), so the live site
+  shows 22. Drafts are still bundled into the page's script, so keep anything private out of them.
+- **Filter chips:** one per type in the HTML; a type with no entries gets no chip.
+- **Study links:** books link to the publisher's or author's page, never to a copy of the book.
 - **Date formats:**
 
   | Where | Format |
@@ -650,6 +664,7 @@ hero strip) is not recorded as a click or a rage click.
 | `POST /collect` (+ `OPTIONS` preflight) | Public, origin-checked | Receives event batches from the tracker |
 | `GET /` | Password | The dashboard page |
 | `GET /api/stats?days=N` | Password | The dashboard's numbers as JSON (`days` 1–400, default 30) |
+| `GET /api/public-stats` | Public (any origin, cached 5 min) | A 30-day summary for the site's "Site stats" strip, totals only: visits, page views, average time on page, visits per day, sections reached, devices, and countries with at least 3 visits. No clicks, link text, referrers, errors or single events (`publicStats` in `stats.js`) |
 
 Any other path returns 404, and any other method returns 405.
 
@@ -845,7 +860,9 @@ the tokens in [section 2](#2-threadline-design-system).
 | `client/src/styles/site.css` | Layout, components, dot grid, breakpoints, section guide |
 | `client/src/styles/motion.css` | Animations and hover effects, section transitions |
 | `client/src/styles/animations.css` | Reduced-motion override |
-| `client/src/scripts/main.js` | Every page: font, analytics, motion, home links |
+| `client/src/scripts/main.js` | Every page: font, analytics, motion, the Office easter egg, the Site stats strip, home links |
+| `client/src/scripts/header-stats.js` | "Site stats": a thin tab hanging from the middle of the header. Pulling it down (24 px) or clicking it opens a drawer under the header with the public 30-day summary from `/api/public-stats` (address built from `VITE_ANALYTICS_ENDPOINT`, falling back to the live Worker); pushing it up, clicking it, ×, Escape or a click elsewhere closes it. Fetched on first open and again after 5 minutes |
+| `client/src/scripts/office-clip.js` | Easter egg: a mug button fixed bottom-left that jingles every 6 s (`mug-jingle` in `motion.css`) until it has been clicked once, remembered in `localStorage` as `office-mug-found`. Clicking it slides "The Office x LinkedIn" banner, full width, up from the bottom edge (350 ms, ease-out, no fade) until the whole banner is in view, and plays a 9-second clip (`client/public/assets/office/`). A click anywhere or Escape slides it back down and stops the sound |
 | `client/src/scripts/home.js` | Home page: timeline, hero strip, section flow |
 | `client/src/scripts/analytics.js` | The analytics tracker |
 | `client/src/scripts/motion.js` | Reveals, ripples, tilt, glow, magnet, progress bar |

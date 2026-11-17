@@ -1025,7 +1025,8 @@ a.project-card:hover .project-card__link {
 .thread-scroll {
     position: relative;
     margin-top: var(--space-md);
-    padding-block: 0.25rem 0.75rem;
+    /* 12 px on top so the start card's "Start" tab, which sits half above its card, isn't clipped. */
+    padding-block: 0.75rem;
     overflow: hidden;
     touch-action: pan-y;
     cursor: grab;
@@ -1088,6 +1089,156 @@ button.event-card[aria-current="true"] {
 /* The selected entry's dot gets a thin navy ring, kept within the gap above the axis date. */
 .thread__item.is-current .thread__dot {
     box-shadow: 0 0 0 2px var(--color-surface), 0 0 0 3.5px var(--color-brand);
+}
+
+/* ---------- Where the journey began ----------
+   timeline.js marks the oldest entry with .thread__item--start. Its dot is a ring a size up, its
+   card carries a "Where it began" label and a "Start" tab on its top edge. The loop wraps from
+   the newest entry back to this one, so the line from the previous dot to this one is dashed:
+   it's the way round, not the next step in time. */
+/* Everything in the start item shares its one column: the dashed stretch overlaps the dot's
+   cell, which auto-placement would otherwise resolve by adding columns. */
+.thread__item--start > * {
+    grid-column: 1;
+}
+
+.thread__item--start .thread__dot {
+    box-sizing: border-box;
+    width: 1.125rem;
+    height: 1.125rem;
+    margin-block: -0.5rem;
+    background: var(--color-surface);
+    border: 3px solid var(--color-brand);
+}
+
+/* The card lets its "Start" tab stick out over its top edge. motion.css clips timeline cards
+   (position: relative; overflow: hidden) to keep click ripples inside, with a selector worth
+   three classes, so this one is a notch more specific; the ripple is dropped on this card so
+   it can't spill out instead. */
+.thread--timeline .thread__item--start > button.event-card {
+    position: relative;
+    overflow: visible;
+}
+
+.thread__item--start .ripple {
+    display: none;
+}
+
+/* A navy tab half over the card's top border, lined up with the card's text. The white ring
+   notches it into the border. */
+.thread__start {
+    position: absolute;
+    top: 0;
+    left: var(--space-md);
+    z-index: 2;
+    padding: 0.1875rem 0.5rem;
+    color: var(--color-on-brand);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    line-height: 0.75rem;
+    text-transform: uppercase;
+    white-space: nowrap;
+    background: var(--color-brand);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 0 0 3px var(--color-surface);
+    transform: translateY(-50%);
+}
+
+/* The dashed stretch: from the previous item's dot to this one's. The gaps are page white,
+   laid over the solid line underneath. */
+.thread--timeline .thread__item--start:not(:first-child)::after {
+    content: "";
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+    align-self: stretch;
+    width: calc(var(--card-width) + 1.5rem);
+    margin-left: calc(-1.5rem - var(--card-width) / 2);
+    background: repeating-linear-gradient(90deg, var(--color-axis) 0 0.375rem, var(--color-surface) 0.375rem 0.75rem);
+}
+
+.event-card__badge {
+    color: var(--color-brand);
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 0.75rem;
+    text-transform: uppercase;
+    white-space: pre;
+}
+
+/* ---------- Where the journey is now ----------
+   timeline.js marks the latest entry up to today .thread__item--now ("You are here") and any
+   later ones .thread__item--upcoming. The now dot wears a soft halo (motion.css makes it pulse);
+   upcoming entries are sketched in: dashed card, hollow dashed dot, and dashed line leading to
+   them from the entry before. */
+.thread__item--now .thread__dot {
+    position: relative;
+    box-shadow: 0 0 0 4px rgb(39 59 112 / 0.18);
+}
+
+.thread__item--upcoming > * {
+    grid-column: 1;
+}
+
+.thread__item--upcoming > .event-card {
+    border-style: dashed;
+    border-color: var(--color-axis);
+}
+
+.thread__item--upcoming .thread__dot {
+    box-sizing: border-box;
+    background: var(--color-surface);
+    border: 2px dashed var(--color-brand);
+}
+
+.thread__item--upcoming .thread__tick {
+    background: repeating-linear-gradient(180deg, var(--color-axis) 0 0.25rem, transparent 0.25rem 0.5rem);
+}
+
+/* From the previous entry's dot to this one's, dashed over the solid line. */
+.thread--timeline .thread__item--upcoming:not(:first-child)::after {
+    content: "";
+    grid-column: 1;
+    grid-row: 3;
+    justify-self: start;
+    align-self: stretch;
+    width: calc(var(--card-width) + 1.5rem);
+    margin-left: calc(-1.5rem - var(--card-width) / 2);
+    background: repeating-linear-gradient(90deg, var(--color-axis) 0 0.375rem, var(--color-surface) 0.375rem 0.75rem);
+}
+
+.event-card__badge--upcoming {
+    color: var(--color-muted);
+}
+
+/* "Jump to now": a chip with a small navy dot, like the now dot on the thread. */
+.timeline-now {
+    gap: 0.4375rem;
+}
+
+.timeline-now__dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: var(--color-brand);
+    box-shadow: 0 0 0 3px rgb(39 59 112 / 0.18);
+}
+
+.timeline-now:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* "Back to the start", next to the arrows: a chip with a rewind icon. */
+.timeline-start {
+    gap: 0.375rem;
+}
+
+.timeline-start:disabled {
+    opacity: 0.45;
+    cursor: default;
 }
 
 /* The selected entry in full. */
@@ -1413,4 +1564,358 @@ button.event-card[aria-current="true"] {
 .section-guide.is-announcing a[aria-current="true"] .section-guide__name {
     opacity: 1;
     transform: none;
+}
+
+/* ---------- Office easter egg ----------
+   office-clip.js adds a mug button fixed in the bottom-left corner. Clicking it slides a
+   full-width banner up from the bottom edge (slide only, no fade) until the whole of
+   "The Office x LinkedIn" is in view, and the clip plays. Clicking anywhere or Escape slides it back down. */
+.office-toggle {
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    z-index: 46;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    color: var(--color-brand);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 4px 14px -4px rgb(34 43 54 / 0.25);
+    cursor: pointer;
+    transition: transform 250ms var(--ease-out, ease), border-color 160ms ease;
+}
+
+.office-toggle:hover {
+    border-color: var(--color-brand);
+    transform: translateY(-2px) rotate(-10deg);
+}
+
+/* Above everything else on the page (the highest elsewhere is the skip link, at 100). Pinned
+   to the bottom edge, full width, and parked one banner-height below the screen; the slide
+   ends the moment the whole banner is in view. visibility switches off only after the slide
+   down has finished. */
+.office-overlay {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    cursor: pointer;
+    box-shadow: 0 -12px 40px -12px rgb(34 43 54 / 0.45);
+    visibility: hidden;
+    transform: translateY(100%);
+    transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 350ms;
+}
+
+.office-overlay.is-open {
+    visibility: visible;
+    transform: none;
+    transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1), visibility 0s;
+}
+
+.office-overlay__banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 1;
+}
+
+@media print {
+    .office-toggle,
+    .office-overlay {
+        display: none;
+    }
+}
+
+/* ---------- Site stats drawer ----------
+   header-stats.js hangs a thin "Site stats" tab from the middle of the header. Pulling it down
+   (or clicking it) opens a drawer under the header; the tab rides on the drawer's bottom edge.
+   The drawer's height animates with grid rows (0fr to 1fr), so it unrolls downward. It lives
+   inside the sticky header, so it stays put while the page scrolls. */
+.stats-drawer {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    display: grid;
+    grid-template-rows: 0fr auto;
+    justify-items: center;
+    width: min(46rem, calc(100vw - 2rem));
+    /* Only the tab and the open panel take clicks, not the empty band around the tab. */
+    pointer-events: none;
+    transform: translateX(-50%);
+    transition: grid-template-rows 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.stats-drawer.is-open {
+    grid-template-rows: 1fr auto;
+}
+
+.stats-drawer__panel {
+    width: 100%;
+    min-height: 0;
+    overflow: hidden;
+    pointer-events: auto;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-top: 0;
+    border-radius: 0 0 var(--radius-card) var(--radius-card);
+    box-shadow: 0 18px 40px -18px rgb(34 43 54 / 0.35);
+    visibility: hidden;
+    transition: visibility 0s 380ms;
+}
+
+.stats-drawer.is-open .stats-drawer__panel {
+    visibility: visible;
+    transition: visibility 0s;
+}
+
+.stats-drawer__inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-md) var(--space-lg) var(--space-lg);
+}
+
+.stats-drawer__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.stats-drawer__close {
+    display: grid;
+    place-items: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    padding: 0;
+    color: var(--color-muted);
+    background: none;
+    border: 0;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+}
+
+.stats-drawer__close:hover {
+    color: var(--color-ink);
+    background: var(--color-canvas);
+}
+
+/* The tab: thin, a grip line and a small label, hanging just under the header's border. */
+.stats-handle {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin-top: -1px;
+    padding: 0.125rem 0.75rem 0.25rem;
+    color: var(--color-muted);
+    font: inherit;
+    font-size: 0.625rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 0.75rem;
+    text-transform: uppercase;
+    pointer-events: auto;
+    touch-action: none;
+    cursor: grab;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-top: 0;
+    border-radius: 0 0 0.625rem 0.625rem;
+    box-shadow: 0 4px 10px -6px rgb(34 43 54 / 0.3);
+    transition: color 160ms ease, padding 200ms ease;
+}
+
+.stats-handle:hover,
+.stats-drawer.is-open .stats-handle {
+    color: var(--color-brand);
+    padding-bottom: 0.375rem;
+}
+
+.stats-handle:active {
+    cursor: grabbing;
+}
+
+.stats-handle__grip {
+    width: 1.25rem;
+    height: 3px;
+    border-radius: var(--radius-pill);
+    background: currentColor;
+    opacity: 0.5;
+}
+
+.stats-handle svg {
+    transition: transform 300ms var(--ease-out, ease);
+}
+
+.stats-drawer.is-open .stats-handle svg {
+    transform: rotate(180deg);
+}
+
+/* Contents. */
+.stats-drawer__status {
+    color: var(--color-muted);
+}
+
+.stats-drawer__retry {
+    align-self: start;
+    padding: 0.375rem 0.875rem;
+    color: var(--color-brand);
+    font: inherit;
+    font-weight: 600;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+}
+
+.stats-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-sm);
+}
+
+.stats-tiles > div {
+    padding: var(--space-sm) var(--space-md);
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-card);
+}
+
+.stats-tile__value {
+    color: var(--color-ink);
+    font-size: 1.3125rem;
+    font-weight: 700;
+    line-height: 1.625rem;
+    font-variant-numeric: tabular-nums;
+}
+
+.stats-tile__label,
+.stats-subhead,
+.stats-chart figcaption {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.stats-subhead,
+.stats-chart figcaption {
+    margin-bottom: var(--space-xs);
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: var(--space-lg);
+}
+
+.stats-chart {
+    margin: 0;
+}
+
+.stats-chart svg {
+    display: block;
+    width: 100%;
+    height: 4rem;
+    fill: var(--color-brand);
+}
+
+.stats-chart__axis {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.25rem;
+    color: var(--color-muted);
+    font-size: 0.6875rem;
+}
+
+.stats-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 0.75rem;
+}
+
+.stats-sections li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr 2.5rem;
+    align-items: center;
+    gap: var(--space-xs);
+}
+
+.stats-meter {
+    height: 0.375rem;
+    overflow: hidden;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+}
+
+.stats-meter > span {
+    display: block;
+    height: 100%;
+    background: var(--color-brand);
+}
+
+.stats-num {
+    color: var(--color-ink);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}
+
+.stats-facts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-lg);
+    margin: 0;
+    font-size: 0.75rem;
+}
+
+.stats-facts dt {
+    color: var(--color-muted);
+}
+
+.stats-facts dd {
+    margin: 0.125rem 0 0;
+    color: var(--color-ink);
+    font-weight: 600;
+}
+
+.stats-drawer__note {
+    color: var(--color-muted);
+    font-size: 0.6875rem;
+}
+
+.stats-drawer__note a {
+    color: var(--color-brand);
+    font-weight: 600;
+}
+
+@media (max-width: 640px) {
+    .stats-grid,
+    .stats-facts {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+    }
+
+    .stats-tile__value {
+        font-size: 1.0625rem;
+    }
+
+    .stats-drawer__inner {
+        padding-inline: var(--space-md);
+    }
+}
+
+@media print {
+    .stats-drawer {
+        display: none;
+    }
 }

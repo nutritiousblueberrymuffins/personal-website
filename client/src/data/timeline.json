@@ -2,26 +2,235 @@
   "$schema": "./timeline.schema.json",
   "entries": [
     {
-      "id": "site-plan",
-      "type": "milestone",
-      "title": "Planned the site and put it on GitHub Pages",
-      "org": "Personal project",
-      "start": "2026-11-05",
+      "id": "cs50",
+      "type": "study",
+      "title": "Started Harvard's CS50",
+      "org": "Harvard University",
+      "start": "2026-01-06",
       "end": null,
-      "summary": "Planned the design, the timeline feature and the build phases; chose GitHub Pages for free hosting and set up the deploy workflow.",
-      "tags": ["github-pages", "planning"],
+      "summary": "CS50: Introduction to Computer Science, Harvard's course on problem solving and programming, from C to Python, SQL and the web.",
+      "tags": ["computer-science", "c", "python"],
+      "links": [
+        { "label": "Course page", "url": "https://pll.harvard.edu/course/cs50-introduction-computer-science" }
+      ]
+    },
+    {
+      "id": "pre-algebra",
+      "type": "study",
+      "title": "Reviewed pre-algebra",
+      "org": "Pre-Algebra: A Practical Step-by-Step Approach",
+      "start": "2026-02-21",
+      "end": null,
+      "summary": "Rebuilt the math foundations: arithmetic, fractions, ratios and solving basic equations.",
+      "tags": ["math"],
       "links": []
     },
     {
-      "id": "music-player",
-      "type": "project",
-      "title": "Built the music player",
-      "org": "Personal project",
-      "start": "2026-10-10",
+      "id": "financial-accounting",
+      "type": "study",
+      "title": "Read Introduction to Financial Accounting",
+      "org": "Horngren, Sundem, Elliott and Philbrick, 11th edition (Pearson)",
+      "start": "2026-06-09",
       "end": null,
-      "summary": "Play, pause and track switching over an HTML audio element, later wired into the hero with a seekable progress bar.",
-      "tags": ["javascript", "audio"],
-      "links": []
+      "summary": "The core of financial accounting: the accounting cycle, the financial statements and how to read and analyse them.",
+      "tags": ["accounting"],
+      "links": [
+        { "label": "Publisher page", "url": "https://www.pearson.com/en-us/subject-catalog/p/introduction-to-financial-accounting/P200000005928/9780133251036" }
+      ]
+    },
+    {
+      "id": "intermediate-algebra",
+      "type": "study",
+      "title": "Studied Intermediate Algebra",
+      "org": "Richard Rusczyk and Mathew Crawford (Art of Problem Solving)",
+      "start": "2026-07-14",
+      "end": null,
+      "summary": "Algebra through problem solving: polynomials, functions, inequalities, sequences and series.",
+      "tags": ["math"],
+      "links": [
+        { "label": "Book page", "url": "https://artofproblemsolving.com/store/book/intermediate-algebra" }
+      ]
+    },
+    {
+      "id": "boolean-algebra",
+      "type": "study",
+      "title": "Studied Boolean algebra",
+      "org": "J. Eldon Whitesitt, Boolean Algebra and Its Applications (Dover)",
+      "start": "2026-07-14",
+      "end": null,
+      "summary": "Sets, symbolic logic and Boolean algebra, applied to switching circuits: the math underneath digital logic.",
+      "tags": ["math", "logic"],
+      "links": [
+        { "label": "Book page", "url": "https://store.doverpublications.com/0486477673.html" }
+      ]
+    },
+    {
+      "id": "code-petzold",
+      "type": "study",
+      "title": "Read Code by Charles Petzold",
+      "org": "Code: The Hidden Language of Computer Hardware and Software (Microsoft Press)",
+      "start": "2026-07-25",
+      "end": null,
+      "summary": "How computers work from the ground up: from codes and relays to logic gates, memory and a working processor.",
+      "tags": ["computer-science", "hardware"],
+      "links": [
+        { "label": "Author's page", "url": "https://www.charlespetzold.com/code/" }
+      ]
+    },
+    {
+      "id": "mdn-html",
+      "type": "study",
+      "title": "Worked through MDN's HTML docs",
+      "org": "MDN Web Docs",
+      "start": "2026-07-28",
+      "end": null,
+      "summary": "The structure of web pages: elements, semantics, forms and accessibility.",
+      "tags": ["html", "web"],
+      "links": [
+        { "label": "MDN: HTML", "url": "https://developer.mozilla.org/en-US/docs/Web/HTML" }
+      ]
+    },
+    {
+      "id": "bootstrapping-article",
+      "type": "study",
+      "title": "Read “About Bootstrapping, and why it's important”",
+      "org": "John Nunley (notgull)",
+      "start": "2026-07-30",
+      "end": null,
+      "summary": "Why trust in software depends on the chain of compilers that built it, and how projects rebuild that chain from small, hand-checkable code.",
+      "tags": ["compilers", "security"],
+      "links": [
+        { "label": "Read the article", "url": "https://notgull.net/bootstrapping/" }
+      ]
+    },
+    {
+      "id": "mdn-learn-web",
+      "type": "study",
+      "title": "Started MDN's Learn web development",
+      "org": "MDN Web Docs",
+      "start": "2026-07-30",
+      "end": null,
+      "summary": "MDN's structured path through building for the web, from the first page to styling and scripting it.",
+      "tags": ["web"],
+      "links": [
+        { "label": "MDN: Learn web development", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development" }
+      ]
+    },
+    {
+      "id": "mdn-javascript",
+      "type": "study",
+      "title": "Worked through MDN's JavaScript docs",
+      "org": "MDN Web Docs",
+      "start": "2026-07-31",
+      "end": null,
+      "summary": "The language itself: values, functions, objects, the DOM and asynchronous code.",
+      "tags": ["javascript", "web"],
+      "links": [
+        { "label": "MDN: JavaScript", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript" }
+      ]
+    },
+    {
+      "id": "grokking-algorithms",
+      "type": "study",
+      "title": "Read Grokking Algorithms",
+      "org": "Aditya Bhargava, 2nd edition (Manning)",
+      "start": "2026-08-01",
+      "end": null,
+      "summary": "Algorithms, illustrated: binary search, sorting, recursion, hash tables, graph search, Dijkstra's algorithm and dynamic programming.",
+      "tags": ["algorithms", "computer-science"],
+      "links": [
+        { "label": "Book page", "url": "https://www.manning.com/books/grokking-algorithms-second-edition" }
+      ]
+    },
+    {
+      "id": "python-docs",
+      "type": "study",
+      "title": "Worked through the Python docs",
+      "org": "Python Software Foundation",
+      "start": "2026-08-06",
+      "end": null,
+      "summary": "The official Python tutorial and reference: the language, its data structures and the standard library.",
+      "tags": ["python"],
+      "links": [
+        { "label": "Python docs", "url": "https://docs.python.org/3/" }
+      ]
+    },
+    {
+      "id": "mdn-css",
+      "type": "study",
+      "title": "Worked through MDN's CSS docs",
+      "org": "MDN Web Docs",
+      "start": "2026-08-09",
+      "end": null,
+      "summary": "Styling and layout: the cascade, the box model, flexbox and grid.",
+      "tags": ["css", "web"],
+      "links": [
+        { "label": "MDN: CSS", "url": "https://developer.mozilla.org/en-US/docs/Web/CSS" }
+      ]
+    },
+    {
+      "id": "c-programming-language",
+      "type": "study",
+      "title": "Read The C Programming Language",
+      "org": "Brian Kernighan and Dennis Ritchie",
+      "start": "2026-08-16",
+      "end": null,
+      "summary": "C from the people who made it: types, control flow, pointers and arrays, structures and the standard library.",
+      "tags": ["c"],
+      "links": [
+        { "label": "About the book", "url": "https://en.wikipedia.org/wiki/The_C_Programming_Language" }
+      ]
+    },
+    {
+      "id": "how-terminals-work",
+      "type": "study",
+      "title": "Read How Terminals Work",
+      "org": "how-terminals-work.vercel.app",
+      "start": "2026-08-19",
+      "end": null,
+      "summary": "An explainer on what a terminal actually is and how it works under the shell.",
+      "tags": ["terminal"],
+      "links": [
+        { "label": "Read it", "url": "https://how-terminals-work.vercel.app/" }
+      ]
+    },
+    {
+      "id": "programming-the-www",
+      "type": "study",
+      "title": "Read Programming the World Wide Web",
+      "org": "Robert W. Sebesta, 8th edition (Pearson)",
+      "start": "2026-08-31",
+      "end": null,
+      "summary": "Client- and server-side web programming: HTML, CSS, JavaScript, PHP and the pieces that connect them.",
+      "tags": ["web"],
+      "links": [
+        { "label": "Publisher page", "url": "https://www.pearson.com/en-us/subject-catalog/p/programming-the-world-wide-web/P200000003412/9780133775983" }
+      ]
+    },
+    {
+      "id": "narb",
+      "type": "project",
+      "title": "narb",
+      "org": "Personal project",
+      "start": "2026-09-01",
+      "end": null,
+      "summary": "Draft: replace with a one-line public description, then remove the draft flag.",
+      "tags": [],
+      "links": [],
+      "draft": true
+    },
+    {
+      "id": "nexus",
+      "type": "project",
+      "title": "Started on Nexus",
+      "org": "Nexus",
+      "start": "2026-09-10",
+      "end": null,
+      "summary": "A Work check for middle and high school teachers: it replays how each assignment was written and asks students to explain their work in their own words.",
+      "tags": ["education", "browser-extension"],
+      "links": [
+        { "label": "trynexus.cc", "url": "https://trynexus.cc/" }
+      ]
     },
     {
       "id": "website-first-commit",
@@ -37,37 +246,61 @@
       ]
     },
     {
-      "id": "sample-cpa",
-      "type": "certification",
-      "title": "Sample entry: CPA license",
-      "org": "Replace with the issuing board",
-      "start": "2024-01",
+      "id": "music-player",
+      "type": "project",
+      "title": "Built the music player",
+      "org": "Personal project",
+      "start": "2026-10-10",
       "end": null,
-      "summary": "Sample entry, shown in local development only. Replace the date, organization and summary with your own and remove the draft flag.",
-      "tags": ["accounting"],
-      "links": [],
-      "draft": true
+      "summary": "Play, pause and track switching over an HTML audio element, later wired into the hero with a seekable progress bar.",
+      "tags": ["javascript", "audio"],
+      "links": []
     },
     {
-      "id": "sample-work",
-      "type": "work",
-      "title": "Sample entry: Accountant",
-      "org": "Replace with the employer",
-      "start": "2022-06",
-      "end": "2024-12",
-      "summary": "Sample entry, shown in local development only. Replace with what you did there and what you learned.",
-      "tags": ["accounting"],
-      "links": [],
-      "draft": true
+      "id": "notestudo",
+      "type": "project",
+      "title": "Started on NoTestudo",
+      "org": "University of Maryland",
+      "start": "2026-10-17",
+      "end": null,
+      "summary": "A free iPhone habit tracker that counts your visits for you: goals become places to visit more or less, with streaks, badges and friend groups.",
+      "tags": ["ios", "app"],
+      "links": [
+        { "label": "notestudo.com", "url": "https://notestudo.com/" }
+      ]
     },
     {
-      "id": "sample-education",
-      "type": "education",
-      "title": "Sample entry: Bachelor's degree in Accounting",
-      "org": "Replace with the university",
-      "start": "2018-09",
-      "end": "2022-05",
-      "summary": "Sample entry, shown in local development only. Replace with your degree, school and dates.",
+      "id": "learning-github",
+      "type": "study",
+      "title": "Learned Git and GitHub",
+      "org": "GitHub Community",
+      "start": "2026-10-27",
+      "end": null,
+      "summary": "Worked from the community's recommended resources for beginners: version control, branches and pull requests.",
+      "tags": ["git", "github"],
+      "links": [
+        { "label": "The discussion", "url": "https://github.com/orgs/community/discussions/161493" }
+      ]
+    },
+    {
+      "id": "site-plan",
+      "type": "milestone",
+      "title": "Planned the site and put it on GitHub Pages",
+      "org": "Personal project",
+      "start": "2026-11-05",
+      "end": null,
+      "summary": "Planned the design, the timeline feature and the build phases; chose GitHub Pages for free hosting and set up the deploy workflow.",
+      "tags": ["github-pages", "planning"],
+      "links": []
+    },
+    {
+      "id": "cpa-exam",
+      "type": "certification",
+      "title": "CPA Examination",
+      "org": "Uniform CPA Examination",
+      "start": "2027-01",
+      "end": null,
+      "summary": "Draft: dated January 2027 in the source list. Confirm the date and wording (taking it, or passed a section), then remove the draft flag.",
       "tags": ["accounting"],
       "links": [],
       "draft": true

@@ -20,7 +20,8 @@
             "description": "Unique, lowercase, hyphenated, for example cpa-license."
           },
           "type": {
-            "enum": ["work", "education", "certification", "project", "milestone"]
+            "enum": ["study", "work", "education", "certification", "project", "milestone"],
+            "description": "study: a book, course, docs or article worked through (a single moment unless it has an end date)."
           },
           "title": { "type": "string" },
           "org": {

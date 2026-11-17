@@ -15,6 +15,7 @@ import data from '../data/timeline.json';
 import { track } from './analytics.js';
 
 const TYPES = [
+  ['study', 'Study'],
   ['work', 'Work'],
   ['education', 'Education'],
   ['certification', 'Certification'],
@@ -43,9 +44,32 @@ const prevButton = document.getElementById('timeline-prev');
 const nextButton = document.getElementById('timeline-next');
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 
+const startButton = document.getElementById('timeline-start');
+
 const entries = data.entries
   .filter((entry) => import.meta.env.DEV || !entry.draft)
   .sort(oldestFirst);
+
+// Where the journey began: the oldest entry overall. On the thread it gets a "Start" flag on the
+// line (where the loop wraps from newest back to oldest, a dashed stretch), a ringed dot and a
+// "Where it began" label; "Back to the start" rewinds to it. Marked only when it's in the
+// current filter, since the first project, say, isn't the start of the journey.
+const START_ID = entries[0]?.id;
+const START_LABEL = 'Where it began';
+
+// Where the journey is now, worked out from the visitor's date: entries that start after today
+// are upcoming (dashed card, hollow dot, dashed line leading to them), and the latest entry that
+// isn't is "You are here" (a pulsing dot). The thread opens on it, and "Jump to now" returns to
+// it. Dates compare as strings, so "2027-01" is after "2026-11-17" and "2026-11" is not.
+const TODAY = (() => {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+})();
+const isUpcoming = (entry) => entry.start > TODAY;
+const NOW_ID = entries.filter((entry) => !isUpcoming(entry)).at(-1)?.id;
+const NOW_LABEL = 'You are here';
+const UPCOMING_LABEL = 'Upcoming';
+const nowButton = document.getElementById('timeline-now');
 
 let shown = [];
 // The selected entry's index in `shown`.
@@ -155,6 +179,22 @@ function entryElement(entry, index, entryIndex) {
   dot.setAttribute('aria-hidden', 'true');
 
   item.append(axis, card, tick, dot);
+
+  if (entry.id === START_ID) {
+    item.classList.add('thread__item--start');
+    card.prepend(element('span', 'event-card__badge', `✦  ${START_LABEL}`));
+    // A "Start" tab sitting on the card's top edge.
+    const flag = element('span', 'thread__start', 'Start');
+    flag.setAttribute('aria-hidden', 'true');
+    card.prepend(flag);
+  }
+  if (entry.id === NOW_ID) {
+    item.classList.add('thread__item--now');
+    card.prepend(element('span', 'event-card__badge event-card__badge--now', `●  ${NOW_LABEL}`));
+  } else if (isUpcoming(entry)) {
+    item.classList.add('thread__item--upcoming');
+    card.prepend(element('span', 'event-card__badge event-card__badge--upcoming', UPCOMING_LABEL));
+  }
   return item;
 }
 
@@ -165,7 +205,16 @@ function items() {
 // ---------- The details panel ----------
 
 function renderDetail(entry, index) {
-  const eyebrow = element('p', 'label-section', `Entry ${index + 1} of ${shown.length}  ·  ${LABELS[entry.type] ?? entry.type}`);
+  const parts = [`Entry ${index + 1} of ${shown.length}`, LABELS[entry.type] ?? entry.type];
+  if (entry.id === START_ID) {
+    parts.push(START_LABEL);
+  }
+  if (entry.id === NOW_ID) {
+    parts.push(NOW_LABEL);
+  } else if (isUpcoming(entry)) {
+    parts.push(UPCOMING_LABEL);
+  }
+  const eyebrow = element('p', 'label-section', parts.join('  ·  '));
   const title = element('h3', 'timeline-detail__title', entry.title);
   const meta = element('p', 'timeline-detail__meta', [detailDate(entry), entry.org].filter(Boolean).join('  ·  '));
   const body = [eyebrow, title, meta];
@@ -279,6 +328,12 @@ function select(index, via, steps = 0) {
     prevButton.disabled = current === 0;
     nextButton.disabled = current === shown.length - 1;
   }
+  if (startButton) {
+    startButton.disabled = shown[current]?.id === START_ID;
+  }
+  if (nowButton) {
+    nowButton.disabled = shown[current]?.id === NOW_ID;
+  }
   if (changed || !detail.childElementCount) {
     renderDetail(shown[current], current);
   }
@@ -289,6 +344,32 @@ function select(index, via, steps = 0) {
 
 prevButton.addEventListener('click', () => goTo(Math.round(pos) - 1, { via: 'arrow' }));
 nextButton.addEventListener('click', () => goTo(Math.round(pos) + 1, { via: 'arrow' }));
+
+// "Back to the start" always travels backward, rewinding through the entries in between, so it
+// reads as going back in time rather than wrapping forward past the newest one.
+startButton?.addEventListener('click', () => {
+  const target = shown.findIndex((entry) => entry.id === START_ID);
+  if (target < 0) {
+    return;
+  }
+  const here = Math.round(pos);
+  const back = (entryAt(here) - target + shown.length) % shown.length;
+  goTo(here - back, { via: 'start', duration: back ? Math.min(400 + back * 60, 1400) : 0 });
+});
+
+// "Jump to now" takes the shorter way round: forward through time from the past, or a step back
+// from an upcoming entry.
+nowButton?.addEventListener('click', () => {
+  const target = shown.findIndex((entry) => entry.id === NOW_ID);
+  if (target < 0) {
+    return;
+  }
+  const here = Math.round(pos);
+  const n = shown.length;
+  const forward = (target - entryAt(here) + n) % n;
+  const steps = forward <= n - forward ? forward : forward - n;
+  goTo(here + steps, { via: 'now', duration: steps ? Math.min(400 + Math.abs(steps) * 60, 1400) : 0 });
+});
 
 thread.addEventListener('click', (event) => {
   const card = event.target.closest('.event-card');
@@ -464,8 +545,11 @@ function render(type) {
   looping = n >= 2;
   period = n % 2 ? n * 2 : n;
   const count = looping ? period * 3 : n;
-  // Start on the newest entry, in the middle period of the track.
-  const start = looping ? period + n - 1 : n - 1;
+  // Open on "You are here" when it's in this filter (otherwise the newest entry), in the middle
+  // period of the track.
+  const nowIndex = shown.findIndex((entry) => entry.id === NOW_ID);
+  const opening = nowIndex >= 0 ? nowIndex : n - 1;
+  const start = looping ? period + opening : opening;
   const trackItems = [];
   for (let i = 0; i < count; i++) {
     const item = entryElement(shown[i % n], i, i % n);
@@ -480,6 +564,12 @@ function render(type) {
   detail.hidden = empty;
   prevButton.disabled = empty || n === 1;
   nextButton.disabled = empty || n === 1;
+  if (startButton) {
+    startButton.hidden = !shown.some((entry) => entry.id === START_ID);
+  }
+  if (nowButton) {
+    nowButton.hidden = nowIndex < 0;
+  }
   positionLabel.textContent = '';
   current = -1;
   detail.replaceChildren();
@@ -492,7 +582,7 @@ function render(type) {
   status.textContent = `Showing ${shown.length} of ${entries.length} ${noun}${SHARE_NOTE}`;
   measure();
   place(start);
-  select(n - 1);
+  select(opening);
 }
 
 function setFilter(type, { updateUrl = true } = {}) {
@@ -521,6 +611,8 @@ function buildFilters() {
   for (const button of filters.querySelectorAll('button')) {
     const type = button.dataset.type;
     button.querySelector('.chip__count').textContent = String(type ? counts[type] ?? 0 : entries.length);
+    // A type with nothing on the timeline yet gets no chip.
+    button.hidden = Boolean(type) && !counts[type];
     button.addEventListener('click', () => {
       setFilter(type);
       track('timeline_filtered', { filter: type || 'all', shown: shown.length });

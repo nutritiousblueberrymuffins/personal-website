@@ -7,6 +7,10 @@ import '@fontsource-variable/inter/wght.css';
 import './analytics.js';
 // Scroll reveals, ripples, cursor effects and the scroll progress bar; off under reduced motion.
 import './motion.js';
+// The mug in the bottom-left corner: The Office x LinkedIn, with sound.
+import './office-clip.js';
+// The "Site stats" pull-down tab in the middle of the header.
+import './header-stats.js';
 
 // Links marked data-home-link always point at the site root, whatever base path the site is
 // deployed under (for example /personal-website/ on GitHub Pages). The 404 page needs this

@@ -411,3 +411,66 @@ html.motion-ok {
         opacity: 0.35;
     }
 }
+
+/* ---------- The mug jingles ----------
+   Every 6 s the easter-egg mug (office-clip.js) rocks side to side for about 0.7 s, starting 2 s
+   after the page loads, to hint that it can be clicked. It stops while hovered (so the hover
+   lift shows) and for good once it has been clicked (.is-found). Off under reduced motion, like
+   everything in this file. */
+.motion-ok .office-toggle:not(.is-found):not(:hover) {
+    animation: mug-jingle 6s ease-in-out 2s infinite;
+}
+
+@keyframes mug-jingle {
+    0%,
+    12%,
+    100% {
+        transform: rotate(0deg) scale(1);
+    }
+
+    2% {
+        transform: rotate(-16deg) scale(1.08);
+    }
+
+    4% {
+        transform: rotate(14deg) scale(1.08);
+    }
+
+    6% {
+        transform: rotate(-10deg) scale(1.05);
+    }
+
+    8% {
+        transform: rotate(6deg) scale(1.03);
+    }
+
+    10% {
+        transform: rotate(-3deg) scale(1);
+    }
+}
+
+/* ---------- "You are here" pulses ----------
+   The timeline's present entry (timeline.js, .thread__item--now): a ring spreads out from its
+   dot and fades, every 2.2 s. */
+.motion-ok .thread__item--now .thread__dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid var(--color-brand);
+    animation: now-pulse 2.2s var(--ease-out) infinite;
+    pointer-events: none;
+}
+
+@keyframes now-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+
+    80%,
+    100% {
+        transform: scale(2.8);
+        opacity: 0;
+    }
+}

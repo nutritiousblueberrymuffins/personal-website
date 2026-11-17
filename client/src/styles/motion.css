@@ -477,35 +477,37 @@ html.motion-ok {
 
 /* ---------- The My story tab tugs ----------
    Until it's been opened once (my-story.js adds .is-found, remembered in this browser), the
-   "My story" tab dips down and bounces back every 5 s, starting 1.5 s after the page loads, as if
-   something were tugging it: a hint that it pulls down. It rests while hovered or open. */
+   "My story" tab gives a small nudge every 10 s: first it dips down and bounces back (0.7 s, from
+   1.5 s after the page loads), as if something were tugging it, then a blue glint runs through its
+   letters (below). It rests while hovered or open. */
 .motion-ok .header-drawer--center:not(.is-found):not(.is-open) .header-tab:not(:hover) {
-    animation: tab-tug 5s ease-in-out 1.5s infinite;
+    animation: tab-tug 10s ease-in-out 1.5s infinite;
 }
 
 .motion-ok .header-drawer--center:not(.is-found):not(.is-open) .header-tab:not(:hover) svg {
-    animation: tab-tug-arrow 5s ease-in-out 1.5s infinite;
+    animation: tab-tug-arrow 10s ease-in-out 1.5s infinite;
 }
 
+/* The dip and bounce take the first 7% (0.7 s) of each 10 s; the rest is still. */
 @keyframes tab-tug {
     0%,
-    14%,
+    7%,
     100% {
         transform: translateY(0);
         padding-bottom: 0.25rem;
     }
 
-    4% {
+    2% {
         transform: translateY(5px);
         padding-bottom: 0.4375rem;
     }
 
-    8% {
+    4% {
         transform: translateY(0);
         padding-bottom: 0.25rem;
     }
 
-    11% {
+    5.5% {
         transform: translateY(2px);
         padding-bottom: 0.3125rem;
     }
@@ -514,16 +516,52 @@ html.motion-ok {
 /* The arrow drops a touch further than the tab, pointing the way. */
 @keyframes tab-tug-arrow {
     0%,
-    14%,
+    7%,
     100% {
         transform: translateY(0);
     }
 
-    4% {
+    2% {
         transform: translateY(2px);
     }
 
-    8% {
+    4% {
         transform: translateY(0);
+    }
+}
+
+/* ---------- A blue glint runs through "My story" ----------
+   Right after each tug, a light-blue band sweeps through the tab's letters (1.4 s, then still for
+   the rest of the 10 s): the text is painted with a wide gradient (grey, a soft blue tint, then a
+   brighter blue at the centre) and the gradient slides across it. Same rules as the tug: until the
+   story is opened once, and not while hovered or open. Without motion the label stays plain grey. */
+.motion-ok .header-drawer--center:not(.is-found):not(.is-open) .header-tab:not(:hover) .header-tab__label {
+    background-image: linear-gradient(
+        100deg,
+        var(--color-muted) 0%,
+        var(--color-muted) 32%,
+        #9ab8f7 40%,
+        #2f62dc 50%,
+        #9ab8f7 60%,
+        var(--color-muted) 68%,
+        var(--color-muted) 100%
+    );
+    background-size: 260% 100%;
+    background-position: 100% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: tab-shine 10s ease-in-out 2.2s infinite;
+}
+
+@keyframes tab-shine {
+    0% {
+        background-position: 100% 0;
+    }
+
+    14%,
+    100% {
+        background-position: 0% 0;
     }
 }

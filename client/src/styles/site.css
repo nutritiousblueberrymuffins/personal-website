@@ -44,7 +44,7 @@ body::before {
     }
 }
 
-/* The still dot grid inside the photo frame and the whiteboard (Figma "Thread/Dot grid"). */
+/* The still dot grid inside the photo frame (Figma "Thread/Dot grid"). */
 .dot-grid {
     background-color: var(--color-canvas);
     background-image: radial-gradient(circle at 0.0625rem 0.0625rem, rgb(157 174 196 / 0.7) 0.0625rem, transparent 0.0938rem);
@@ -587,84 +587,6 @@ a.project-card:hover .project-card__link {
     font-weight: 700;
     line-height: 1.125rem;
     text-align: right;
-}
-
-/* Whiteboard: a still illustration of the thread. Positions are the Figma ones, as fractions
-   of the 400 px frame so it can shrink on phones. */
-.whiteboard {
-    position: relative;
-    height: 20rem;
-    overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
-}
-
-.whiteboard__caption {
-    position: absolute;
-    top: 1.4375rem;
-    left: 5.75%;
-    color: var(--color-muted);
-    font-size: 0.8125rem;
-    line-height: 1.125rem;
-}
-
-.whiteboard__axis {
-    position: absolute;
-    top: 11.8125rem;
-    left: 5.75%;
-    right: 5.75%;
-    height: 2px;
-    background: var(--color-axis);
-}
-
-.whiteboard .event-card {
-    position: absolute;
-    width: 45%;
-}
-
-.whiteboard__card-a {
-    left: 5.75%;
-    bottom: 9.8125rem;
-}
-
-.whiteboard__card-b {
-    top: 13.1875rem;
-    right: 5.75%;
-}
-
-.whiteboard__tick {
-    position: absolute;
-    width: 2px;
-    background: var(--color-axis);
-}
-
-.whiteboard__tick--a {
-    top: 10.4375rem;
-    left: calc(28.25% - 1px);
-    height: 1.375rem;
-}
-
-.whiteboard__tick--b {
-    top: 11.9375rem;
-    left: calc(71.25% - 1px);
-    height: 1.25rem;
-}
-
-.whiteboard__dot {
-    position: absolute;
-    top: 11.5rem;
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 50%;
-    background: var(--color-brand);
-}
-
-.whiteboard__dot--a {
-    left: calc(28.25% - 0.375rem);
-}
-
-.whiteboard__dot--b {
-    left: calc(71.25% - 0.375rem);
 }
 
 /* ---------- Projects ---------- */

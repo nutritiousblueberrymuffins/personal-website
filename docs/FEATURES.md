@@ -134,7 +134,6 @@ Both halves deploy automatically from GitHub Actions on every push to `main`.
   | `.chip` | Pill-shaped filter button with a count |
   | `.arrow-button` | Timeline back / forward |
   | `.glance` | "At a glance" panel |
-  | `.whiteboard` | Still illustration of the thread |
   | `.thread`, `.thread__item`, `.thread__tick`, `.thread__dot`, `.thread__date` | The thread itself, built on a CSS grid |
 
 **To change it:**
@@ -206,7 +205,7 @@ speed, fading between 90% and 50% opacity and back. The Figma prototype has the 
   - Opacity goes 0.9 → 0.5 → 0.9 over the same 30 s.
 - **Performance:** only `transform` and `opacity` animate (with `will-change`), so the GPU moves the
   layer without repainting. That keeps it smooth on phones.
-- **Still dots:** the dots inside the photo frame and the whiteboard illustration are a separate, still
+- **Still dots:** the dots inside the photo frame are a separate, still
   `.dot-grid` class.
 - **Reduced motion:** the grid stands still (`animations.css`).
 
@@ -229,7 +228,7 @@ the hero strip and the section guide link to.
 | Section | `id` | Contents |
 |---------|------|----------|
 | Hero | `top` | Photo frame with a name-tag card, intro heading and text, "View projects" button, links to GitHub · LinkedIn · Email, and the "On this thread" strip |
-| About | `about` | "At a glance" panel (background, focus, stack, next), the whiteboard illustration, two paragraphs |
+| About | `about` | "At a glance" panel (background, focus, stack, next) and two paragraphs |
 | Projects | `projects` | Three project cards linking to GitHub |
 | Timeline | `timeline` | Filters, arrows, the endless strip and the details panel (see [section 7](#7-interactive-timeline)) |
 | Contact | `contact` | Email, LinkedIn and GitHub cards |
@@ -561,7 +560,7 @@ example a timeline filter), the browser may re-settle by about 20 px.
   - The timeline region works with the arrow keys and Home / End.
   - Tabbing into the hero strip stops it and brings the focused card into view.
 - **Screen readers:**
-  - Decorative and duplicate elements (clones, axis dates, ticks, dots, the whiteboard) are
+  - Decorative and duplicate elements (clones, axis dates, ticks, dots) are
     `aria-hidden`.
   - The timeline's selection is announced through an `aria-live` panel, and filter results through a
     `role="status"` line.

@@ -44,7 +44,7 @@ body::before {
     }
 }
 
-/* The still dot grid inside the photo frame and the whiteboard (Figma "Thread/Dot grid"). */
+/* The still dot grid inside the photo frame (Figma "Thread/Dot grid"). */
 .dot-grid {
     background-color: var(--color-canvas);
     background-image: radial-gradient(circle at 0.0625rem 0.0625rem, rgb(157 174 196 / 0.7) 0.0625rem, transparent 0.0938rem);
@@ -76,8 +76,23 @@ body::before {
 
 /* ---------- Header ---------- */
 
+/* The header stays pinned to the top while the page scrolls. A frosted white backing keeps
+   content that slides under it from showing through, and z-index keeps it above the cards
+   (but under the scroll progress bar). */
 .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 45;
     border-bottom: 1px solid var(--color-border);
+    background: rgb(255 255 255 / 0.85);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+}
+
+/* Jumps to #about, #projects and the rest stop below the pinned header, not under it.
+   Keep in step with the header's height (5 rem plus its 1 px border; taller on phones). */
+html {
+    scroll-padding-top: calc(5rem + 1px);
 }
 
 .site-header .container {
@@ -95,6 +110,8 @@ body::before {
     font-weight: 700;
     line-height: 1.625rem;
     white-space: pre;
+    /* 7 px top and bottom makes it as tall as the nav pill (26 + 14 = 40 px). */
+    padding: 0.4375rem 1.25rem;
 }
 
 .nav-links {
@@ -102,8 +119,18 @@ body::before {
     align-items: center;
     gap: 2rem;
     margin: 0;
-    padding: 0;
+    padding: 0 1.5rem;
     list-style: none;
+}
+
+/* The wordmark and the links sit on white pills, like the cards, so the dot grid doesn't run
+   behind them. */
+.wordmark,
+.nav-links {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 1px 3px rgb(34 43 54 / 0.06);
 }
 
 /* Nav: Inter Bold 14 / 20, in the brand blue */
@@ -246,6 +273,22 @@ a.contact-card:hover {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-card);
+}
+
+/* A screenshot across the top of the card, edge to edge: it cancels the card's padding on three
+   sides and rounds its top corners to sit inside the card's border. */
+.project-card__image {
+    display: block;
+    width: calc(100% + 2 * var(--space-lg));
+    max-width: none;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    margin: calc(-1 * var(--space-lg)) calc(-1 * var(--space-lg)) var(--space-xs);
+    object-fit: cover;
+    object-position: top;
+    background: var(--color-canvas);
+    border-bottom: 1px solid var(--color-border);
+    border-radius: calc(var(--radius-card) - 1px) calc(var(--radius-card) - 1px) 0 0;
 }
 
 .project-card__eyebrow {
@@ -472,6 +515,110 @@ a.project-card:hover .project-card__link {
     object-fit: cover;
 }
 
+/* Photo slideshow (photo-slides.js adds .is-sliding): the slides are stacked and cross-fade.
+   Without the script only the first shows. The name tag, counter and arrows come later in the
+   HTML, so they paint on top. */
+.photo__slides {
+    position: absolute;
+    inset: 0;
+    touch-action: pan-y;
+}
+
+.photo.is-sliding .photo__slides {
+    cursor: pointer;
+}
+
+.photo__slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 450ms ease, visibility 0s 450ms;
+}
+
+.photo:not(.is-sliding) .photo__slide:first-child,
+.photo__slide.is-current {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 450ms ease, visibility 0s;
+}
+
+.photo__slide img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* A wide shot kept whole, over a blurred, dimmed, slightly enlarged copy that fills the rest. */
+.photo__slide[data-fit="contain"] img:not(.photo__fill) {
+    object-fit: contain;
+}
+
+.photo__fill {
+    filter: blur(1.25rem) brightness(0.8);
+    transform: scale(1.2);
+}
+
+/* "‹ 2 / 6 ›" in a small white pill in the top-right corner, which is background (wall, sky,
+   blur) in the photos, so it never sits on a face. */
+.photo__controls {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 0.125rem;
+    padding: 0.1875rem;
+    background: rgb(255 255 255 / 0.92);
+    border-radius: var(--radius-pill);
+    box-shadow: 0 2px 10px rgb(34 43 54 / 0.18);
+}
+
+.photo__controls[hidden] {
+    display: none;
+}
+
+.photo .photo__arrow {
+    width: 2rem;
+    height: 2rem;
+    border-color: transparent;
+}
+
+.photo .photo__arrow svg {
+    width: 1rem;
+    height: 1rem;
+}
+
+.photo__count {
+    min-width: 2.5em;
+    color: var(--color-ink);
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    line-height: 1rem;
+    text-align: center;
+}
+
+/* While the slideshow runs, the name tag drops its year line and tightens up, to cover less
+   of each photo. */
+.photo.is-sliding .event-card {
+    left: 0.75rem;
+    bottom: 0.75rem;
+    gap: 0.25rem;
+    width: auto;
+    max-width: calc(100% - 1.5rem);
+    padding: 0.625rem 0.875rem;
+}
+
+.photo.is-sliding .event-card__date {
+    display: none;
+}
+
 .photo .event-card {
     position: absolute;
     left: 1.1875rem;
@@ -589,92 +736,163 @@ a.project-card:hover .project-card__link {
     text-align: right;
 }
 
-/* Whiteboard: a still illustration of the thread. Positions are the Figma ones, as fractions
-   of the 400 px frame so it can shrink on phones. */
-.whiteboard {
-    position: relative;
-    height: 20rem;
+/* Stepping (glance.js adds .is-stepping): one fact at a time. Every fact sits in the same grid
+   cell, so the card keeps the height of the longest and never jumps. The new fact slides in
+   from the side you're heading toward (--dir: 1 forward, -1 back) while the old one slides
+   out the other way. */
+.glance.is-stepping dl {
+    display: grid;
     overflow: hidden;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-card);
 }
 
-.whiteboard__caption {
-    position: absolute;
-    top: 1.4375rem;
-    left: 5.75%;
-    color: var(--color-muted);
-    font-size: 0.8125rem;
-    line-height: 1.125rem;
+.glance.is-stepping dl > div {
+    grid-area: 1 / 1;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 0.375rem;
+    padding-block: var(--space-xs);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(calc(var(--dir, 1) * 1.5rem));
+    transition: opacity 220ms ease, transform 320ms var(--ease-out, ease), visibility 0s 320ms;
 }
 
-.whiteboard__axis {
-    position: absolute;
-    top: 11.8125rem;
-    left: 5.75%;
-    right: 5.75%;
-    height: 2px;
+.glance.is-stepping dl > div.is-leaving {
+    transform: translateX(calc(var(--dir, 1) * -1.5rem));
+}
+
+.glance.is-stepping dl > div.is-current {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 260ms ease 60ms, transform 320ms var(--ease-out, ease), visibility 0s;
+}
+
+.glance.is-stepping dt {
+    font-size: 0.6875rem;
+    font-weight: 700;
+    line-height: 0.875rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.glance.is-stepping dd {
+    color: var(--color-brand);
+    font-size: 1.3125rem;
+    line-height: 1.625rem;
+    text-align: left;
+}
+
+/* Dots on the left (one per fact, the current one stretched into a pill), arrows on the right. */
+.glance__controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.glance__controls[hidden] {
+    display: none;
+}
+
+.glance__dots {
+    display: flex;
+    align-items: center;
+}
+
+/* The dot is drawn by ::before; the button around it is a bigger, easier target. */
+.glance__dot {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.625rem 0.25rem;
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.glance__dot::before {
+    content: "";
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-border);
+    transition: width 260ms var(--ease-out, ease), background-color 200ms ease;
+}
+
+.glance__dot:hover::before {
     background: var(--color-axis);
 }
 
-.whiteboard .event-card {
-    position: absolute;
-    width: 45%;
-}
-
-.whiteboard__card-a {
-    left: 5.75%;
-    bottom: 9.8125rem;
-}
-
-.whiteboard__card-b {
-    top: 13.1875rem;
-    right: 5.75%;
-}
-
-.whiteboard__tick {
-    position: absolute;
-    width: 2px;
-    background: var(--color-axis);
-}
-
-.whiteboard__tick--a {
-    top: 10.4375rem;
-    left: calc(28.25% - 1px);
-    height: 1.375rem;
-}
-
-.whiteboard__tick--b {
-    top: 11.9375rem;
-    left: calc(71.25% - 1px);
-    height: 1.25rem;
-}
-
-.whiteboard__dot {
-    position: absolute;
-    top: 11.5rem;
-    width: 0.75rem;
-    height: 0.75rem;
-    border-radius: 50%;
+.glance__dot[aria-current="true"]::before {
+    width: 1.5rem;
     background: var(--color-brand);
-}
-
-.whiteboard__dot--a {
-    left: calc(28.25% - 0.375rem);
-}
-
-.whiteboard__dot--b {
-    left: calc(71.25% - 0.375rem);
 }
 
 /* ---------- Projects ---------- */
 
 /* 24 px between cards in a grid. As many columns as fit at 300 px or wider: three at full
    width, two on tablets, one on phones, changing as the window is resized. */
+/* Project carousel: a sideways row of cards, --per-view at a time (one on phones), that snaps
+   to each card. It scrolls by swipe, trackpad or keyboard; project-carousel.js adds the arrows.
+   The 12 px of padding (cancelled by the negative margin) leaves room for a card's hover lift
+   and shadow, which the scroll box would otherwise clip. */
+.project-carousel {
+    --per-view: 2;
+    position: relative;
+    /* Lets the arrows size themselves from the carousel width (cqi units). */
+    container-type: inline-size;
+}
+
 .project-grid {
+    --bleed: 0.75rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18.75rem), 1fr));
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--per-view) - 1) * var(--space-lg)) / var(--per-view));
     gap: var(--space-lg);
+    margin: calc(-1 * var(--bleed)) calc(-1 * var(--bleed)) calc(-2 * var(--bleed));
+    padding: var(--bleed) var(--bleed) calc(2 * var(--bleed));
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--bleed);
+    scrollbar-width: none;
+}
+
+.project-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.project-grid > * {
+    scroll-snap-align: start;
+}
+
+/* The arrows sit on the row's edges, half over the cards, centred on the cards' 16:9 screenshots
+   (a card is (carousel width - gaps) / per-view wide, so its image is 9/16 of that). They're placed
+   with offsets, not transform, because motion.css uses transform for the magnet effect (and
+   sets position: relative on every .arrow-button with a selector worth three classes, hence
+   this longer one). At either end,
+   the arrow that can't go further fades out. */
+.project-carousel > button.arrow-button.project-arrow {
+    position: absolute;
+    top: calc((100cqi - (var(--per-view) - 1) * var(--space-lg)) / var(--per-view) * 9 / 32);
+    z-index: 2;
+    margin-top: -1.375rem;
+    box-shadow: 0 2px 10px rgb(34 43 54 / 0.14);
+    transition: opacity 200ms ease, border-color 160ms ease, transform 250ms var(--ease-out, ease);
+}
+
+.project-arrow--prev {
+    left: -1.375rem;
+}
+
+.project-arrow--next {
+    right: -1.375rem;
+}
+
+.project-carousel > button.arrow-button.project-arrow:disabled {
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* ---------- Timeline ---------- */
@@ -1040,16 +1258,38 @@ button.event-card[aria-current="true"] {
 
 /* Phones. */
 @media (max-width: 640px) {
+    /* The stacked header is taller: 1 rem top + 42 px name + 8 px gap + 46 px links + border. */
+    html {
+        scroll-padding-top: 7rem;
+    }
+
+    /* One project at a time; the arrows tuck inside the edges, since the 20 px gutter can't fit
+       half an arrow. */
+    .project-carousel {
+        --per-view: 1;
+    }
+
+    .project-arrow--prev {
+        left: 0.5rem;
+    }
+
+    .project-arrow--next {
+        right: 0.5rem;
+    }
+
     .site-header .container {
         flex-direction: column;
         align-items: flex-start;
-        gap: 0;
+        gap: var(--space-xs);
         padding-top: 1rem;
     }
 
+    /* A card corner instead of a pill, in case the links wrap onto two lines. */
     .nav-links {
         flex-wrap: wrap;
         gap: 0 1.25rem;
+        padding: 0 1rem;
+        border-radius: var(--radius-card);
     }
 
     /* Nav links get a 44 px tall tap area. */

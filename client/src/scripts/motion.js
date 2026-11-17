@@ -18,7 +18,6 @@ const REVEAL = [
   ['.section-heading > *', 80],
   ['.about__text > *', 90],
   ['.glance', 0],
-  ['.whiteboard', 0],
   ['.project-grid > *', 110],
   ['.timeline-controls', 0],
   ['.contact-grid > li', 90],

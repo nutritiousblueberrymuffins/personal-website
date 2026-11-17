@@ -369,6 +369,7 @@ the thread, in the order they happened.
   | `start`, `end` | `YYYY`, `YYYY-MM` or `YYYY-MM-DD` |
   | `summary` | Text for the details panel |
   | `tags` | List of tags |
+  | `image` | Optional. A screenshot of the resource (`assets/timeline/<id>.jpg`, relative to `client/public/`), shown faded behind the details panel |
   | `links` | List of `{label, url}` |
   | `draft` | Optional. `true` keeps the entry out of the live site |
 
@@ -379,6 +380,18 @@ the thread, in the order they happened.
   Right now there are no drafts, so the live site shows all 24 entries. Drafts are still bundled into the page's script, so keep anything private out of them.
 - **Filter chips:** one per type in the HTML; a type with no entries gets no chip.
 - **Study links:** books link to the publisher's or author's page, never to a copy of the book.
+- **Card links:** on a card whose entry has a link, the type line ("Study ↗") opens the first link in a
+  new tab instead of selecting the card (`.event-card__type--link`; a real `<a>` can't sit inside the
+  card's `<button>`, so the thread's click listener opens it). Only the words and arrow are the target;
+  a drag that ends on it still just moves the strip. Keyboard and screen-reader users have the same
+  link in the details panel.
+- **Resource backdrops:** 18 entries have a screenshot of the page they link to (960 × 540 JPEGs in
+  `client/public/assets/timeline/`, taken with headless Edge in light mode; the three projects reuse
+  their project-card screenshots). The selected entry's screenshot fills the right side of the details
+  panel, fading from white behind the text, which keeps to the left 58%; on phones it sits behind a
+  near-solid veil. The neighbouring entries' images are preloaded. Pre-algebra, Boolean algebra (its
+  publisher page blocks automated capture), narb, the music player, the GitHub Pages milestone, the
+  CPA entry and the Today card have none.
 - **Date formats:**
 
   | Where | Format |

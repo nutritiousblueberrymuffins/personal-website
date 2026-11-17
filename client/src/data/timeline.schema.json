@@ -46,6 +46,11 @@
             "type": "array",
             "items": { "type": "string" }
           },
+          "image": {
+            "type": "string",
+            "pattern": "^assets/[A-Za-z0-9/_.-]+\\.(jpg|jpeg|png|webp)$",
+            "description": "A screenshot of the resource, shown faded behind the details panel. Relative to client/public/, e.g. assets/timeline/cs50.jpg."
+          },
           "links": {
             "type": "array",
             "items": {

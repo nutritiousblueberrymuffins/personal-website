@@ -190,10 +190,24 @@ function entryElement(entry, index, entryIndex) {
   card.dataset.track = String(index);
   card.dataset.entry = String(entryIndex);
   card.tabIndex = -1;
+  const type = element('span', 'event-card__type', LABELS[entry.type] ?? entry.type);
+  // With a link, the type line opens the resource (handled by the thread's click listener: a
+  // real <a> can't sit inside the card's <button>). The details panel has the same link for
+  // keyboard and screen-reader users, since the track itself is hidden from them.
+  const resource = entry.links?.[0];
+  if (resource) {
+    type.classList.add('event-card__type--link');
+    type.dataset.href = resource.url;
+    type.dataset.trackTimelineLink = entry.id;
+    type.title = `${resource.label} (opens in a new tab)`;
+    const arrow = element('span', 'event-card__type-arrow', '↗');
+    arrow.setAttribute('aria-hidden', 'true');
+    type.append(arrow);
+  }
   card.append(
     element('span', 'event-card__date', cardDate(entry)),
     element('span', 'event-card__title', entry.title),
-    element('span', 'event-card__type', LABELS[entry.type] ?? entry.type),
+    type,
   );
 
   const tick = element('span', 'thread__tick');
@@ -268,10 +282,37 @@ function renderDetail(entry, index) {
     body.push(links);
   }
   detail.replaceChildren(...body);
+  // The resource's screenshot, faded in behind the panel (site.css, "Resource backdrop").
+  if (entry.image) {
+    detail.style.setProperty('--detail-image', `url("${imageUrl(entry.image)}")`);
+  } else {
+    detail.style.removeProperty('--detail-image');
+  }
+  detail.classList.toggle('has-image', Boolean(entry.image));
+  preloadNeighbours(index);
   // Replays the panel's ease-in (motion.css) for the new entry.
   detail.classList.remove('is-swapping');
   void detail.offsetWidth;
   detail.classList.add('is-swapping');
+}
+
+// Image paths in timeline.json are relative to client/public/, so they need the site's base path
+// (/personal-website/ on GitHub Pages).
+function imageUrl(path) {
+  return `${import.meta.env.BASE_URL}${path}`;
+}
+
+// Fetches the entries either side ahead of time, so stepping along doesn't show a blank panel
+// while the next screenshot loads.
+const preloaded = new Set();
+function preloadNeighbours(index) {
+  for (const step of [-1, 1]) {
+    const entry = shown[(index + step + shown.length) % shown.length];
+    if (entry?.image && !preloaded.has(entry.image)) {
+      preloaded.add(entry.image);
+      new Image().src = imageUrl(entry.image);
+    }
+  }
 }
 
 // ---------- Moving the track ----------
@@ -407,6 +448,13 @@ nowButton?.addEventListener('click', () => {
 });
 
 thread.addEventListener('click', (event) => {
+  // The type line on a card with a link ("Study ↗") opens the resource in a new tab instead of
+  // selecting the card. A drag that ends on it is still swallowed by the viewport first.
+  const resource = event.target.closest('.event-card__type--link');
+  if (resource) {
+    window.open(resource.dataset.href, '_blank', 'noopener');
+    return;
+  }
   const card = event.target.closest('.event-card');
   if (card) {
     goTo(Number(card.dataset.track), { via: 'card' });

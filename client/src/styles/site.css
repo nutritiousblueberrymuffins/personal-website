@@ -1277,6 +1277,68 @@ button.event-card[aria-current="true"] {
     border-radius: var(--radius-card);
 }
 
+/* On a timeline card with a link, the type line ("Study ↗") opens the resource. Only the words
+   and arrow are the target, so a click anywhere else on the card still selects it. */
+.event-card__type--link {
+    display: inline-flex;
+    align-self: flex-start;
+    align-items: baseline;
+    gap: 0.25rem;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.1875rem;
+    transition: text-decoration-color 160ms ease;
+}
+
+.event-card__type--link:hover {
+    text-decoration-color: currentColor;
+}
+
+.event-card__type-arrow {
+    font-size: 0.875em;
+    transition: transform 200ms var(--ease-out, ease);
+}
+
+.event-card__type--link:hover .event-card__type-arrow {
+    transform: translate(1px, -1px);
+}
+
+/* Resource backdrop: when an entry has an image (timeline.js sets --detail-image), the screenshot
+   of what was read or visited fills the panel's background, fading from solid white behind the
+   text on the left to a light veil on the right, so the resource shows without hurting the
+   text. The text keeps to the white side. On phones the image sits behind a near-solid veil. */
+.timeline-detail.has-image {
+    background-image:
+        linear-gradient(90deg, var(--color-surface) 0%, var(--color-surface) 56%, rgb(255 255 255 / 0.75) 70%, rgb(255 255 255 / 0.12) 100%),
+        var(--detail-image);
+    /* The screenshot is as tall as the panel and anchored right, so it always reaches the right
+       and bottom edges; in a wide panel it starts near the middle, so what shows past the white
+       is the left part of the page, where its title and heading usually are. */
+    background-position: center, right top;
+    background-repeat: no-repeat;
+    background-size: cover, auto 100%;
+}
+
+/* Both in fractions of the panel, so the text always stays on the white part, at any width. */
+.timeline-detail.has-image > * {
+    max-width: 58%;
+}
+
+@media (max-width: 640px) {
+    .timeline-detail.has-image {
+        background-image:
+            linear-gradient(rgb(255 255 255 / 0.86), rgb(255 255 255 / 0.94)),
+            var(--detail-image);
+        background-position: center, center top;
+        background-size: cover, cover;
+    }
+
+    .timeline-detail.has-image > * {
+        max-width: none;
+    }
+}
+
 .timeline-detail__title {
     color: var(--color-ink);
     font-size: 1.1875rem;

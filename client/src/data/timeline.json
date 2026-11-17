@@ -10,6 +10,7 @@
       "end": null,
       "summary": "CS50: Introduction to Computer Science, Harvard's course on problem solving and programming, from C to Python, SQL and the web.",
       "tags": ["computer-science", "c", "python"],
+      "image": "assets/timeline/cs50.jpg",
       "links": [
         { "label": "Course page", "url": "https://pll.harvard.edu/course/cs50-introduction-computer-science" }
       ]
@@ -34,6 +35,7 @@
       "end": null,
       "summary": "The core of financial accounting: the accounting cycle, the financial statements and how to read and analyse them.",
       "tags": ["accounting"],
+      "image": "assets/timeline/financial-accounting.jpg",
       "links": [
         { "label": "Publisher page", "url": "https://www.pearson.com/en-us/subject-catalog/p/introduction-to-financial-accounting/P200000005928/9780133251036" }
       ]
@@ -47,6 +49,7 @@
       "end": null,
       "summary": "Algebra through problem solving: polynomials, functions, inequalities, sequences and series.",
       "tags": ["math"],
+      "image": "assets/timeline/intermediate-algebra.jpg",
       "links": [
         { "label": "Book page", "url": "https://artofproblemsolving.com/store/book/intermediate-algebra" }
       ]
@@ -61,7 +64,7 @@
       "summary": "Sets, symbolic logic and Boolean algebra, applied to switching circuits: the math underneath digital logic.",
       "tags": ["math", "logic"],
       "links": [
-        { "label": "Book page", "url": "https://store.doverpublications.com/0486477673.html" }
+        { "label": "Book page", "url": "https://store.doverpublications.com/products/9780486477671" }
       ]
     },
     {
@@ -73,6 +76,7 @@
       "end": null,
       "summary": "How computers work from the ground up: from codes and relays to logic gates, memory and a working processor.",
       "tags": ["computer-science", "hardware"],
+      "image": "assets/timeline/code-petzold.jpg",
       "links": [
         { "label": "Author's page", "url": "https://www.charlespetzold.com/code/" }
       ]
@@ -86,6 +90,7 @@
       "end": null,
       "summary": "The structure of web pages: elements, semantics, forms and accessibility.",
       "tags": ["html", "web"],
+      "image": "assets/timeline/mdn-html.jpg",
       "links": [
         { "label": "MDN: HTML", "url": "https://developer.mozilla.org/en-US/docs/Web/HTML" }
       ]
@@ -99,6 +104,7 @@
       "end": null,
       "summary": "Why trust in software depends on the chain of compilers that built it, and how projects rebuild that chain from small, hand-checkable code.",
       "tags": ["compilers", "security"],
+      "image": "assets/timeline/bootstrapping-article.jpg",
       "links": [
         { "label": "Read the article", "url": "https://notgull.net/bootstrapping/" }
       ]
@@ -112,6 +118,7 @@
       "end": null,
       "summary": "MDN's structured path through building for the web, from the first page to styling and scripting it.",
       "tags": ["web"],
+      "image": "assets/timeline/mdn-learn-web.jpg",
       "links": [
         { "label": "MDN: Learn web development", "url": "https://developer.mozilla.org/en-US/docs/Learn_web_development" }
       ]
@@ -125,6 +132,7 @@
       "end": null,
       "summary": "The language itself: values, functions, objects, the DOM and asynchronous code.",
       "tags": ["javascript", "web"],
+      "image": "assets/timeline/mdn-javascript.jpg",
       "links": [
         { "label": "MDN: JavaScript", "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript" }
       ]
@@ -138,6 +146,7 @@
       "end": null,
       "summary": "Algorithms, illustrated: binary search, sorting, recursion, hash tables, graph search, Dijkstra's algorithm and dynamic programming.",
       "tags": ["algorithms", "computer-science"],
+      "image": "assets/timeline/grokking-algorithms.jpg",
       "links": [
         { "label": "Book page", "url": "https://www.manning.com/books/grokking-algorithms-second-edition" }
       ]
@@ -151,6 +160,7 @@
       "end": null,
       "summary": "The official Python tutorial and reference: the language, its data structures and the standard library.",
       "tags": ["python"],
+      "image": "assets/timeline/python-docs.jpg",
       "links": [
         { "label": "Python docs", "url": "https://docs.python.org/3/" }
       ]
@@ -164,6 +174,7 @@
       "end": null,
       "summary": "Styling and layout: the cascade, the box model, flexbox and grid.",
       "tags": ["css", "web"],
+      "image": "assets/timeline/mdn-css.jpg",
       "links": [
         { "label": "MDN: CSS", "url": "https://developer.mozilla.org/en-US/docs/Web/CSS" }
       ]
@@ -177,6 +188,7 @@
       "end": null,
       "summary": "C from the people who made it: types, control flow, pointers and arrays, structures and the standard library.",
       "tags": ["c"],
+      "image": "assets/timeline/c-programming-language.jpg",
       "links": [
         { "label": "About the book", "url": "https://en.wikipedia.org/wiki/The_C_Programming_Language" }
       ]
@@ -190,6 +202,7 @@
       "end": null,
       "summary": "An explainer on what a terminal actually is and how it works under the shell.",
       "tags": ["terminal"],
+      "image": "assets/timeline/how-terminals-work.jpg",
       "links": [
         { "label": "Read it", "url": "https://how-terminals-work.vercel.app/" }
       ]
@@ -203,6 +216,7 @@
       "end": null,
       "summary": "Client- and server-side web programming: HTML, CSS, JavaScript, PHP and the pieces that connect them.",
       "tags": ["web"],
+      "image": "assets/timeline/programming-the-www.jpg",
       "links": [
         { "label": "Publisher page", "url": "https://www.pearson.com/en-us/subject-catalog/p/programming-the-world-wide-web/P200000003412/9780133775983" }
       ]
@@ -227,6 +241,7 @@
       "end": null,
       "summary": "A Work check for middle and high school teachers: it replays how each assignment was written and asks students to explain their work in their own words.",
       "tags": ["education", "browser-extension"],
+      "image": "assets/projects/nexus.jpg",
       "links": [
         { "label": "trynexus.cc", "url": "https://trynexus.cc/" }
       ]
@@ -240,6 +255,7 @@
       "end": null,
       "summary": "First commit: the hero layout, the design tokens, and the project cards.",
       "tags": ["html", "css", "portfolio"],
+      "image": "assets/projects/personal-website.jpg",
       "links": [
         { "label": "Repository", "url": "https://github.com/nutritiousblueberrymuffins/personal-website" }
       ]
@@ -264,6 +280,7 @@
       "end": null,
       "summary": "A free iPhone habit tracker that counts your visits for you: goals become places to visit more or less, with streaks, badges and friend groups.",
       "tags": ["ios", "app"],
+      "image": "assets/projects/notestudo.jpg",
       "links": [
         { "label": "notestudo.com", "url": "https://notestudo.com/" }
       ]
@@ -277,6 +294,7 @@
       "end": null,
       "summary": "Worked from the community's recommended resources for beginners: version control, branches and pull requests.",
       "tags": ["git", "github"],
+      "image": "assets/timeline/learning-github.jpg",
       "links": [
         { "label": "The discussion", "url": "https://github.com/orgs/community/discussions/161493" }
       ]

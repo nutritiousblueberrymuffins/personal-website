@@ -46,6 +46,12 @@
             "type": "array",
             "items": { "type": "string" }
           },
+          "topics": {
+            "type": "array",
+            "items": { "type": "string" },
+            "maxItems": 4,
+            "description": "Up to four short topics or highlights, shown on the card's last page (\"Covered\" for study, \"Highlights\" otherwise)."
+          },
           "image": {
             "type": "string",
             "pattern": "^assets/[A-Za-z0-9/_.-]+\\.(jpg|jpeg|png|webp)$",

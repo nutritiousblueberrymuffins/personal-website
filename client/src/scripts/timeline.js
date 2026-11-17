@@ -173,6 +173,70 @@ function element(tag, className, text) {
   return node;
 }
 
+// ---------- Card pages ----------
+// Each card is a little book: the cover (date, title, type), then an "About" page with the
+// summary, then a "Covered" (study) or "Highlights" page with the entry's topics. All the pages
+// share one grid cell, so a card is always as tall as its tallest page and flipping never moves
+// the thread. Back / forward arrows and "1 / 3" sit at the bottom; they're spans the thread's
+// click listener handles (a <button> can't hold buttons), and they only turn pages, never move
+// along the timeline. The page turn itself lives in site.css ("Card pages").
+
+function cardBook(entry, cover) {
+  const pages = [cover];
+  if (entry.summary) {
+    pages.push([element('span', 'card-page__label', 'About'), element('span', 'card-page__text', entry.summary)]);
+  }
+  if (entry.topics?.length) {
+    const list = element('span', 'card-page__list');
+    for (const topic of entry.topics) {
+      list.append(element('span', 'card-page__item', topic));
+    }
+    pages.push([element('span', 'card-page__label', entry.type === 'study' ? 'Covered' : 'Highlights'), list]);
+  }
+
+  const book = element('span', 'card-pages');
+  pages.forEach((content, i) => {
+    const page = element('span', `card-page${i === 0 ? ' card-page--cover is-current' : ' is-after'}`);
+    page.append(...content);
+    book.append(page);
+  });
+  if (pages.length < 2) {
+    return [book];
+  }
+
+  const pager = element('span', 'card-pager');
+  pager.setAttribute('aria-hidden', 'true');
+  const back = element('span', 'card-pager__btn is-disabled', '‹');
+  back.dataset.step = '-1';
+  back.title = 'Previous page';
+  const forward = element('span', 'card-pager__btn', '›');
+  forward.dataset.step = '1';
+  forward.title = 'Next page';
+  pager.append(back, element('span', 'card-pager__count', `1 / ${pages.length}`), forward);
+  return [book, pager];
+}
+
+// Turns a card one page back or forward. Pages before the current one are turned away over the
+// left edge, pages after it wait underneath.
+function turnPage(card, step) {
+  const pages = [...card.querySelectorAll('.card-page')];
+  const from = Number(card.dataset.page || 0);
+  const to = Math.max(0, Math.min(pages.length - 1, from + step));
+  if (to === from) {
+    return;
+  }
+  card.dataset.page = String(to);
+  pages.forEach((page, i) => {
+    page.classList.toggle('is-current', i === to);
+    page.classList.toggle('is-before', i < to);
+    page.classList.toggle('is-after', i > to);
+  });
+  card.querySelector('.card-pager__count').textContent = `${to + 1} / ${pages.length}`;
+  const [back, forward] = card.querySelectorAll('.card-pager__btn');
+  back.classList.toggle('is-disabled', to === 0);
+  forward.classList.toggle('is-disabled', to === pages.length - 1);
+}
+
 // `index` is the item's place on the track; `entryIndex` is which entry it shows.
 function entryElement(entry, index, entryIndex) {
   const item = element('li', `thread__item thread__item--${index % 2 === 0 ? 'above' : 'below'}`);
@@ -204,11 +268,11 @@ function entryElement(entry, index, entryIndex) {
     arrow.setAttribute('aria-hidden', 'true');
     type.append(arrow);
   }
-  card.append(
+  card.append(...cardBook(entry, [
     element('span', 'event-card__date', cardDate(entry)),
     element('span', 'event-card__title', entry.title),
     type,
-  );
+  ]));
 
   const tick = element('span', 'thread__tick');
   tick.setAttribute('aria-hidden', 'true');
@@ -458,6 +522,13 @@ nowButton?.addEventListener('click', () => {
 });
 
 thread.addEventListener('click', (event) => {
+  // A card's page arrows turn its pages and do nothing else: the card isn't selected and the
+  // strip doesn't move.
+  const pageArrow = event.target.closest('.card-pager__btn');
+  if (pageArrow) {
+    turnPage(pageArrow.closest('.event-card'), Number(pageArrow.dataset.step));
+    return;
+  }
   // The type line on a card with a link ("Study ↗") opens the resource in a new tab instead of
   // selecting the card. A drag that ends on it is still swallowed by the viewport first.
   const resource = event.target.closest('.event-card__type--link');

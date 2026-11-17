@@ -375,6 +375,7 @@ the thread, in the order they happened.
   | `start`, `end` | `YYYY`, `YYYY-MM` or `YYYY-MM-DD` |
   | `summary` | Text for the details panel |
   | `tags` | List of tags |
+  | `topics` | Optional. Up to four short topics or highlights for the card's last page |
   | `image` | Optional. A screenshot of the resource (`assets/timeline/<id>.jpg`, relative to `client/public/`), shown faded behind the details panel |
   | `links` | List of `{label, url}` |
   | `draft` | Optional. `true` keeps the entry out of the live site |
@@ -386,6 +387,12 @@ the thread, in the order they happened.
   Right now there are no drafts, so the live site shows all 23 entries. Drafts are still bundled into the page's script, so keep anything private out of them.
 - **Filter chips:** one per type in the HTML; a type with no entries gets no chip.
 - **Study links:** books link to the publisher's or author's page, never to a copy of the book.
+- **Card pages:** each card is a little book (`cardBook` / `turnPage` in `timeline.js`, "Card pages" in
+  `site.css`): the cover (date, title, type), an "About" page with the summary (five lines at most),
+  and a "Covered" (study) or "Highlights" page with the entry's `topics`. Back / forward arrows and
+  "1 / 3" sit at the bottom; a turn swings the page over its left edge like a book page. The arrows
+  only page within the card: they don't select it or move the strip. All pages share one grid cell,
+  so a card is as tall as its tallest page and flipping never moves the thread.
 - **Card links:** on a card whose entry has a link, the type line ("Study ↗") opens the first link in a
   new tab instead of selecting the card (`.event-card__type--link`; a real `<a>` can't sit inside the
   card's `<button>`, so the thread's click listener opens it). Only the words and arrow are the target;

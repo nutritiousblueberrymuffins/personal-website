@@ -238,7 +238,33 @@ The page also has:
 - a header with the wordmark and nav, pinned to the top while scrolling (`position: sticky`, with a
   frosted white backing and `scroll-padding-top` on `html` so nav jumps land below it);
 - a footer;
-- a "Skip to content" link as the first Tab stop.
+- a "Skip to content" link as the first Tab stop;
+- a `<div class="page">` around the header, `main` and footer, so "My story" can tilt the whole page
+  back in one piece (nothing else depends on it).
+
+**"My story" (the tab in the middle of the header):** clicking it, or pulling it down, opens a short
+journey in 3D (`my-story.js`, "My story" in `site.css`).
+
+1. **The camera pulls back and tilts** (0.95 s): the page lies back like a sheet on the site's own
+   dotted background, cut to the part that was on screen and turned a few degrees, with a thin edge
+   around it and a soft shadow under it so the white sheet stands out from the white background.
+   The things pinned to the window (the mug, the section guide, the progress bar) step aside, and
+   the page stops scrolling.
+2. **A panel pops out of the page** (0.95 s, starting 0.55 s in): it starts small, lying in the page
+   where the tab is, then rises to face the visitor, overshooting toward them a little before it
+   settles. It leans slightly toward the mouse.
+3. **A timeline plays forward** from where I started to today: six stops, each with a heading and a
+   caption. While a stop is up, the navy line runs on toward the next stop (longer captions stay up
+   longer: 3.8 s at least, plus about 42 ms a character); when it arrives, that stop comes up. The
+   last stop ends on the quote, then the button becomes "Replay".
+4. **Controls:** Pause / Play, back and forward arrows (or the arrow keys), a click on any stop, and
+   × / Escape / a click anywhere around the panel to close. Closing sinks the panel back into the
+   page and returns the camera, and focus goes back to the tab.
+
+The stops and the quote are plain HTML in `<template id="my-story">` in `index.html`: each `<li>` is a
+stop (`data-label` is the short name under its dot, then a heading `<p>` and a caption `<p>`), and the
+`<figure>` is the closing quote. Section snapping is off while it's open (browsers measure snap
+points after transforms, so the tilted page would otherwise scroll itself).
 
 **Contact details:**
 
@@ -609,6 +635,8 @@ example a timeline filter), the browser may re-settle by about 20 px.
   smooth scrolling.
 - The hero strip doesn't drift, but can still be dragged. The timeline moves without animating.
 - The section guide still works.
+- "My story" has no camera move or pop: the panel appears over the frosted, blurred page, and its
+  line waits and then steps from stop to stop instead of running.
 
 **Accessibility features:**
 
@@ -617,6 +645,9 @@ example a timeline filter), the browser may re-settle by about 20 px.
   - Visible focus rings.
   - The timeline region works with the arrow keys and Home / End.
   - Tabbing into the hero strip stops it and brings the focused card into view.
+  - "My story" is a modal dialog: focus moves into it, the rest of the page is `inert` while it's
+    open, the arrow keys step through the stops, and Escape closes it. Each stop is read out as it
+    comes up (`aria-live`), and the stops are buttons marked `aria-current="step"`.
 - **Screen readers:**
   - Decorative and duplicate elements (clones, axis dates, ticks, dots) are
     `aria-hidden`.
@@ -901,8 +932,8 @@ the tokens in [section 2](#2-threadline-design-system).
 | `client/src/styles/motion.css` | Animations and hover effects, section transitions |
 | `client/src/styles/animations.css` | Reduced-motion override |
 | `client/src/scripts/main.js` | Every page: font, analytics, motion, the Office easter egg, the header's My story and Site stats tabs, home links |
-| `client/src/scripts/header-drawer.js` | The header's pull-down tabs: a thin tab under the header opens a drawer (pull it down 24 px or click; push up, click, ×, Escape or a click elsewhere closes it); the tab rides on the drawer's edge, and opening one closes the other. Used by My story (centre) and Site stats (right) |
-| `client/src/scripts/my-story.js` | "My story": the tab in the middle of the header. Its drawer shows the `<template id="my-story">` in `index.html` (a quote and a few paragraphs, editable as plain HTML); pages without the template get no tab. On phones the tab moves to the left so it doesn't meet Site stats. Until it's opened once (remembered in `localStorage` as `my-story-opened`), the tab gives one small nudge every 10 s: it tugs down and bounces back (`tab-tug` in `motion.css`), then a light-blue glint sweeps through its letters (`tab-shine`) |
+| `client/src/scripts/header-drawer.js` | The header's pull-down tabs: a thin tab under the header opens a drawer (pull it down 24 px or click; push up, click, ×, Escape or a click elsewhere closes it); the tab rides on the drawer's edge, and opening one closes the other. Used by Site stats (right). With `launch`, the same tab opens something else instead of a drawer: My story (centre) uses that |
+| `client/src/scripts/my-story.js` | "My story": the tab in the middle of the header opens the 3D journey (see [section 5](#5-page-structure-and-content)): the camera pulls back and tilts the page (`.page`) back onto the dotted background, a panel pops out of it from the tab, and a timeline of the stops in `<template id="my-story">` plays forward, ending on the quote. Pages without the template get no tab. On phones the tab moves to the left so it doesn't meet Site stats. Until it's opened once (remembered in `localStorage` as `my-story-opened`), the tab gives one small nudge every 10 s: it tugs down and bounces back (`tab-tug` in `motion.css`), then a light-blue glint sweeps through its letters (`tab-shine`) |
 | `client/src/scripts/header-stats.js` | "Site stats": the tab on the right of the header, under the nav. Its drawer shows the public 30-day summary from `/api/public-stats` (address built from `VITE_ANALYTICS_ENDPOINT`, falling back to the live Worker): six tiles, a visits-per-day chart with a scale and dates, and lists; it scrolls when taller than the screen. Fetched on first open and again after 5 minutes |
 | `client/src/scripts/office-clip.js` | Easter egg: a mug button fixed bottom-left that jingles every 6 s (`mug-jingle` in `motion.css`) until it has been clicked once, remembered in `localStorage` as `office-mug-found`. Clicking it slides "The Office x LinkedIn" banner, full width, up from the bottom edge (350 ms, ease-out, no fade) until the whole banner is in view, and plays a 9-second clip (`client/public/assets/office/`). A click anywhere or Escape slides it back down and stops the sound |
 | `client/src/scripts/home.js` | Home page: timeline, hero strip, section flow |

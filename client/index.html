@@ -37,6 +37,10 @@
 <body>
     <a class="skip-link" href="#main">Skip to content</a>
 
+    <!-- The whole page in one box, so "My story" can tilt it back like a sheet on a desk
+         (my-story.js). Nothing else depends on it. -->
+    <div class="page">
+
     <header class="site-header">
         <div class="container">
             <a class="wordmark" href="#top"><span aria-hidden="true">✦  </span>Tony Nguyen</a>
@@ -54,21 +58,43 @@
         </div>
     </header>
 
-    <!-- "My story": my-story.js turns this into the tab in the middle of the header and its
-         pull-down drawer. Edit the words freely; keep the classes for the styling. -->
+    <!-- "My story": my-story.js turns this into the tab in the middle of the header and the 3D
+         journey it opens. Each <li> is a stop, oldest first: data-label is the short name under
+         its dot, the first <p> the heading over the caption, the second <p> the caption. The
+         <figure> is the closing quote, shown on the last stop. Edit the words freely. -->
     <template id="my-story">
-        <figure class="story-quote">
+        <ol>
+            <li data-label="The start">
+                <p>The start</p>
+                <p>Accounting, which taught me to care about systems that balance, records someone can audit, and work someone else can pick up.</p>
+            </li>
+            <li data-label="Jan 2026">
+                <p>January 2026</p>
+                <p>I started Harvard’s CS50.</p>
+            </li>
+            <li data-label="Foundations">
+                <p>Learning the foundations</p>
+                <p>MDN’s HTML, CSS and JavaScript docs, the Python docs, <cite>Code</cite>, <cite>Grokking Algorithms</cite> and <cite>The C Programming Language</cite>, and the math underneath: pre-algebra, intermediate algebra and Boolean algebra.</p>
+            </li>
+            <li data-label="Sep 2026">
+                <p>September 2026</p>
+                <p>Developer work at narb, building Nexus.</p>
+            </li>
+            <li data-label="Oct 2026">
+                <p>October 2026</p>
+                <p>NoTestudo, and building this website.</p>
+            </li>
+            <li data-label="Today → next">
+                <p>Today → next</p>
+                <p>The CPA, next year.</p>
+            </li>
+        </ol>
+        <figure>
             <blockquote>
                 <p>I don’t think of it as leaving accounting for software. I’m doing both, and each one makes me better at the other.</p>
             </blockquote>
             <figcaption>Tony Nguyen  ·  Accountant and software engineer</figcaption>
         </figure>
-        <div class="story-text">
-            <p>I work in accounting. It taught me to care about systems that balance, records someone can audit, and work that someone else can pick up later.</p>
-            <p>In January 2026 I started Harvard’s CS50. Since then I’ve worked through MDN’s HTML, CSS and JavaScript docs and the Python docs, read <cite>Code</cite>, <cite>Grokking Algorithms</cite> and <cite>The C Programming Language</cite>, and gone back over the math underneath: pre-algebra, intermediate algebra and Boolean algebra.</p>
-            <p>In September I started doing developer work at narb, and began working on Nexus, a tool that shows teachers how assignments were written. In October I started on NoTestudo, a habit tracker from the University of Maryland, and began building this site.</p>
-            <p>Next year I’m planning to start the CPA. The aim isn’t to pick one path: it’s to keep doing both.</p>
-        </div>
     </template>
 
     <main id="main" tabindex="-1">
@@ -384,6 +410,8 @@
             <p>© 2026 Tony Nguyen  ·  Built with Vite, hosted on GitHub Pages</p>
         </div>
     </footer>
+
+    </div>
 
     <script type="module" src="./src/scripts/main.js"></script>
     <script type="module" src="./src/scripts/home.js"></script>

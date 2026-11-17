@@ -1,5 +1,6 @@
 // Header drawers: a thin tab hanging from the header that opens a drawer underneath it. Used by
-// "My story" (my-story.js, in the middle) and "Site stats" (header-stats.js, on the right).
+// "Site stats" (header-stats.js, on the right). "My story" (my-story.js, in the middle) uses the
+// same tab with `launch` instead: pulling or clicking it calls launch() and there is no drawer.
 //
 // Pull the tab down (or click it) to open; push it back up, click it, the close button, Escape,
 // or a click elsewhere to close. The tab rides on the drawer's bottom edge. Opening one drawer
@@ -20,12 +21,17 @@ const drawers = new Set();
  * @param {'center'|'right'} options.place
  * @param {string} [options.footer]   Markup for a note under the body.
  * @param {() => void} [options.onOpen]
+ * @param {(tab: HTMLButtonElement) => void} [options.launch]
+ *   Turns the tab into a launcher: pulling or clicking it calls this, and no drawer is made.
  * @returns {{ body: HTMLElement, inner: HTMLElement, setOpen: (open: boolean) => void } | null}
  */
-export function createHeaderDrawer({ id, tab, heading, place, footer = '', onOpen }) {
+export function createHeaderDrawer({ id, tab, heading, place, footer = '', onOpen, launch }) {
   const host = document.querySelector('.site-header .container');
   if (!host) {
     return null;
+  }
+  if (launch) {
+    return createLauncherTab({ tab, place, launch, host });
   }
 
   const drawer = document.createElement('div');
@@ -127,4 +133,46 @@ export function createHeaderDrawer({ id, tab, heading, place, footer = '', onOpe
   const api = { element: drawer, body, inner, setOpen };
   drawers.add(api);
   return api;
+}
+
+// The same tab, opening something else: a pull down or a click calls launch(tab).
+function createLauncherTab({ tab, place, launch, host }) {
+  const wrap = document.createElement('div');
+  wrap.className = `header-drawer header-drawer--${place} header-drawer--launcher`;
+  wrap.innerHTML = `
+    <button class="header-tab" type="button" aria-haspopup="dialog">
+      <span class="header-tab__grip" aria-hidden="true"></span>
+      <span class="header-tab__label">${tab}</span>${CHEVRON}
+    </button>`;
+  host.append(wrap);
+  const handle = wrap.querySelector('.header-tab');
+
+  let drag = null;
+  let pulled = false;
+  handle.addEventListener('pointerdown', (event) => {
+    drag = { y: event.clientY, id: event.pointerId };
+    pulled = false;
+    try {
+      handle.setPointerCapture(event.pointerId);
+    } catch {}
+  });
+  handle.addEventListener('pointermove', (event) => {
+    if (drag && event.pointerId === drag.id && event.clientY - drag.y > PULL_PX) {
+      pulled = true;
+      drag = null;
+      launch(handle);
+    }
+  });
+  const endDrag = () => { drag = null; };
+  handle.addEventListener('pointerup', endDrag);
+  handle.addEventListener('pointercancel', endDrag);
+  handle.addEventListener('click', () => {
+    // A pull already launched it; the click that ends the pull shouldn't launch it again.
+    if (pulled) {
+      pulled = false;
+      return;
+    }
+    launch(handle);
+  });
+  return { element: wrap, handle };
 }

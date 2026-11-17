@@ -2211,19 +2211,340 @@ button.event-card[aria-current="true"] {
 }
 
 /* ---------- My story ----------
-   The "My story" drawer (my-story.js, words in index.html's <template id="my-story">): a quote in
-   navy with a large quote mark and a signature, then a few short paragraphs. */
-.story-quote {
+   my-story.js: the "My story" tab opens a journey in 3D (words in index.html's
+   <template id="my-story">). The camera pulls back and tilts: the page (.page) lies back like a
+   sheet on the site's own dotted background, cut to the part that was on screen, with a thin edge
+   and a soft shadow under it. A panel pops up out of the page from the tab, and on it a timeline
+   plays forward, a stop at a time, ending on a quote. The camera and the pop are Web Animations in
+   my-story.js; the rest is here. */
+
+/* This tab opens the journey rather than a drawer, so it needs only its own row. */
+.header-drawer--launcher {
+    grid-template-rows: auto;
+}
+
+/* While it's open the page underneath stays still. The scrollbar's gutter is kept, so nothing
+   shifts sideways when the scrollbar goes. Section snapping (motion.css) is off too: browsers
+   measure snap points after transforms, so tilting the page would move them and the page would
+   scroll to follow. (:root outranks motion.css's html.motion-ok, which loads later.) */
+:root.journey-open {
+    overflow: hidden;
+    scrollbar-gutter: stable;
+    scroll-snap-type: none;
+}
+
+/* The page as a sheet: its own white paper with the dot grid printed on it, cut to the part that
+   was on screen (my-story.js sets --journey-clip). Around it is the site's usual background, the
+   drifting dot grid (body::before), so the sheet lies on the same dots. The things pinned to the
+   window (the mug, the section guide, the progress bar) step aside. */
+html.journey-open .page {
+    background-color: var(--color-surface);
+    background-image: radial-gradient(circle at 0.875rem 0.875rem, rgb(157 174 196 / 0.7) 0.0781rem, transparent 0.1094rem);
+    background-size: 1.75rem 1.75rem;
+    clip-path: var(--journey-clip, none);
+}
+
+html.journey-open :is(.office-toggle, .section-guide, .scroll-progress) {
+    visibility: hidden;
+}
+
+/* White on white, the sheet needs an edge: a thin line around it (over the page) and a soft
+   shadow under it. my-story.js moves both with the page; the corners match its 22 px cut. */
+.journey-frame,
+.journey-shadow {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    border-radius: 22px;
+    opacity: 0;
+}
+
+.journey-frame {
+    z-index: 1;
+    border: 1px solid rgb(157 174 196 / 0.75);
+}
+
+.journey-shadow {
+    z-index: -1;
+    background: rgb(34 43 54 / 0.32);
+    filter: blur(1.75rem);
+}
+
+/* Over everything but the skip link and the Office banner. The panel sits a little above the
+   middle, leaving the page in view below it. */
+.journey {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    padding: 1rem 1rem 14vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.journey[hidden] {
+    display: none;
+}
+
+.journey.is-closing {
+    pointer-events: none;
+}
+
+/* Reduced motion (or a page without .page): no camera, just the panel over the page, frosted. */
+.journey--flat {
+    padding-bottom: 1rem;
+    background: rgb(250 251 253 / 0.72);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+}
+
+.journey__panel {
+    width: min(44rem, 100%);
+    margin: auto;
+}
+
+/* A white slab with a little thickness along its bottom edge. It leans a touch toward the mouse
+   (--rx, --ry from my-story.js). */
+.journey__card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem 1.75rem 1.25rem;
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 1rem;
+    box-shadow:
+        0 1px 0 #dde3eb,
+        0 2px 0 #d3dbe5,
+        0 3px 0 #c9d2de,
+        0 4px 0 #bfc9d7,
+        0 28px 60px -22px rgb(34 43 54 / 0.4);
+    outline: none;
+    transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform 400ms var(--ease-out, ease);
+}
+
+.journey__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+}
+
+.journey__sub {
+    margin-top: 0.25rem;
+    color: var(--color-ink);
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+}
+
+.journey__close {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--color-muted);
+    background: none;
+    border: 0;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+}
+
+.journey__close:hover {
+    color: var(--color-ink);
+    background: var(--color-canvas);
+}
+
+/* The track: a dot per stop on a line, the stretch already travelled in navy. While a stop is up,
+   the navy runs on toward the next one, with a bright head at its tip; when it arrives, that stop
+   comes up. */
+.journey__track {
+    --dot: 0.875rem;
     position: relative;
+}
+
+.journey__line {
+    position: absolute;
+    top: calc(var(--dot) / 2 - 1.5px);
+    left: calc(50% / var(--stops));
+    right: calc(50% / var(--stops));
+    height: 3px;
+    border-radius: 3px;
+    background: var(--color-border);
+}
+
+.journey__fill {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    border-radius: inherit;
+    background: var(--color-brand);
+}
+
+.journey__fill::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: -0.25rem;
+    width: 0.5rem;
+    height: 0.5rem;
+    margin-top: -0.25rem;
+    border-radius: 50%;
+    background: var(--color-brand);
+    box-shadow: 0 0 0 4px rgb(39 59 112 / 0.18);
+}
+
+.journey__stops {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(var(--stops), minmax(0, 1fr));
     margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.journey__stop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    padding: 0 0 0.125rem;
+    color: var(--color-muted);
+    font: inherit;
+    background: none;
+    border: 0;
+    border-radius: 0.375rem;
+    cursor: pointer;
+}
+
+.journey__stop:focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+}
+
+.journey__dot {
+    width: var(--dot);
+    height: var(--dot);
+    background: var(--color-surface);
+    border: 2px solid var(--color-axis);
+    border-radius: 50%;
+    transition: border-color 250ms ease, background-color 250ms ease, box-shadow 250ms ease, transform 300ms var(--ease-spring, ease);
+}
+
+.journey__stop:hover .journey__dot {
+    border-color: var(--color-brand);
+}
+
+.journey__stop.is-reached .journey__dot,
+.journey__stop.is-current .journey__dot {
+    background: var(--color-brand);
+    border-color: var(--color-brand);
+}
+
+.journey__stop.is-current .journey__dot {
+    box-shadow: 0 0 0 3px var(--color-surface), 0 0 0 5px var(--color-brand);
+    transform: scale(1.15);
+}
+
+.journey__label {
+    max-width: 100%;
+    padding-inline: 0.125rem;
+    overflow: hidden;
+    font-size: 0.6875rem;
+    font-weight: 600;
+    line-height: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    transition: color 250ms ease;
+}
+
+.journey__stop:hover .journey__label,
+.journey__stop.is-current .journey__label {
+    color: var(--color-brand);
+}
+
+.journey__stop.is-current .journey__label {
+    font-weight: 700;
+}
+
+/* The captions share one cell, so the panel keeps its size. The new one rises in as the old one
+   lifts away. */
+.journey__stage {
+    display: grid;
+}
+
+.journey__caption {
+    grid-area: 1 / 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(0.875rem);
+    transition: opacity 300ms ease, transform 450ms var(--ease-out, ease), visibility 0s 300ms;
+}
+
+.journey__caption.is-before {
+    transform: translateY(-0.875rem);
+}
+
+.journey__caption.is-current {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition: opacity 420ms ease 150ms, transform 620ms var(--ease-out, ease) 150ms, visibility 0s;
+}
+
+.journey__when {
+    color: var(--color-brand);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    line-height: 1rem;
+    text-transform: uppercase;
+}
+
+.journey__text {
+    color: var(--color-ink);
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.875rem;
+    text-wrap: pretty;
+}
+
+.journey__text cite {
+    font-style: italic;
+}
+
+/* The closing quote, on the last stop: in navy with a large quote mark and a signature. It comes
+   up a beat after the caption. */
+.journey__quote {
+    position: relative;
+    margin: 0.5rem 0 0;
     padding: var(--space-md) var(--space-lg) var(--space-md) 3rem;
     background: var(--color-canvas);
     border: 1px solid var(--color-border);
     border-left: 3px solid var(--color-brand);
     border-radius: var(--radius-card);
+    opacity: 0;
+    transform: translateY(0.625rem);
+    transition: opacity 200ms ease, transform 200ms ease;
 }
 
-.story-quote::before {
+.journey__caption.is-current .journey__quote {
+    opacity: 1;
+    transform: none;
+    transition: opacity 700ms ease 900ms, transform 900ms var(--ease-out, ease) 900ms;
+}
+
+.journey__quote::before {
     content: "\201C";
     position: absolute;
     top: 0.25rem;
@@ -2235,35 +2556,146 @@ button.event-card[aria-current="true"] {
     opacity: 0.35;
 }
 
-.story-quote blockquote {
+.journey__quote blockquote {
     margin: 0;
 }
 
-.story-quote blockquote p {
+.journey__quote blockquote p {
     color: var(--color-brand);
     font-size: 1.0625rem;
     font-weight: 600;
     line-height: 1.5rem;
 }
 
-.story-quote figcaption {
+.journey__quote figcaption {
     margin-top: var(--space-xs);
     color: var(--color-muted);
     font-size: 0.75rem;
     line-height: 1rem;
 }
 
-.story-text {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    max-width: 38rem;
-    color: var(--color-ink);
-    line-height: 1.5rem;
+/* For screen readers: each stop is read out as it comes up. */
+.journey__live {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
-.story-text cite {
-    font-style: italic;
+.journey__foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-top: 0.875rem;
+    border-top: 1px solid var(--color-border);
+}
+
+.journey__play {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4375rem 0.875rem 0.4375rem 0.75rem;
+    color: var(--color-on-brand);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 700;
+    line-height: 1rem;
+    background: var(--color-brand);
+    border: 0;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: background-color 160ms ease;
+}
+
+.journey__play:hover {
+    background: #1d2d57;
+}
+
+.journey__step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.journey__arrow {
+    display: grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    color: var(--color-brand);
+    font: inherit;
+    font-size: 1.0625rem;
+    font-weight: 700;
+    line-height: 1;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: border-color 160ms ease;
+}
+
+.journey__arrow:hover {
+    border-color: var(--color-brand);
+}
+
+.journey__arrow:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+.journey__count {
+    min-width: 2.75rem;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-variant-numeric: tabular-nums;
+    text-align: center;
+}
+
+/* Phones: dots only on the track (the heading over the caption names the stop), and smaller
+   type. */
+@media (max-width: 640px) {
+    .journey {
+        padding: 0.75rem 0.75rem 10vh;
+    }
+
+    .journey__card {
+        gap: 1rem;
+        padding: 1.25rem 1.125rem 1rem;
+    }
+
+    .journey__sub {
+        font-size: 1rem;
+    }
+
+    .journey__label {
+        display: none;
+    }
+
+    .journey__text {
+        font-size: 1.0625rem;
+        line-height: 1.5625rem;
+    }
+
+    .journey__quote {
+        padding: var(--space-sm) var(--space-md) var(--space-sm) 2.5rem;
+    }
+
+    .journey__quote blockquote p {
+        font-size: 0.9375rem;
+        line-height: 1.375rem;
+    }
+}
+
+@media print {
+    .journey,
+    .journey-frame,
+    .journey-shadow {
+        display: none;
+    }
 }
 
 /* ---------- Card pages ----------

@@ -9,7 +9,8 @@ import './analytics.js';
 import './motion.js';
 // The mug in the bottom-left corner: The Office x LinkedIn, with sound.
 import './office-clip.js';
-// The "Site stats" pull-down tab in the middle of the header.
+// The header's pull-down tabs: "My story" in the middle, "Site stats" on the right.
+import './my-story.js';
 import './header-stats.js';
 
 // Links marked data-home-link always point at the site root, whatever base path the site is

@@ -1760,30 +1760,66 @@ button.event-card[aria-current="true"] {
     }
 }
 
-/* ---------- Site stats drawer ----------
-   header-stats.js hangs a thin "Site stats" tab from the middle of the header. Pulling it down
-   (or clicking it) opens a drawer under the header; the tab rides on the drawer's bottom edge.
-   The drawer's height animates with grid rows (0fr to 1fr), so it unrolls downward. It lives
-   inside the sticky header, so it stays put while the page scrolls. */
-.stats-drawer {
+/* ---------- Header drawers (Site stats, My story) ----------
+   header-drawer.js hangs thin tabs from the header: "My story" in the middle, "Site stats" on the
+   right under the nav. Pulling a tab down (or clicking it) opens its drawer under the header; the
+   tab rides on the drawer's bottom edge, and opening one closes the other. The height animates
+   with grid rows (0fr to 1fr), so a drawer unrolls downward. Drawers live in the sticky header's
+   content column, so they line up with it and stay put while the page scrolls. */
+.site-header .container {
+    position: relative;
+}
+
+.header-drawer {
     position: absolute;
-    top: 100%;
-    left: 50%;
+    /* Just under the header's 1 px bottom border. */
+    top: calc(100% + 1px);
     display: grid;
     grid-template-rows: 0fr auto;
-    justify-items: center;
-    width: min(46rem, calc(100vw - 2rem));
+    width: min(46rem, 100%);
     /* Only the tab and the open panel take clicks, not the empty band around the tab. */
     pointer-events: none;
-    transform: translateX(-50%);
     transition: grid-template-rows 380ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.stats-drawer.is-open {
+.header-drawer--center {
+    left: 50%;
+    justify-items: center;
+    transform: translateX(-50%);
+}
+
+/* Lined up with the right edge of the nav pill, with its tab under it. */
+.header-drawer--right {
+    right: 0;
+    justify-items: end;
+}
+
+.header-drawer--right .header-tab {
+    margin-right: 1.5rem;
+}
+
+/* Phones: both tabs would meet in the middle, so My story moves to the left edge. */
+@media (max-width: 640px) {
+    .header-drawer--center {
+        left: 0;
+        justify-items: start;
+        transform: none;
+    }
+
+    .header-drawer--center .header-tab {
+        margin-left: 1rem;
+    }
+
+    .header-drawer--right .header-tab {
+        margin-right: 1rem;
+    }
+}
+
+.header-drawer.is-open {
     grid-template-rows: 1fr auto;
 }
 
-.stats-drawer__panel {
+.header-drawer__panel {
     width: 100%;
     min-height: 0;
     overflow: hidden;
@@ -1797,25 +1833,25 @@ button.event-card[aria-current="true"] {
     transition: visibility 0s 380ms;
 }
 
-.stats-drawer.is-open .stats-drawer__panel {
+.header-drawer.is-open .header-drawer__panel {
     visibility: visible;
     transition: visibility 0s;
 }
 
-.stats-drawer__inner {
+.header-drawer__inner {
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
     padding: var(--space-md) var(--space-lg) var(--space-lg);
 }
 
-.stats-drawer__head {
+.header-drawer__head {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
 
-.stats-drawer__close {
+.header-drawer__close {
     display: grid;
     place-items: center;
     width: 1.75rem;
@@ -1828,13 +1864,13 @@ button.event-card[aria-current="true"] {
     cursor: pointer;
 }
 
-.stats-drawer__close:hover {
+.header-drawer__close:hover {
     color: var(--color-ink);
     background: var(--color-canvas);
 }
 
 /* The tab: thin, a grip line and a small label, hanging just under the header's border. */
-.stats-handle {
+.header-tab {
     display: inline-flex;
     align-items: center;
     gap: 0.375rem;
@@ -1858,17 +1894,17 @@ button.event-card[aria-current="true"] {
     transition: color 160ms ease, padding 200ms ease;
 }
 
-.stats-handle:hover,
-.stats-drawer.is-open .stats-handle {
+.header-tab:hover,
+.header-drawer.is-open .header-tab {
     color: var(--color-brand);
     padding-bottom: 0.375rem;
 }
 
-.stats-handle:active {
+.header-tab:active {
     cursor: grabbing;
 }
 
-.stats-handle__grip {
+.header-tab__grip {
     width: 1.25rem;
     height: 3px;
     border-radius: var(--radius-pill);
@@ -1876,29 +1912,29 @@ button.event-card[aria-current="true"] {
     opacity: 0.5;
 }
 
-.stats-handle svg {
+.header-tab svg {
     transition: transform 300ms var(--ease-out, ease);
 }
 
-.stats-drawer.is-open .stats-handle svg {
+.header-drawer.is-open .header-tab svg {
     transform: rotate(180deg);
 }
 
 /* Contents. The inner part scrolls once the drawer would run past the bottom of the screen
    (the header is 5 rem, 7 rem on phones; the rest leaves room for the tab and a margin), and
    the scroll doesn't spill over to the page. */
-.stats-drawer__inner {
+.header-drawer__inner {
     max-height: calc(100dvh - 8.5rem);
     overflow-y: auto;
     overscroll-behavior: contain;
     scrollbar-width: thin;
 }
 
-.stats-drawer__status {
+.header-drawer__status {
     color: var(--color-muted);
 }
 
-.stats-drawer__retry {
+.header-drawer__retry {
     align-self: start;
     padding: 0.375rem 0.875rem;
     color: var(--color-brand);
@@ -1910,7 +1946,7 @@ button.event-card[aria-current="true"] {
     cursor: pointer;
 }
 
-.stats-drawer__body {
+.header-drawer__body {
     display: flex;
     flex-direction: column;
     gap: var(--space-lg);
@@ -2107,12 +2143,12 @@ button.event-card[aria-current="true"] {
     text-align: right;
 }
 
-.stats-drawer__note {
+.header-drawer__note {
     color: var(--color-muted);
     font-size: 0.6875rem;
 }
 
-.stats-drawer__note a {
+.header-drawer__note a {
     color: var(--color-brand);
     font-weight: 600;
 }
@@ -2124,7 +2160,7 @@ button.event-card[aria-current="true"] {
 }
 
 @media (max-width: 640px) {
-    .stats-drawer__inner {
+    .header-drawer__inner {
         max-height: calc(100dvh - 10.5rem);
         padding-inline: var(--space-md);
     }
@@ -2148,7 +2184,63 @@ button.event-card[aria-current="true"] {
 }
 
 @media print {
-    .stats-drawer {
+    .header-drawer {
         display: none;
     }
+}
+
+/* ---------- My story ----------
+   The "My story" drawer (my-story.js, words in index.html's <template id="my-story">): a quote in
+   navy with a large quote mark and a signature, then a few short paragraphs. */
+.story-quote {
+    position: relative;
+    margin: 0;
+    padding: var(--space-md) var(--space-lg) var(--space-md) 3rem;
+    background: var(--color-canvas);
+    border: 1px solid var(--color-border);
+    border-left: 3px solid var(--color-brand);
+    border-radius: var(--radius-card);
+}
+
+.story-quote::before {
+    content: "\201C";
+    position: absolute;
+    top: 0.25rem;
+    left: 0.875rem;
+    color: var(--color-brand);
+    font-size: 3rem;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.35;
+}
+
+.story-quote blockquote {
+    margin: 0;
+}
+
+.story-quote blockquote p {
+    color: var(--color-brand);
+    font-size: 1.0625rem;
+    font-weight: 600;
+    line-height: 1.5rem;
+}
+
+.story-quote figcaption {
+    margin-top: var(--space-xs);
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    line-height: 1rem;
+}
+
+.story-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    max-width: 38rem;
+    color: var(--color-ink);
+    line-height: 1.5rem;
+}
+
+.story-text cite {
+    font-style: italic;
 }

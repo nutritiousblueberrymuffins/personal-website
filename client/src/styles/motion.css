@@ -474,3 +474,56 @@ html.motion-ok {
         opacity: 0;
     }
 }
+
+/* ---------- The My story tab tugs ----------
+   Until it's been opened once (my-story.js adds .is-found, remembered in this browser), the
+   "My story" tab dips down and bounces back every 5 s, starting 1.5 s after the page loads, as if
+   something were tugging it: a hint that it pulls down. It rests while hovered or open. */
+.motion-ok .header-drawer--center:not(.is-found):not(.is-open) .header-tab:not(:hover) {
+    animation: tab-tug 5s ease-in-out 1.5s infinite;
+}
+
+.motion-ok .header-drawer--center:not(.is-found):not(.is-open) .header-tab:not(:hover) svg {
+    animation: tab-tug-arrow 5s ease-in-out 1.5s infinite;
+}
+
+@keyframes tab-tug {
+    0%,
+    14%,
+    100% {
+        transform: translateY(0);
+        padding-bottom: 0.25rem;
+    }
+
+    4% {
+        transform: translateY(5px);
+        padding-bottom: 0.4375rem;
+    }
+
+    8% {
+        transform: translateY(0);
+        padding-bottom: 0.25rem;
+    }
+
+    11% {
+        transform: translateY(2px);
+        padding-bottom: 0.3125rem;
+    }
+}
+
+/* The arrow drops a touch further than the tab, pointing the way. */
+@keyframes tab-tug-arrow {
+    0%,
+    14%,
+    100% {
+        transform: translateY(0);
+    }
+
+    4% {
+        transform: translateY(2px);
+    }
+
+    8% {
+        transform: translateY(0);
+    }
+}

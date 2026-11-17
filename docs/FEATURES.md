@@ -342,8 +342,8 @@ the thread, in the order they happened.
 - **An endless strip:** dragging, swiping or flicking keeps going forward or backward, looping from the
   newest entry round to the oldest.
 - **Focus:** cards fade by how far they are from the current one in time order (`FOCUS` in
-  `timeline.js`, `--focus` in `site.css`): the current card and its neighbours at full strength, then
-  45%, then 20%. Counting in time order means that where the loop wraps, the newest entries beside
+  `timeline.js`, `--focus` in `site.css`): only the current card at full strength, its neighbours
+  at 45%, everything further at 20%. Counting in time order means that where the loop wraps, the newest entries beside
   the START card stay faded. Cards come back as the strip moves to them; a faded card brightens a
   little on hover.
 - **One entry selected:** the strip always settles with one entry centred. That entry is selected, and

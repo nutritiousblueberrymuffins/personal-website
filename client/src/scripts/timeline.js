@@ -360,9 +360,9 @@ function normalise() {
   }
 }
 
-// How strongly a card shows, by how many entries it is from the current one in time order:
-// the current card and its neighbours in full, then fading out (site.css, "Focus").
-const FOCUS = [1, 1, 0.45, 0.2];
+// How strongly a card shows, by how many entries it is from the current one in time order: only
+// the current card in full, its neighbours at 45%, everything further at 20% (site.css, "Focus").
+const FOCUS = [1, 0.45, 0.2];
 
 // Highlights the centred card (only that copy, not every repeat of the entry), fades the cards
 // away from it, and updates the "n / total" position.

@@ -390,10 +390,10 @@ a.project-card:hover .project-card__link {
     position: relative;
 }
 
-/* Focus: on the timeline, cards away from the current one fade (timeline.js sets --focus from how
-   many entries away in time they are: full for the current card and its neighbours, then 45%,
-   then 20%), and come back as the strip moves to them. A faded card brightens a little on hover,
-   so it still reads as clickable. */
+/* Focus: on the timeline, every card but the current one fades (timeline.js sets --focus from how
+   many entries away in time they are: full for the current card, 45% for its neighbours, 20%
+   beyond), and a card comes back to full as the strip settles on it, by arrow, drag or scroll.
+   A faded card brightens a little on hover, so it still reads as clickable. */
 .thread--timeline .thread__item {
     opacity: var(--focus, 1);
     transition: opacity 320ms ease;

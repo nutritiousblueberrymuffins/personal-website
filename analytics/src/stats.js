@@ -93,6 +93,47 @@ const QUERIES = {
     ORDER BY id DESC LIMIT 40`,
 };
 
+// The public summary shown in the website's pull-down "Site stats" strip. Totals only: no clicks,
+// link text, referrers, errors or single events, and a country is listed only once it has at
+// least PUBLIC_MIN_COUNTRY visits, so no one visitor can be picked out.
+export const PUBLIC_MIN_COUNTRY = 3;
+
+const PUBLIC_QUERIES = {
+  totals: `
+    SELECT COUNT(DISTINCT session_id) AS visits,
+           SUM(type = 'pageview') AS pageviews
+    FROM events WHERE received_at >= ?1`,
+  engagement: `
+    SELECT CAST(AVG(json_extract(props, '$.engaged_ms')) AS INTEGER) AS avg_engaged_ms
+    FROM events WHERE type = 'page_leave' AND received_at >= ?1`,
+  daily: `
+    SELECT strftime('%Y-%m-%d', received_at / 1000, 'unixepoch') AS day,
+           COUNT(DISTINCT session_id) AS visits
+    FROM events WHERE received_at >= ?1
+    GROUP BY day ORDER BY day`,
+  sections: QUERIES.sections,
+  devices: `
+    SELECT device AS name, COUNT(DISTINCT session_id) AS n
+    FROM events WHERE type = 'pageview' AND device IS NOT NULL AND received_at >= ?1
+    GROUP BY name ORDER BY n DESC`,
+  countries: `
+    SELECT country AS name, COUNT(DISTINCT session_id) AS n
+    FROM events WHERE type = 'pageview' AND country IS NOT NULL AND received_at >= ?1
+    GROUP BY name HAVING n >= ${PUBLIC_MIN_COUNTRY} ORDER BY n DESC LIMIT 5`,
+};
+
+export async function publicStats(db, since) {
+  const names = Object.keys(PUBLIC_QUERIES);
+  const results = await db.batch(names.map((name) => db.prepare(PUBLIC_QUERIES[name]).bind(since)));
+  const out = {};
+  names.forEach((name, i) => {
+    out[name] = results[i].results;
+  });
+  out.totals = { visits: out.totals[0]?.visits ?? 0, pageviews: out.totals[0]?.pageviews ?? 0 };
+  out.engagement = { avg_engaged_ms: out.engagement[0]?.avg_engaged_ms ?? null };
+  return out;
+}
+
 export async function stats(db, since) {
   const names = Object.keys(QUERIES);
   const results = await db.batch(names.map((name) => db.prepare(QUERIES[name]).bind(since)));

@@ -2,7 +2,8 @@
 
 Our own analytics for the website, in the spirit of PostHog but with no third party: a small
 tracker on the site, a collector on Cloudflare Workers that stores events in a Cloudflare D1
-database, and a password-protected dashboard served by the same Worker.
+database, and a password-protected dashboard served by the same Worker. A public, totals-only
+summary (`GET /api/public-stats`) feeds the "Site stats" strip in the site's header.
 
 | Part | File |
 |------|------|
@@ -27,6 +28,11 @@ depth, rage and dead clicks, referrers, countries, devices, browsers, pages, err
 heatmap over the live page (desktop and phone), and the latest events.
 
 ## Privacy
+
+The public summary (`/api/public-stats`, `publicStats` in `src/stats.js`) has the last 30 days
+as totals only: visits, page views, average time on page, visits per day, sections reached,
+devices, and countries with at least 3 visits. Clicks, link text, referrers, errors and single
+events stay behind the dashboard password.
 
 No cookies and no IP addresses. A visit is a random id that exists only while the page is
 open. Text typed into fields is never read. Browsers sending Do Not Track or Global Privacy

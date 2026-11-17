@@ -1,15 +1,24 @@
 // Analytics collector and dashboard for the personal website.
 //
-//   POST /collect    events from the website's tracker (public, origin-checked)
-//   GET  /           the dashboard page            (password)
-//   GET  /api/stats  the dashboard's numbers, JSON (password)
+//   POST /collect           events from the website's tracker (public, origin-checked)
+//   GET  /api/public-stats  a 30-day summary, totals only, for the site's "Site stats" strip
+//                           (public, any origin may read it, cached 5 minutes)
+//   GET  /                  the dashboard page            (password)
+//   GET  /api/stats         the dashboard's numbers, JSON (password)
 //
 // Events are stored in the D1 database bound as DB (schema.sql). The dashboard password is the
 // DASHBOARD_PASSWORD secret; the browser asks for it (any user name works). A daily cron
 // deletes events older than RETENTION_DAYS.
 import dashboardHtml from './dashboard.html';
 import { MAX_BODY_BYTES, isBot, toRows } from './collect.js';
-import { stats } from './stats.js';
+import { publicStats, stats } from './stats.js';
+
+const PUBLIC_DAYS = 30;
+const PUBLIC = {
+  'Access-Control-Allow-Origin': '*',
+  'Cache-Control': 'public, max-age=300',
+  'X-Content-Type-Options': 'nosniff',
+};
 
 const INSERT = `INSERT INTO events
   (received_at, ts, session_id, type, path, target, label, href, x, y, track, props,
@@ -153,6 +162,16 @@ export default {
 
     if (request.method !== 'GET') {
       return new Response('method not allowed', { status: 405 });
+    }
+    // Public: a fixed 30-day window and totals only (see publicStats), so there's nothing to
+    // configure from the request.
+    if (url.pathname === '/api/public-stats') {
+      const since = Date.now() - PUBLIC_DAYS * 86400000;
+      const data = await publicStats(env.DB, since);
+      return Response.json(
+        { days: PUBLIC_DAYS, generated_at: Date.now(), ...data },
+        { headers: PUBLIC },
+      );
     }
     if (url.pathname !== '/' && url.pathname !== '/api/stats') {
       return new Response('not found', { status: 404 });
